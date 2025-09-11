@@ -2,7 +2,7 @@
 @Component
 struct Index {
   @State message: string = '欢迎登录';
-//测试连接01
+//测试连接02
   build() {
     RelativeContainer() {
       Text(this.message)
