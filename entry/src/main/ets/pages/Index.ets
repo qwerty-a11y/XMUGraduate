@@ -1,71 +1,78 @@
+import { AnimatorParams } from "@kit.MediaLibraryKit"
+import {StuLoginView} from '../components/Login/StuLogin'
+import {LoginType} from  '../components/Login/LoginType'
+
+
 @Entry
 @Component
 struct Index {
-  @State message: string = '欢迎登录';
-//测试连接05
+  private isFirstLoad:boolean = true
+  animateOutParam:AnimateParam = {
+    duration:500,
+    curve:Curve.EaseIn
+  }
+  animateInParam:AnimateParam={
+    delay:250,
+    duration:500,
+    curve:Curve.EaseOut
+  }
+  mainAnimationsFirst = TransitionEffect.asymmetric(
+    TransitionEffect.IDENTITY.animation(this.animateInParam),
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateOutParam)
+  )
+  mainAnimations = TransitionEffect.asymmetric(
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateInParam),
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateOutParam)
+  )
+  childAnimations = TransitionEffect.asymmetric(
+    TransitionEffect.translate({x:'100%'}).animation(this.animateInParam),
+    TransitionEffect.translate({x:'100%'}).animation(this.animateOutParam)
+  )
+  @State activeViewIndex:number = 0;
+
+  TriggerAnimate(index:number):void{
+    this.activeViewIndex=index
+    this.isFirstLoad=false
+  }
+
+  @Builder
+  LoginView(){
+    if(this.activeViewIndex==0) {
+      if (this.isFirstLoad){
+        LoginType({onTypeSelected:((index)=>this.TriggerAnimate(index))}).transition(this.mainAnimationsFirst)
+      } else {
+        LoginType({onTypeSelected:((index)=>this.TriggerAnimate(index))}).transition(this.mainAnimations)
+      }
+    } else if (this.activeViewIndex==1) {
+      StuLoginView({onBack:(()=>this.TriggerAnimate(0))}).transition(this.childAnimations)
+    }
+  }
+
+
   build() {
     RelativeContainer() {
-      Text(this.message)
-        .id('TitleText')
-        .fontSize($r('app.float.page_text_font_size'))
-        .fontWeight(FontWeight.Bold)
+      Image($r('app.media.Title_background'))
+        .objectFit(ImageFit.Fill)
+      Image($r('app.media.logo'))
+        .id('TitleLogo')
+        .width('70%')
+        .objectFit(ImageFit.Contain)
         .margin({
-          top:'10%',
-          left:'5%'
+          top:'15%',
+          left:'15%',
+          right:'15%'
         })
+      Column(){
+        this.LoginView()
+      }
         .alignRules({
-          top:{anchor:'__container__',align: VerticalAlign.Top},
-          left:{anchor:'__container__',align: HorizontalAlign.Start}
-        })
-      TextInput({
-        placeholder:'账号'
-      })
-        .id('Account')
-        .alignRules({
-          top:{anchor:'TitleText',align:VerticalAlign.Bottom},
+          top:{anchor:"TitleLogo",align:VerticalAlign.Bottom}
         })
         .margin({
-          left:'10%',
-          right:'10%',
-          top:'10%'
+          top:'5%'
         })
-        .borderRadius(10)
-        .border({
-          color:Color.Gray,
-          width:2
-        })
-      TextInput({
-        placeholder:'密码'
-      })
-        .type(InputType.Password)
-        .id('Password')
-        .alignRules({
-          top:{anchor:'Account',align:VerticalAlign.Bottom},
-        })
-        .margin({
-          left:'10%',
-          right:'10%',
-          top:'10%'
-        })
-        .borderRadius(10)
-        .border({
-          color:Color.Gray,
-          width:2
-        })
-      Button()
-        .id('Comfirm')
-        .backgroundColor('#00bbff')
-        .borderRadius(37.5)
-        .alignRules({
-          top:{anchor:'Password', align: VerticalAlign.Bottom},
-          right:{anchor:'__container__', align: HorizontalAlign.End}
-        })
-        .margin({
-          top:'10%',
-          right:'10%'
-        })
-        .width(75)
-        .height(75)
+
+
     }
     .height('100%')
     .width('100%')

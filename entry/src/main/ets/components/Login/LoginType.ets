@@ -1,0 +1,110 @@
+@Component
+export struct LoginType{
+  public onTypeSelected?:(type:number) => void = undefined;
+
+  setOnTypeSelected(callback: (type:number)=>void):LoginType{
+    this.onTypeSelected=callback;
+    return this
+  }
+
+  build() {
+    RelativeContainer(){
+      Button(){
+        RelativeContainer(){
+          Image($r('app.media.Title_StuLogin'))
+            .id('StuLogin.Logo')
+            .objectFit(ImageFit.Contain)
+            //.backgroundColor(Color.White)
+            .alignRules({
+              left:{anchor:'__container__',align:HorizontalAlign.Start}
+            })
+            .margin({
+              top:'5%',
+              left:'5%'
+            })
+            .width('30%')
+            .height('80%')
+          Text('学生登录')
+            .font({
+              size:38,
+              weight:300
+            })
+            .alignRules({
+              left:{anchor:'StuLogin.Logo',align:HorizontalAlign.End},
+              right:{anchor:'__container__',align:HorizontalAlign.End},
+              center:{anchor:'__container__',align:VerticalAlign.Center}
+            })
+            .margin({
+              right:'5%'
+            })
+            .textAlign(TextAlign.Center)
+        }
+      }
+      .id('StuLogin')
+      .backgroundColor('#99ddf3f1')
+      .borderWidth(1)
+      .borderColor(Color.Gray)
+      .alignRules({
+        top:{anchor:'TitleLogo',align:VerticalAlign.Bottom},
+        middle:{anchor:'__container__',align:HorizontalAlign.Center}
+      })
+      .margin({
+        top:'10%'
+      })
+      .width('90%')
+      .height('20%')
+      .borderRadius('10%')
+      .onClick(()=>{
+        this.onTypeSelected && this.onTypeSelected(1)
+      })
+      Button(){
+        RelativeContainer(){
+          Image($r('app.media.Title_TchLogin'))
+            .id('TchLogin.Logo')
+            .objectFit(ImageFit.Contain)
+            //.backgroundColor(Color.White)
+            .alignRules({
+              right:{anchor:'__container__',align:HorizontalAlign.End}
+            })
+            .margin({
+              top:'5%',
+              right:'5%'
+            })
+            .width('30%')
+            .height('80%')
+          Text('教师登录')
+            .font({
+              size:38,
+              weight:300
+            })
+            .alignRules({
+              left:{anchor:'__container__',align:HorizontalAlign.Start},
+              right:{anchor:'TchLogin.Logo',align:HorizontalAlign.Start},
+              center:{anchor:'__container__',align:VerticalAlign.Center}
+            })
+            .margin({
+              left:'5%'
+            })
+            .textAlign(TextAlign.Center)
+        }
+      }
+      .id('TchLogin')
+      .backgroundColor('#99ddf3f1')
+      .borderWidth(1)
+      .borderColor(Color.Gray)
+      .alignRules({
+        top:{anchor:'StuLogin',align:VerticalAlign.Bottom},
+        middle:{anchor:'__container__',align:HorizontalAlign.Center}
+      })
+      .margin({
+        top:'5%'
+      })
+      .width('90%')
+      .height('20%')
+      .borderRadius('10%')
+      .onClick(()=>{
+        this.onTypeSelected && this.onTypeSelected(2)
+      })
+    }
+  }
+}
