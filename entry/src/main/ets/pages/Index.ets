@@ -1,11 +1,12 @@
 import { AnimatorParams } from "@kit.MediaLibraryKit"
-import {StuLoginView} from '../components/Login/StuLogin'
-import {LoginType} from  '../components/Login/LoginType'
+import {Waiting} from '../components/Login/Waiting'
+import {Login} from '../components/Login/Login'
 
 
 @Entry
 @Component
 struct Index {
+  @State LoginType:number=0
   private isFirstLoad:boolean = true
   animateOutParam:AnimateParam = {
     duration:500,
@@ -39,12 +40,24 @@ struct Index {
   LoginView(){
     if(this.activeViewIndex==0) {
       if (this.isFirstLoad){
-        LoginType({onTypeSelected:((index)=>this.TriggerAnimate(index))}).transition(this.mainAnimationsFirst)
+        Login({LoginType:this.LoginType})
+          .transition(this.mainAnimationsFirst)
+          .margin({
+            left:'10%',
+            right:'10%',
+            top:'10%'
+          })
       } else {
-        LoginType({onTypeSelected:((index)=>this.TriggerAnimate(index))}).transition(this.mainAnimations)
+        Login({LoginType:this.LoginType})
+          .transition(this.mainAnimations)
+          .margin({
+            left:'10%',
+            right:'10%',
+            top:'10%'
+          })
       }
     } else if (this.activeViewIndex==1) {
-      StuLoginView({onBack:(()=>this.TriggerAnimate(0))}).transition(this.childAnimations)
+      Waiting().transition(this.childAnimations)
     }
   }
 
@@ -53,14 +66,24 @@ struct Index {
     RelativeContainer() {
       Image($r('app.media.Title_background'))
         .objectFit(ImageFit.Fill)
+        .borderRadius({
+          topLeft:'20%',
+          topRight:'20%'
+        })
+        .margin({
+          top:'20%'
+        })
       Image($r('app.media.logo'))
         .id('TitleLogo')
-        .width('70%')
+        .width('50%')
         .objectFit(ImageFit.Contain)
         .margin({
-          top:'15%',
+          top:'30%',
           left:'15%',
           right:'15%'
+        })
+        .alignRules({
+          middle:{anchor:'__container__',align:HorizontalAlign.Center}
         })
       Column(){
         this.LoginView()

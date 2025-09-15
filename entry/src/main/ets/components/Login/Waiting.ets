@@ -1,7 +1,7 @@
 import { AnimatorParams } from "@kit.MediaLibraryKit"
 
 @Component
-export struct StuLoginView{
+export struct Waiting{
   public onBack?:() => void = undefined;
   build(){
     RelativeContainer(){
