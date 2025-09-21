@@ -1,0 +1,149 @@
+import { Baoyanstartbg } from '../components/Baoyanstart';
+import router from '@ohos.router'; // 导入路由模块
+import { ROUTER } from '../routerConstants'; // 导入路由常量
+import promptAction from '@ohos.promptAction';
+
+@Entry
+@Component
+struct logoin {
+  @State selectedValue: string = 'student';
+  @State account: string = '';   // 账号状态
+  @State password: string = '';  // 密码状态
+
+  // 登录方法：验证账号密码，跳转首页
+  login() {
+    if (this.selectedValue === 'student' && this.account && this.password) {
+      router.pushUrl({ url: ROUTER.HOME });
+    } else {
+      // 使用 promptAction 替换 prompt
+      promptAction.showToast({
+        message: '请输入正确的学生账号和密码',
+        duration: 2000 // 可选：设置弹窗显示时间（毫秒）
+      });
+    }
+  }
+
+  build() {
+    Stack() {
+      Baoyanstartbg()
+        .width('100%')
+        .height('100%');
+
+      Text('保研小助手')
+        .fontSize(36)
+        .fontWeight(FontWeight.Bold)
+        .width('80%')
+        .height(50)
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 500 });
+
+      Column() {
+        // 身份选择 Row（学生、教师、超管）
+        Row() {
+          Row() {
+            Radio({ value: 'student', group: 'identity' })
+              .checked(this.selectedValue === 'student')
+              .onChange((isChecked: boolean) => {
+                if (isChecked) this.selectedValue = 'student';
+              })
+              .width(0).height(0)
+              .position({ x: -100, y: 0 });
+            Text('学生')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .padding({ top: 12, bottom: 12 })
+              .backgroundColor(this.selectedValue === 'student' ? '#AFEEEE' : '#FFFFFF')
+              .borderRadius(20)
+              .flexGrow(1)
+              .textAlign(TextAlign.Center)
+              .onClick(() => this.selectedValue = 'student');
+          }.flexGrow(1);
+
+          Row() {
+            Radio({ value: 'teacher', group: 'identity' })
+              .checked(this.selectedValue === 'teacher')
+              .onChange((isChecked: boolean) => {
+                if (isChecked) this.selectedValue = 'teacher';
+              })
+              .width(0).height(0)
+              .position({ x: -100, y: 0 });
+            Text('教师')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .padding({ top: 12, bottom: 12 })
+              .backgroundColor(this.selectedValue === 'teacher' ? '#AFEEEE' : '#FFFFFF')
+              .borderRadius(20)
+              .flexGrow(1)
+              .textAlign(TextAlign.Center)
+              .onClick(() => this.selectedValue = 'teacher');
+          }.flexGrow(1);
+
+          Row() {
+            Radio({ value: 'super', group: 'identity' })
+              .checked(this.selectedValue === 'super')
+              .onChange((isChecked: boolean) => {
+                if (isChecked) this.selectedValue = 'super';
+              })
+              .width(0).height(0)
+              .position({ x: -100, y: 0 });
+            Text('超管')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .padding({ top: 12, bottom: 12 })
+              .backgroundColor(this.selectedValue === 'super' ? '#AFEEEE' : '#FFFFFF')
+              .borderRadius(20)
+              .flexGrow(1)
+              .textAlign(TextAlign.Center)
+              .onClick(() => this.selectedValue = 'super');
+          }.flexGrow(1);
+        }
+        .alignItems(VerticalAlign.Center)
+        .width('100%')
+        .margin({ bottom: 15 })
+        .borderRadius(20)
+        .backgroundColor('#FFFFFF');
+
+        // 账号输入框：绑定account状态
+        TextInput({ placeholder: '输入账号' })
+          .width('100%')
+          .height(40)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .shadow({ color: '#12000000', radius: 4, offsetX: 2, offsetY: 4 })
+          .margin({ bottom: 15 })
+          .onChange((value: string) => this.account = value); // 输入时更新account
+
+        // 密码输入框：绑定password状态
+        TextInput({ placeholder: '输入密码' })
+          .type(InputType.Password)
+          .width('100%')
+          .height(40)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .shadow({ color: '#12000000', radius: 4, offsetX: 2, offsetY: 4 })
+          .margin({ bottom: 15 })
+          .onChange((value: string) => this.password = value); // 输入时更新password
+
+        Text('忘记密码？')
+          .fontSize(12)
+          .fontColor('#FF0000')
+          .margin({ bottom: 15 })
+          .align(Alignment.Start)
+          .width('100%');
+
+        // 登录按钮：点击触发login方法
+        Button('登录')
+          .width('80%')
+          .height(45)
+          .backgroundColor('#ff77f0ec')
+          .borderRadius(16)
+          .onClick(() => this.login()); // 点击登录
+      }
+      .width(257)
+      .height(300)
+      .margin({ bottom: 20 });
+    }
+    .width('100%')
+    .height('100%');
+  }
+}
