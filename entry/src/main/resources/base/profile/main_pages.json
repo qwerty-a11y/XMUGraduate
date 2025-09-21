@@ -1,5 +1,8 @@
 {
   "src": [
-    "pages/Index"
+    "pages/launch",
+    "pages/login",
+    "pages/home",
+    "pages/checked"
   ]
 }
