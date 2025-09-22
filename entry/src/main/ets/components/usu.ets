@@ -15,70 +15,6 @@ export struct Poster {
 }
 
 // 导航栏组件
-// @Component
-// export struct NavigationBar {
-//   @Prop homeIcon: ResourceStr = $r('app.media.table1');
-//   @Prop reviewIcon: ResourceStr = $r('app.media.table2');
-//
-//   build() {
-//     Row() {
-//       // 首页导航项
-//       Column() {
-//         Column() {
-//           Image(this.homeIcon)
-//             .width(24)
-//             .height(24)
-//             .objectFit(ImageFit.Contain);
-//         }
-//         .width(100)
-//         .height(50)
-//         .borderRadius(20)
-//         .justifyContent(FlexAlign.Center)
-//         .alignItems(HorizontalAlign.Center)
-//         .backgroundColor('#ffffffff');
-//
-//         Text('首页')
-//           .fontSize(14)
-//           .height(22)
-//           .margin({ top: 5 });
-//       }
-//       .width('50%')
-//       .alignItems(HorizontalAlign.Center);
-//
-//       // 审核导航项
-//       Column() {
-//         Column() {
-//           Image(this.reviewIcon)
-//             .width(24)
-//             .height(24)
-//             .objectFit(ImageFit.Contain);
-//         }
-//         .width(100)
-//         .height(50)
-//         .borderRadius(20)
-//         .justifyContent(FlexAlign.Center)
-//         .alignItems(HorizontalAlign.Center)
-//         .backgroundColor('#ffaafafb');
-//
-//         Text('审核')
-//           .fontSize(14)
-//           .height(22)
-//           .margin({ top: 5 });
-//       }
-//       .width('50%')
-//       .alignItems(HorizontalAlign.Center);
-//     }
-//     .width('100%')
-//     .height('100%')
-//     .backgroundColor('#ffffffff')
-//     .shadow({ radius: 10, color: '#00000010' })
-//     .padding({ top: 10 })
-//     .backgroundImagePosition(Alignment.Bottom)
-//     .backgroundImageSize(ImageSize.Cover);
-//   }
-// }
-
-// 导航栏组件
 @Component
 export struct NavigationBar {
   // 接收当前页面路径（如 "/pages/Home" 或 "/pages/Checked"）
@@ -138,7 +74,7 @@ export struct NavigationBar {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
         // 逻辑：当前页面是审核页 → 主题色，否则白色
-        .backgroundColor(this.currentPage === '/pages/checked' ? this.activeColor : this.inactiveColor)
+        .backgroundColor(this.currentPage === '/pages/checked'||this.currentPage === '/pages/checking' ? this.activeColor : this.inactiveColor)
         // 点击跳转审核页
         .onClick(() => {
           router.pushUrl({ url: 'pages/checked' });
@@ -219,10 +155,14 @@ export struct FeatureCard {
   }
 }
 
+//顶栏组件
 @Component
 export struct top{
+  @Prop currentPage: string = '';
   @Prop image_setting: ResourceStr = $r('app.media.set');
   @Prop image_search: ResourceStr = $r('app.media.Search');
+  private activeColor: string = '#ff77f0ec'; // 当前页面背景色
+  private inactiveColor: string = '#FFFFFF'; // 非当前页面背景色
 
   build() {
     Column(){
@@ -238,12 +178,14 @@ export struct top{
               .width(40)
               .height(11)
               .borderRadius(20)
-              .backgroundColor('#ff77f0ec');
+              .backgroundColor(this.currentPage === '/pages/checked' ? this.activeColor : this.inactiveColor);
           }
           .width(85)
           .height('100%')
           .justifyContent(FlexAlign.Center)
-          //.backgroundColor('#FFFFFFFF');
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/checked' }); // 直接写目标页面路径
+          });
 
           Column() {
             Text('审核中')
@@ -254,12 +196,15 @@ export struct top{
               .width(40)
               .height(11)
               .borderRadius(20)
-              .backgroundColor('#FFFFFFFF');
+              .backgroundColor(this.currentPage === '/pages/checking' ? this.activeColor : this.inactiveColor);
           }
           .width(85)
           .height('100%')
           .justifyContent(FlexAlign.Center)
-          //.backgroundColor('#FFFFFFFF');
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/checking' }); // 直接写目标页面路径
+          });
+
         }
         .backgroundColor('#FFFFFFFF')
         .margin({left:8})
@@ -278,7 +223,11 @@ export struct top{
           .width(24)
           .height(24)
           .backgroundImagePosition(Alignment.End)
-          .margin({right: 8});
+          .margin({right: 8})
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/setting' }); // 直接写目标页面路径
+          });
+
 
       }
       .width(343)
@@ -403,3 +352,4 @@ export struct ActivityCardComponent {
     .margin({ bottom: 10 });
   }
 }
+

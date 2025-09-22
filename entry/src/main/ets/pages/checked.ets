@@ -62,7 +62,7 @@ struct  Checked{
 
   build() {
       Column(){
-          top()
+          top({ currentPage: '/pages/checked' })
             .width('100%')
             .height('20%')
             .backgroundColor('#FFFFFFFF')

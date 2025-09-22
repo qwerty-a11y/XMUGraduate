@@ -3,6 +3,8 @@
     "pages/launch",
     "pages/login",
     "pages/home",
-    "pages/checked"
+    "pages/checked",
+    "pages/checking",
+    "pages/setting"
   ]
 }
