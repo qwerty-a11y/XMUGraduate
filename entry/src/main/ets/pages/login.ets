@@ -9,6 +9,10 @@ struct logoin {
   @State selectedValue: string = 'student';
   @State account: string = '';   // 账号状态
   @State password: string = '';  // 密码状态
+  CustomAnimate:AnimateParam={
+    duration:250,
+    curve:Curve.EaseInOut
+  }
 
   // 登录方法：验证账号密码，跳转首页
   login() {
@@ -39,7 +43,17 @@ struct logoin {
 
       Column() {
         // 身份选择 Row（学生、教师、超管）
-        Row() {
+        RelativeContainer() {
+          Column()
+            .height(42)
+            .borderRadius(20)
+            .width('33.33%')
+            .alignRules({
+              middle:{anchor:this.selectedValue,align:HorizontalAlign.Center}
+            })
+            .backgroundColor('#AFEEEE')
+            .animation(this.CustomAnimate)
+
           Row() {
             Radio({ value: 'student', group: 'identity' })
               .checked(this.selectedValue === 'student')
@@ -51,13 +65,16 @@ struct logoin {
             Text('学生')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .padding({ top: 12, bottom: 12 })
-              .backgroundColor(this.selectedValue === 'student' ? '#AFEEEE' : '#FFFFFF')
+              .height(42)
+              .backgroundColor(Color.Transparent)
               .borderRadius(20)
               .flexGrow(1)
               .textAlign(TextAlign.Center)
               .onClick(() => this.selectedValue = 'student');
-          }.flexGrow(1);
+          }
+          .id('student')
+          .width('33.33%')
+          .flexGrow(1);
 
           Row() {
             Radio({ value: 'teacher', group: 'identity' })
@@ -70,13 +87,19 @@ struct logoin {
             Text('教师')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .padding({ top: 12, bottom: 12 })
-              .backgroundColor(this.selectedValue === 'teacher' ? '#AFEEEE' : '#FFFFFF')
+              .height(42)
+              .backgroundColor(Color.Transparent)
               .borderRadius(20)
               .flexGrow(1)
               .textAlign(TextAlign.Center)
               .onClick(() => this.selectedValue = 'teacher');
-          }.flexGrow(1);
+          }
+          .id('teacher')
+          .width('33.34%')
+          .alignRules({
+            left:{anchor:'student',align:HorizontalAlign.End}
+          })
+          .flexGrow(1);
 
           Row() {
             Radio({ value: 'super', group: 'identity' })
@@ -89,16 +112,24 @@ struct logoin {
             Text('超管')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .padding({ top: 12, bottom: 12 })
-              .backgroundColor(this.selectedValue === 'super' ? '#AFEEEE' : '#FFFFFF')
+              .height(42)
+              .backgroundColor(Color.Transparent)
               .borderRadius(20)
               .flexGrow(1)
               .textAlign(TextAlign.Center)
               .onClick(() => this.selectedValue = 'super');
-          }.flexGrow(1);
+          }
+          .id('super')
+          .alignRules({
+            left:{anchor:'teacher',align:HorizontalAlign.End}
+          })
+          .width('33.33%')
+          .flexGrow(1);
+
+
         }
-        .alignItems(VerticalAlign.Center)
         .width('100%')
+        .height(42)
         .margin({ bottom: 15 })
         .borderRadius(20)
         .backgroundColor('#FFFFFF');
