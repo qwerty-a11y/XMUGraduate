@@ -1,10 +1,8 @@
-import {  NavigationBar, top, Category, ActivityCard,CategoryComponent,ActivityCardComponent} from '../components/usu';
+import {  NavigationBar, top, Category, ActivityCard,CategoryComponent,ActivityCardComponent} from '../../components/usu';
 import router from '@ohos.router'; // 导入路由模块
 
-@Entry
 @Component
-struct  Checked{
-
+export struct UploadsView{
   @State categories: Category[] = [
     {
       name: '类别1',
@@ -59,52 +57,53 @@ struct  Checked{
       ],
     },
   ];
+  @Link SelectedType:number;
+
+  onPageShow(): void {
+    const params = router.getParams() as Record<string, object>
+    if(params){
+      this.SelectedType=Number(params['targetType']) || 0;
+    }
+  }
+
+
 
   build() {
-      Column(){
-          top({ currentPage: '/pages/checked' })
-            .width('100%')
-            .height('20%')
-            .backgroundColor('#FFFFFFFF')
-            .position({
-              x: 0,
-              y: 0,  // 定位到父容器底部
-              top: 0   // 关键偏移量设置
-            })
-
-        Scroll(){
-            Column() {
-              ForEach(this.categories, (category: Category) => {
-                CategoryComponent({ category: category });
-              });
-            }
-            .width(343)
-            //.height('100%');
-        }
-        .scrollable(ScrollDirection.Vertical)
+    Column(){
+      top({onTypeSwitch:(type) => {
+        this.SelectedType=type
+      },currentPage:this.SelectedType})
         .width('100%')
-        .height('70%')
+        .height('20%')
+        .backgroundColor('#FFFFFFFF')
         .position({
-          y:'20%',
-          x:0
+          x: 0,
+          y: 0,  // 定位到父容器底部
+          top: 0   // 关键偏移量设置
         })
 
-
-
-        NavigationBar({ currentPage: '/pages/checked' })
-          .width('100%')
-          .height('10%')
-          .backgroundColor('#ffffffff')
-          .position({
-            x: 0,
-            y: '90%',  // 定位到父容器底部
-            bottom: 0   // 关键偏移量设置
-          })
+      Scroll(){
+        Column() {
+          ForEach(this.categories, (category: Category) => {
+            CategoryComponent({ category: category });
+          });
+        }
+        .width(343)
+        //.height('100%');
       }
+      .scrollable(ScrollDirection.Vertical)
       .width('100%')
-      .height('100%')
-      .alignItems(HorizontalAlign.Center)
-      .backgroundColor('#f4fafa');
+      .height('70%')
+      .position({
+        y:'20%',
+        x:0
+      })
+
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#f4fafa');
   }
 
 }

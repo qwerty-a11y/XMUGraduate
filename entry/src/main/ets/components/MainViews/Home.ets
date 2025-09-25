@@ -1,9 +1,8 @@
-import { Poster, NavigationBar, FeatureCard, CardItem } from '../components/usu';
+import { Poster, NavigationBar, FeatureCard, CardItem } from '../../components/usu';
 import router from '@ohos.router'; // 导入路由模块
 
-@Entry
 @Component
-struct Home {
+export struct HomeView {
   // 控制首页导航项背景色
   @State homeNavBgColor: string = '#ffffffff';
   // 为数组添加明确的CardItem类型注解
@@ -180,17 +179,6 @@ struct Home {
       .backgroundImageSize(ImageSize.Auto)
       .backgroundImagePosition(Alignment.Center);
 
-      // 底部导航栏
-     // NavigationBar()
-      NavigationBar({ currentPage: '/pages/home' })
-        .width('100%')
-        .height('10%')
-        .backgroundColor('#ffffffff')
-        .position({
-          x: 0,
-          y: '90%',  // 定位到父容器底部
-          bottom: 0   // 关键偏移量设置
-        })
     }
     .width('100%')
     .height('100%')

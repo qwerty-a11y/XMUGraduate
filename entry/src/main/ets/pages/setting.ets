@@ -10,6 +10,14 @@ struct  Setting {
   @Prop image_about: ResourceStr = $r('app.media.about');
   @Prop image_out: ResourceStr = $r('app.media.out');
   @Prop image_go: ResourceStr = $r('app.media.go');
+  private ParentPage:number = 0;
+
+  onPageShow(): void {
+    const params = router.getParams() as Record<string, object>;
+    if (params){
+      this.ParentPage = Number(params['ParentPage']) || 0;
+    }
+  }
 
     build() {
         Column(){
@@ -20,7 +28,7 @@ struct  Setting {
               .height(24)
               .margin({ left: 8 })// 图标左侧间距
               .onClick(() => {
-                router.pushUrl({ url: 'pages/checked' }); // 直接写目标页面路径
+                router.pushUrl({ url: 'pages/main' ,params:{targetView:1,targetSubPage:this.ParentPage}}); // 直接写目标页面路径
               });
 
             // 文字在整个Row组件的中间位置

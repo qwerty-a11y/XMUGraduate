@@ -17,8 +17,9 @@ export struct Poster {
 // 导航栏组件
 @Component
 export struct NavigationBar {
+  public onPageSwitch?:(type:number) => void = undefined;
   // 接收当前页面路径（如 "/pages/Home" 或 "/pages/Checked"）
-  @Prop currentPage: string = '';
+  @Link currentPage: number;
   // 导航图标资源（可外部传入，默认用现有资源）
   @Prop homeIcon: ResourceStr = $r('app.media.table1');
   @Prop reviewIcon: ResourceStr = $r('app.media.table2');
@@ -43,10 +44,10 @@ export struct NavigationBar {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
         // 逻辑：当前页面是首页 → 主题色，否则白色
-        .backgroundColor(this.currentPage === '/pages/home' ? this.activeColor : this.inactiveColor)
+        .backgroundColor(this.currentPage === 0 ? this.activeColor : this.inactiveColor)
         // 点击跳转首页
         .onClick(() => {
-          router.pushUrl({ url: 'pages/home' });
+          this.onPageSwitch && this.onPageSwitch(0)
         });
 
         // 首页文字
@@ -74,10 +75,10 @@ export struct NavigationBar {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
         // 逻辑：当前页面是审核页 → 主题色，否则白色
-        .backgroundColor(this.currentPage === '/pages/checked'||this.currentPage === '/pages/checking' ? this.activeColor : this.inactiveColor)
+        .backgroundColor(this.currentPage === 1 ? this.activeColor : this.inactiveColor)
         // 点击跳转审核页
         .onClick(() => {
-          router.pushUrl({ url: 'pages/checked' });
+          this.onPageSwitch && this.onPageSwitch(1)
         });
 
         // 审核页文字
@@ -158,7 +159,8 @@ export struct FeatureCard {
 //顶栏组件
 @Component
 export struct top{
-  @Prop currentPage: string = '';
+  public onTypeSwitch?:(type:number) => void = undefined;
+  @Link currentPage: number;
   @Prop image_setting: ResourceStr = $r('app.media.set');
   @Prop image_search: ResourceStr = $r('app.media.Search');
   private activeColor: string = '#ff77f0ec'; // 当前页面背景色
@@ -178,13 +180,13 @@ export struct top{
               .width(40)
               .height(11)
               .borderRadius(20)
-              .backgroundColor(this.currentPage === '/pages/checked' ? this.activeColor : this.inactiveColor);
+              .backgroundColor(this.currentPage === 0 ? this.activeColor : this.inactiveColor);
           }
           .width(85)
           .height('100%')
           .justifyContent(FlexAlign.Center)
           .onClick(() => {
-            router.pushUrl({ url: 'pages/checked' }); // 直接写目标页面路径
+            this.onTypeSwitch && this.onTypeSwitch(0);
           });
 
           Column() {
@@ -196,13 +198,13 @@ export struct top{
               .width(40)
               .height(11)
               .borderRadius(20)
-              .backgroundColor(this.currentPage === '/pages/checking' ? this.activeColor : this.inactiveColor);
+              .backgroundColor(this.currentPage === 1 ? this.activeColor : this.inactiveColor);
           }
           .width(85)
           .height('100%')
           .justifyContent(FlexAlign.Center)
           .onClick(() => {
-            router.pushUrl({ url: 'pages/checking' }); // 直接写目标页面路径
+            this.onTypeSwitch && this.onTypeSwitch(1);
           });
 
         }
@@ -225,7 +227,7 @@ export struct top{
           .backgroundImagePosition(Alignment.End)
           .margin({right: 8})
           .onClick(() => {
-            router.pushUrl({ url: 'pages/setting' }); // 直接写目标页面路径
+            router.pushUrl({ url: 'pages/setting' ,params:{ParentPage:this.currentPage}}); // 直接写目标页面路径
           });
 
 

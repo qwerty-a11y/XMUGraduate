@@ -2,9 +2,7 @@
   "src": [
     "pages/launch",
     "pages/login",
-    "pages/home",
-    "pages/checked",
-    "pages/checking",
+    "pages/main",
     "pages/setting"
   ]
 }
