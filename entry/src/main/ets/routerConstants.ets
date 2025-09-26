@@ -7,5 +7,5 @@ interface RouterConfig {
 // 导出符合接口的路由对象
 export const ROUTER: RouterConfig = {
   LOGIN: 'pages/launch',
-  HOME: 'pages/home'
+  HOME: 'pages/main'
 };
