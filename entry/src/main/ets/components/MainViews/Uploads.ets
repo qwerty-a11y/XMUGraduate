@@ -1,8 +1,11 @@
 import {  NavigationBar, top, Category, ActivityCard,CategoryComponent,ActivityCardComponent} from '../../components/usu';
 import router from '@ohos.router'; // 导入路由模块
+import {TestData} from '../../debug/TestData'
+import * as TypeRecord from '../../datatypes/Record'
 
 @Component
 export struct UploadsView{
+  /*
   @State categories: Category[] = [
     {
       name: '类别1',
@@ -57,6 +60,8 @@ export struct UploadsView{
       ],
     },
   ];
+  */
+  @State RecordList:TypeRecord.RecordEntry[]=TestData.RecordList
   @Link SelectedType:number;
 
   onPageShow(): void {
@@ -84,9 +89,9 @@ export struct UploadsView{
 
       Scroll(){
         Column() {
-          ForEach(this.categories, (category: Category) => {
-            CategoryComponent({ category: category });
-          });
+          //ForEach(this.RecordList, (record: Category) => {
+          CategoryComponent({ category:this.RecordList });
+          //});
         }
         .width(343)
         //.height('100%');

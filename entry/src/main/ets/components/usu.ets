@@ -1,5 +1,9 @@
 // usu.ets
 import router from '@ohos.router'; // 导入路由模块
+import * as TypeRecord from '../datatypes/Record'
+import { RecordEntry } from '../datatypes/Record';
+import { DateUtils } from '../utils';
+import { convertxml } from '@kit.ArkTS';
 
 // 海报组件
 @Component
@@ -286,26 +290,49 @@ export interface ActivityCard {
 // 类别数据结构
 export interface Category {
   name: string; // 类别名称
-  cards: ActivityCard[]; // 该类别下的卡片数组
+  cards: TypeRecord.RecordEntry[]; // 该类别下的卡片数组
 }
 
 // 类别组件
 @Component
 export struct CategoryComponent {
-  @Prop category: Category;
+  @Prop category: TypeRecord.RecordEntry[];
+  private cards:ActivityCard[] = []
+
+  Convert(data:TypeRecord.RecordEntry): ActivityCard{
+    let status:string
+    let submitTime:string = DateUtils.ToString(data.UploadTime)
+    let publishTime:string = DateUtils.ToString(data.ModifyTime)
+    let score:string = '加'+data.Score.toString()+'分'
+    switch (data.ReviewStatus){
+      case 0:status="待审核";break;
+      case 1:status="审核中";break;
+      case 2:status="审核成功";break;
+      case 3:status="审核失败";break;
+      default:status="待审核";break;
+    }
+    let card:ActivityCard={
+      status:status,
+      activityName:data.Title,
+      publishTime:publishTime,
+      score:score,
+      submitTime:submitTime
+    }
+    return card
+  }
+
+  aboutToAppear(): void {
+    console.log("category 长度:", this.category.length); // 添加日志
+    console.log("category 内容:", JSON.stringify(this.category)); // 添加日志
+    this.category.forEach(entry => {
+      this.cards.push(this.Convert(entry))
+    });
+  }
 
   build() {
     Column() {
-      // 类别标题
-      Text(this.category.name)
-        .fontSize(20)
-        .fontWeight(FontWeight.Bold)
-        .margin({ top: 10, bottom: 5 })
-        .width('100%')
-        .textAlign(TextAlign.Start);
-
       // 循环渲染该类别下的每个卡片
-      ForEach(this.category.cards, (card: ActivityCard) => {
+      ForEach(this.cards, (card: ActivityCard) => {
         ActivityCardComponent({ card: card });
       });
     }
