@@ -43,7 +43,7 @@ export class RecordEntry{
 }
 
 export class Filter{
-  public ReviewStatus:number=0
-  public Type?:RecordType=undefined
+  public ReviewStatus:boolean[]=[true,true,true,true]
+  public Type:boolean[]=[true,true,true,true,true,true,true,true]
   public TimeSpan:TimeSpan=new TimeSpan()
 }

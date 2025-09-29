@@ -2,6 +2,7 @@ import {  NavigationBar, top, Category, ActivityCard,CategoryComponent,ActivityC
 import router from '@ohos.router'; // 导入路由模块
 import {TestData} from '../../debug/TestData'
 import * as TypeRecord from '../../datatypes/Record'
+import {UploadsData} from '../../service/UploadsData'
 
 @Component
 export struct UploadsView{
@@ -61,23 +62,22 @@ export struct UploadsView{
     },
   ];
   */
-  @State RecordList:TypeRecord.RecordEntry[]=TestData.RecordList
-  @Link SelectedType:number;
+  //@State RecordList:TypeRecord.RecordEntry[]=TestData.RecordList
+  @Link UpdateTrigger:boolean;
 
-  onPageShow(): void {
-    const params = router.getParams() as Record<string, object>
-    if(params){
-      this.SelectedType=Number(params['targetType']) || 0;
-    }
+  aboutToAppear(): void {
+    UploadsData.UploadsList=TestData.RecordList
+    UploadsData.Filter()
   }
 
 
 
   build() {
     Column(){
-      top({onTypeSwitch:(type) => {
-        this.SelectedType=type
-      },currentPage:this.SelectedType})
+      top({onFilterUpdate:() => {
+        UploadsData.Filter();
+        this.UpdateTrigger=!this.UpdateTrigger;
+      }})
         .width('100%')
         .height('20%')
         .backgroundColor('#FFFFFFFF')
@@ -90,13 +90,15 @@ export struct UploadsView{
       Scroll(){
         Column() {
           //ForEach(this.RecordList, (record: Category) => {
-          CategoryComponent({ category:this.RecordList });
+          CategoryComponent({UpdateTrigger:this.UpdateTrigger });
           //});
         }
         .width(343)
+        .justifyContent(FlexAlign.Start)
         //.height('100%');
       }
       .scrollable(ScrollDirection.Vertical)
+      .align(Alignment.Top)
       .width('100%')
       .height('70%')
       .position({

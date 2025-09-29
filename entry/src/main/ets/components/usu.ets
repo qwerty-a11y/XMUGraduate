@@ -1,9 +1,8 @@
 // usu.ets
 import router from '@ohos.router'; // 导入路由模块
 import * as TypeRecord from '../datatypes/Record'
-import { RecordEntry } from '../datatypes/Record';
 import { DateUtils } from '../utils';
-import { convertxml } from '@kit.ArkTS';
+import {UploadsData} from '../service/UploadsData'
 
 // 海报组件
 @Component
@@ -163,64 +162,25 @@ export struct FeatureCard {
 //顶栏组件
 @Component
 export struct top{
-  public onTypeSwitch?:(type:number) => void = undefined;
-  @Link currentPage: number;
+  public onFilterUpdate?:() => void = undefined;
   @Prop image_setting: ResourceStr = $r('app.media.set');
   @Prop image_search: ResourceStr = $r('app.media.Search');
+  @Prop image_filter: ResourceStr = $r('app.media.filter');
+  @State SearchText: string = ''
   private activeColor: string = '#ff77f0ec'; // 当前页面背景色
   private inactiveColor: string = '#FFFFFF'; // 非当前页面背景色
 
   build() {
     Column(){
       Row(){
-        Row() {
-          Column() {
-            Text('已审核')
-              .fontSize(14)
-              .margin({ bottom: 4 })
-              .backgroundImagePosition(Alignment.Center);
-
-            Column()
-              .width(40)
-              .height(11)
-              .borderRadius(20)
-              .backgroundColor(this.currentPage === 0 ? this.activeColor : this.inactiveColor);
-          }
-          .width(85)
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
+        Image(this.image_filter)
+          .width(24)
+          .height(24)
+          .backgroundImagePosition(Alignment.End)
+          .margin({right: 8})
           .onClick(() => {
-            this.onTypeSwitch && this.onTypeSwitch(0);
+            this.onFilterUpdate && this.onFilterUpdate() // 直接写目标页面路径
           });
-
-          Column() {
-            Text('审核中')
-              .fontSize(14)
-              .margin({ bottom: 4 });
-
-            Column()
-              .width(40)
-              .height(11)
-              .borderRadius(20)
-              .backgroundColor(this.currentPage === 1 ? this.activeColor : this.inactiveColor);
-          }
-          .width(85)
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-          .onClick(() => {
-            this.onTypeSwitch && this.onTypeSwitch(1);
-          });
-
-        }
-        .backgroundColor('#FFFFFFFF')
-        .margin({left:8})
-        .borderRadius({topLeft:20,topRight:20})
-        .shadow({
-          radius: 8,
-          color: '#90001007',
-          offsetX: 4,
-          offsetY: 4
-        });
 
         Column()
           .flexGrow(1)
@@ -231,7 +191,7 @@ export struct top{
           .backgroundImagePosition(Alignment.End)
           .margin({right: 8})
           .onClick(() => {
-            router.pushUrl({ url: 'pages/setting' ,params:{ParentPage:this.currentPage}}); // 直接写目标页面路径
+            router.pushUrl({ url: 'pages/setting'}); // 直接写目标页面路径
           });
 
 
@@ -247,13 +207,19 @@ export struct top{
           .margin({ left: 12 })
           .objectFit(ImageFit.Contain)
 
-        TextInput({ placeholder: 'Search', text: '' })
+        TextInput({ placeholder: 'Search', text: this.SearchText })
           .fontSize(16)
           .height(32)
           .backgroundColor('white')
           .placeholderColor('#999999')
           .margin({ left: 8 })
           .flexGrow(1)
+          .onChange((value:string)=>{
+            UploadsData.SearchText=value
+          })
+          .onSubmit(()=>{
+            this.onFilterUpdate && this.onFilterUpdate()
+          })
       }
       .justifyContent(FlexAlign.Center)
       .backgroundColor('white')
@@ -296,8 +262,10 @@ export interface Category {
 // 类别组件
 @Component
 export struct CategoryComponent {
-  @Prop category: TypeRecord.RecordEntry[];
-  private cards:ActivityCard[] = []
+  @Watch('Update')
+  @Link UpdateTrigger:boolean;
+
+  @State cards:ActivityCard[] = []
 
   Convert(data:TypeRecord.RecordEntry): ActivityCard{
     let status:string
@@ -321,12 +289,15 @@ export struct CategoryComponent {
     return card
   }
 
-  aboutToAppear(): void {
-    console.log("category 长度:", this.category.length); // 添加日志
-    console.log("category 内容:", JSON.stringify(this.category)); // 添加日志
-    this.category.forEach(entry => {
+  public Update(){
+    this.cards=[]
+    UploadsData.FilteredList.forEach(entry => {
       this.cards.push(this.Convert(entry))
     });
+  }
+
+  aboutToAppear(): void {
+    this.Update();
   }
 
   build() {

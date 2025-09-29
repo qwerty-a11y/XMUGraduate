@@ -28,7 +28,7 @@ struct Main {
   @State homeNavBgColor: string = '#ffffffff';
 
   @State ActiveView:number = 0;
-
+  @State UpdateTrigger:boolean = false;
   @State ActiveSubPage:number = 0;
   // 为数组添加明确的CardItem类型注解
   @State academicCards: Array<CardItem> = [
@@ -102,7 +102,7 @@ struct Main {
         HomeView().transition(this.leftAnimations)
       }
     }else if (this.ActiveView==1){
-      UploadsView({SelectedType:this.ActiveSubPage}).transition(this.rightAnimations)
+      UploadsView({UpdateTrigger:this.UpdateTrigger}).transition(this.rightAnimations)
     }
   }
 

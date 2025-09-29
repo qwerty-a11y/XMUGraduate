@@ -7,10 +7,10 @@ export class TestData{
       TypeRecord.RecordType.Competition,"测试标题1",1.0,0,Date.now()
     ),
     new TypeRecord.RecordEntry(
-      TypeRecord.RecordType.Innovation,"测试标题2",2.0,0,Date.now()
+      TypeRecord.RecordType.Innovation,"测试标题2",2.0,0,Date.now()-2000
     ),
     new TypeRecord.RecordEntry(
-      TypeRecord.RecordType.Innovation,"测试标题3",1.0,1,Date.now()
+      TypeRecord.RecordType.Innovation,"测试标题3",1.0,1,Date.now()-4000
     ),
     new TypeRecord.RecordEntry(
       TypeRecord.RecordType.Honor,"测试标题4",2.0,1,Date.now()
