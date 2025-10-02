@@ -3,6 +3,9 @@
     "pages/launch",
     "pages/login",
     "pages/main",
-    "pages/setting"
+    "pages/setting",
+    "pages/changepassword",
+    "pages/changecontactinformation",
+    "pages/feedback"
   ]
 }
