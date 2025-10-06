@@ -1,7 +1,8 @@
-import { Poster, NavigationBar, FeatureCard, CardItem } from '../../components/usu';
+import { Poster,FeatureCard, CardItem } from '../../components/MainViews/HomeComponents/TypeCard';
 import router from '@ohos.router'; // 导入路由模块
 
 @Component
+@Preview
 export struct HomeView {
   // 控制首页导航项背景色
   @State homeNavBgColor: string = '#ffffffff';
@@ -73,12 +74,12 @@ export struct HomeView {
 
           // 书本图片组件
           Poster()
-            .width(343)
+            .width('100%')
             .height(192)
             .margin({ bottom: 10 });
 
           // GPA 等信息区域
-          Column() {
+          Column({space:5}) {
             Row() {
               Text('GPA')
                 .fontSize(16);
@@ -112,8 +113,10 @@ export struct HomeView {
             .width('90%')
             .margin({ bottom: 10 });
           }
-          .width(343)
+          .width('92%')
           .backgroundColor('#ffffff')
+          .shadow({offsetX:10, offsetY:10, color:'#40000000',radius:10})
+          .borderRadius(5)
           .padding({ top: 5, bottom: 5 });
 
           // 学业专长标题
@@ -135,8 +138,8 @@ export struct HomeView {
             .width('auto')
             .padding({ bottom: 10 });
           }
-          .width('100%')
-          .height(224)
+          .width('92%')
+          //.height(224)
           .scrollable(ScrollDirection.Horizontal);
 
           // 综合表现标题
@@ -159,12 +162,12 @@ export struct HomeView {
             .padding({ bottom: 10 })
             .backgroundImagePosition({ x: '0', y: 0 });
           }
-          .width('100%')
-          .height(224)
+          .width('92%')
+          //.height(224)
           .scrollable(ScrollDirection.Horizontal);
 
         }
-        .width(343)
+        .width('100%')
         .alignItems(HorizontalAlign.Center);
       }
       .scrollable(ScrollDirection.Vertical)

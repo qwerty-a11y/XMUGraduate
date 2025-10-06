@@ -1,5 +1,5 @@
 // 导入通用组件库：包含导航栏、顶部栏、类别组件等可复用UI元素
-import { NavigationBar, top, Category, ActivityCard, CategoryComponent, ActivityCardComponent } from '../../components/usu';
+import {top, CategoryComponent} from './UploadsComponents/RecordList'
 // 导入鸿蒙路由模块：用于页面跳转（当前组件暂未直接使用，预留扩展）
 import router from '@ohos.router';
 // 导入测试数据：用于开发阶段模拟审核记录数据（避免依赖真实后端）
@@ -8,7 +8,7 @@ import { TestData } from '../../debug/TestData';
 import * as TypeRecord from '../../datatypes/Record';
 // 导入审核页数据服务：全局管理审核数据（存储、筛选），实现数据与UI解耦
 import { UploadsData } from '../../service/UploadsData';
-import {FilterDialog} from './Filter'
+import {FilterDialog} from './UploadsComponents/Filter'
 
 // 审核页视图组件（页面级组件，对应"审核"导航项的内容）
 @Component
@@ -121,7 +121,7 @@ export struct UploadsView {
 
           // 渲染类别组件：传递UpdateTrigger状态，实现数据更新联动
           // 核心作用：展示筛选后的审核记录列表（通过CategoryComponent内部遍历UploadsData.FilteredList实现）
-          CategoryComponent({ UpdateTrigger: this.UpdateTrigger });
+          CategoryComponent();
         }
         .width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
         .justifyContent(FlexAlign.Start); // 列表项靠上排列（避免内容为空时居中）

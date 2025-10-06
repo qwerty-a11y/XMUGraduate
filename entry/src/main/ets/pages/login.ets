@@ -5,7 +5,7 @@ import promptAction from '@ohos.promptAction';
 
 @Entry
 @Component
-struct logoin {
+struct login {
   @State selectedValue: string = 'student';
   @State account: string = '';   // 账号状态
   @State password: string = '';  // 密码状态
