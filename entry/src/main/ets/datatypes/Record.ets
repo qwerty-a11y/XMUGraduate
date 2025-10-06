@@ -46,4 +46,11 @@ export class Filter{
   public ReviewStatus:boolean[]=[true,true,true,true]
   public Type:boolean[]=[true,true,true,true,true,true,true,true]
   public TimeSpan:TimeSpan=new TimeSpan()
+  public clone():Filter{
+    let NewFilter=new Filter()
+    NewFilter.ReviewStatus=this.ReviewStatus.slice()
+    NewFilter.Type=this.Type.slice()
+    NewFilter.TimeSpan=new TimeSpan(this.TimeSpan.start,this.TimeSpan.end)
+    return NewFilter
+  }
 }
