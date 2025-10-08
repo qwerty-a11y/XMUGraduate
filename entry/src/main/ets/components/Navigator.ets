@@ -13,8 +13,8 @@ export struct NavigationBar {
   // 0 = 首页，1 = 审核页，用于控制导航项的高亮状态
   @Link currentPage: number;
   // 导航图标资源（@Prop修饰：可外部自定义，默认用内置资源）
-  @Prop homeIcon: ResourceStr = $r('app.media.table1'); // 首页图标
-  @Prop reviewIcon: ResourceStr = $r('app.media.table2'); // 审核页图标
+  @Prop homeIcon: ResourceStr = $r("app.media.MainPage_Home"); // 首页图标
+  @Prop reviewIcon: ResourceStr = $r("app.media.MainPage_List"); // 审核页图标
   // 导航项颜色配置：区分激活/未激活状态
   private activeColor: string = '#ffaafafb'; // 激活状态背景色（浅蓝主题色）
   private inactiveColor: string = '#FFFFFF'; // 未激活状态背景色（白色）

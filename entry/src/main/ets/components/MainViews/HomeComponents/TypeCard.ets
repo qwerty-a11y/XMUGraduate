@@ -8,7 +8,7 @@
 export struct Poster {
   // 父组件传递的图片资源（@Prop修饰：单向数据流，父变子变）
   // 默认值为app.media.haibao（需在媒体资源目录中提前配置该资源）
-  @Prop imageResource: ResourceStr = $r('app.media.haibao');
+  @Prop imageResource: ResourceStr = $r("app.media.Poster");
 
   build() {
     // 图片组件：展示海报资源
@@ -29,7 +29,6 @@ export interface CardItem {
   icon: ResourceStr; // 卡片图标资源（如"学业竞赛"图标）
   title: string; // 卡片标题（如"学业竞赛"、"志愿服务"）
   score: number; // 卡片当前分数（初始为0，后续可动态更新）
-  addIcon: ResourceStr; // 加分按钮图标（如"+"号图标）
 }
 
 

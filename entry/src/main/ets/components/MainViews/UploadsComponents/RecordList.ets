@@ -14,9 +14,9 @@ export struct top {
   // 筛选更新回调（可选）：点击筛选按钮时，触发父组件的筛选逻辑
   public onFilterUpdate?: () => void = undefined;
   // 顶部栏图标资源（@Prop修饰：可外部自定义，默认用内置资源）
-   @Prop image_arrange: ResourceStr = $r('app.media.arrange'); // 排序图标
+   @Prop image_arrange: ResourceStr = $r("app.media.Sort"); // 排序图标
    @Prop image_search: ResourceStr = $r('app.media.Search'); // 搜索图标
-   @Prop image_filter: ResourceStr = $r('app.media.filter'); // 筛选图标
+   @Prop image_filter: ResourceStr = $r("app.media.Filter"); // 筛选图标
   // 搜索框输入文本（@State修饰：组件内部状态，变化时触发重渲染）
   @State SearchText: string = '';
   // 颜色配置（当前未使用，预留扩展用）
@@ -54,7 +54,8 @@ export struct top {
            .onSubmit(() => {
              this.onFilterUpdate && this.onFilterUpdate();
            })
-           .width('220.00vp');
+           .layoutWeight(1)
+           //.width('220.00vp');
        }
        //.justifyContent(FlexAlign.Center) // 搜索框内容垂直居中
        .backgroundColor('white') // 搜索框整体背景色（白色）
@@ -64,7 +65,7 @@ export struct top {
        .shadow({
          // 搜索框阴影：增强层次感
          radius: 4,
-         color: '#00000010',
+         color: '#10000000',
          offsetX: 0,
          offsetY: 2
        })
@@ -74,7 +75,7 @@ export struct top {
        Image(this.image_filter)
          .width(24)
          .height(24)
-         .backgroundImagePosition(Alignment.End)
+         //.backgroundImagePosition(Alignment.End)
          .margin({ left:8,right: 5 }) // 与右侧设置按钮保持间距
          .onClick(() => {
            this.onFilterUpdate && this.onFilterUpdate(); // 触发父组件筛选逻辑
@@ -91,8 +92,8 @@ export struct top {
      .width('100%') // 顶部栏宽度占满屏幕
      .height('100%') // 顶部栏高度由父组件控制（通常为屏幕20%）
      .backgroundColor('#fff4fafa') // 顶部栏背景色（浅蓝灰）
-     .shadow({ radius: 10, color: '#00000010' }); // 顶部栏阴影：区分页面区域
-
+     .shadow({ radius: 10, color: '#00000010' }) // 顶部栏阴影：区分页面区域
+     .alignItems(VerticalAlign.Center)
    }
  }
 
@@ -172,29 +173,29 @@ export struct ActivityCardComponent {
    * 组件构建方法：定义单条审核记录的UI布局
    * 设计：白色背景卡片，带阴影效果，信息分区域展示
    */
-   @Prop image_true: ResourceStr = $r('app.media.true'); // 设置图标
-   @Prop image_flase: ResourceStr = $r('app.media.false'); // 设置图标
-   @Prop image_going: ResourceStr = $r('app.media.going'); // 设置图标
-   @Prop image_draft: ResourceStr = $r('app.media.draft'); // 设置图标
-   @Prop image_upload: ResourceStr = $r('app.media.Upload'); // 设置图标
-   @Prop image_edit: ResourceStr = $r('app.media.edit'); // 设置图标
+   @Prop image_accepted: ResourceStr = $r("app.media.RecordEntry_Accepted"); // 设置图标
+   @Prop image_denied: ResourceStr = $r("app.media.RecordEntry_Denied"); // 设置图标
+   @Prop image_reviewing: ResourceStr = $r("app.media.RecordEntry_Reviewing"); // 设置图标
+   @Prop image_draft: ResourceStr = $r("app.media.RecordEntry_Draft"); // 设置图标
+   @Prop image_uploadtime: ResourceStr = $r("app.media.RecordEntry_UploadTime"); // 设置图标
+   @Prop image_modifytime: ResourceStr = $r("app.media.RecordEntry_ModifyTime"); // 设置图标
    build() {
      Row() {
        Column(){}
        .width(10)
-       if (this.status.includes('成功')) {
-         Image(this.image_true)
+       if (this.entry.ReviewStatus.valueOf() == 3) {
+         Image(this.image_accepted)
            .width(30)
            .height(30);
-       } else if (this.status.includes('失败')) {
-         Image(this.image_flase)
+       } else if (this.entry.ReviewStatus.valueOf() == 2) {
+         Image(this.image_denied)
            .width(30)
            .height(30);
-       } else if (this.status.includes('中')) {
-         Image(this.image_going)
+       } else if (this.entry.ReviewStatus.valueOf() == 1) {
+         Image(this.image_reviewing)
            .width(30)
            .height(30);
-       } else if (this.status.includes('待')) {
+       } else if (this.entry.ReviewStatus.valueOf() == 0) {
          Image(this.image_draft)
            .width(30)
            .height(30);
@@ -220,7 +221,7 @@ export struct ActivityCardComponent {
 
        Column() {
          Row() {
-           Image(this.image_upload)
+           Image(this.image_uploadtime)
              .width(10)
              .height(10)
              .margin({ right: 3 })
@@ -229,7 +230,7 @@ export struct ActivityCardComponent {
          }
 
          Row() {
-           Image(this.image_edit)
+           Image(this.image_modifytime)
              .width(10)
              .height(10)
              .margin({ right: 3 })

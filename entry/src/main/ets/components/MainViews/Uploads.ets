@@ -123,7 +123,7 @@ export struct UploadsView {
           // 核心作用：展示筛选后的审核记录列表（通过CategoryComponent内部遍历UploadsData.FilteredList实现）
           CategoryComponent();
         }
-        .width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
+        //.width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
         .justifyContent(FlexAlign.Start); // 列表项靠上排列（避免内容为空时居中）
         // .height('100%'); // 【注释保留】旧的高度配置，当前依赖Scroll容器自动适配
 
@@ -131,7 +131,7 @@ export struct UploadsView {
       .scrollable(ScrollDirection.Vertical) // 允许垂直滚动（关键配置，确保内容超出时可滚动）
       .align(Alignment.Top) // 滚动容器内的内容靠上对齐
       .width('100%') // 滚动容器宽度占满屏幕
-      .height('80%') // 滚动容器高度占屏幕70%（与顶部栏20%+底部导航栏10%适配）
+      .height('75%') // 滚动容器高度占屏幕70%（与顶部栏20%+底部导航栏10%适配）
       .position({ // 绝对定位：固定在顶部栏下方
         y: '15%', // 垂直方向距离顶部20%（与顶部栏高度一致，避免重叠）
         x: 0 // 水平方向靠左

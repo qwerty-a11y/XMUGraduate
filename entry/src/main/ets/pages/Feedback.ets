@@ -5,7 +5,7 @@ import promptAction from '@ohos.promptAction';
 @Component
 struct FeedbackPage {
   // @Prop 必须定义在组件顶层，不能放在 build 方法内
-  @Prop image_back: ResourceStr = $r('app.media.back');
+  @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
 
   // 反馈内容状态管理
   @State feedbackContent: string = '';

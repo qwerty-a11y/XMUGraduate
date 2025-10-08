@@ -16,7 +16,7 @@ struct ChangeContactInformation {
   @State errorMessage: string = '';
 
   // 返回图标资源
-  @Prop image_back: ResourceStr = $r('app.media.back');
+  @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
 
   // 获取验证码
   private getVerificationCode() {

@@ -3,13 +3,13 @@ import router from '@ohos.router'; // 导入路由模块
 @Entry
 @Component
 struct  Setting {
-  @Prop image_back: ResourceStr = $r('app.media.back');
-  @Prop image_phone: ResourceStr = $r('app.media.Phone');
-  @Prop image_key: ResourceStr = $r('app.media.Key');
-  @Prop image_feedback: ResourceStr = $r('app.media.feedback');
-  @Prop image_about: ResourceStr = $r('app.media.about');
-  @Prop image_out: ResourceStr = $r('app.media.out');
-  @Prop image_go: ResourceStr = $r('app.media.go');
+  @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
+  @Prop image_phone: ResourceStr = $r("app.media.Settings_Contact");
+  @Prop image_key: ResourceStr = $r("app.media.Settings_Password");
+  @Prop image_feedback: ResourceStr = $r("app.media.Settings_Feedback");
+  @Prop image_about: ResourceStr = $r("app.media.Settings_About");
+  @Prop image_out: ResourceStr = $r("app.media.Settings_Logout");
+  @Prop image_go: ResourceStr = $r("app.media.RightArrow");
   private ParentPage:number = 0;
 
   onPageShow(): void {

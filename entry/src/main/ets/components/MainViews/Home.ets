@@ -1,4 +1,4 @@
-import { Poster, NavigationBar, FeatureCard, CardItem } from '../../components/usu';
+import { Poster, FeatureCard, CardItem } from '../../components/MainViews/HomeComponents/TypeCard';
 import router from '@ohos.router'; // 导入路由模块
 
 @Component
@@ -10,20 +10,17 @@ export struct HomeView {
     {
       icon: $r('app.media.icon_1'),
       title: '学业竞赛',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_2'),
       title: '创新创业训练',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_3'),
       title: '学术研究',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
   ];
   // 综合表现卡片数据
@@ -31,35 +28,30 @@ export struct HomeView {
     {
       icon: $r('app.media.icon_4'),
       title: '荣誉称号',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_5'),
       title: '社会工作',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_6'),
       title: '志愿服务',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_7'),
       title: '国际组织学习',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     },
     {
       icon: $r('app.media.icon_8'),
       title: '参军入伍',
-      score: 0,
-      addIcon: $r('app.media.Plus')
+      score: 0
     }
   ];
-  @Prop image_setting: ResourceStr = $r('app.media.set'); // 设置图标
+  @Prop image_setting: ResourceStr = $r("app.media.Settings"); // 设置图标
   build() {
     Column() {
       // 可滚动内容区域
