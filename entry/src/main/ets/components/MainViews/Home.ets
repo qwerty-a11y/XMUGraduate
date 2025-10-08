@@ -59,21 +59,32 @@ export struct HomeView {
       addIcon: $r('app.media.Plus')
     }
   ];
-
+  @Prop image_setting: ResourceStr = $r('app.media.set'); // 设置图标
   build() {
     Column() {
       // 可滚动内容区域
       Scroll() {
         Column() {
-          // 顶部“Hi~”文字
-          Text('Hi~')
-            .fontSize(32)
-            .width(320)
-            .margin({ top: 10, bottom: 5 });
+          Row() {
+            // 顶部“Hi~”文字
+            Text('Hi~')
+              .fontSize(32)
+              .width(300)
+              .margin({ top: 10, bottom: 5 });
 
+            Image(this.image_setting)
+              .width(24)
+              .height(24)
+              .backgroundImagePosition(Alignment.End)
+              .margin({ right: 8 })
+              .onClick(() => {
+                // 路由跳转：跳转到"pages/setting"页面（需在config.json中配置该页面路径）
+                router.pushUrl({ url: 'pages/setting' });
+              });
+          }
           // 书本图片组件
           Poster()
-            .width(343)
+            .width(340)
             .height(192)
             .margin({ bottom: 10 });
 
@@ -112,9 +123,29 @@ export struct HomeView {
             .width('90%')
             .margin({ bottom: 10 });
           }
-          .width(343)
+          .width(340)
           .backgroundColor('#ffffff')
-          .padding({ top: 5, bottom: 5 });
+          .margin({bottom:15})
+          .padding({ top: 5, bottom: 5 })
+          .shadow({
+            // 卡片阴影，增强立体感
+            radius: 4,
+            color: '#D9D9D9', // 浅灰色阴影
+            offsetX: 2,
+            offsetY: 4 // 阴影向下偏移2px
+          });
+
+          Row(){
+            Text("新添加分项")
+              .fontSize(18)
+              //.textAlign(TextAlign.Center)
+          }
+          //.alignItems(VerticalAlign.Center)
+          .justifyContent(FlexAlign.Center)
+          .width(340)
+          .height(32)
+          .backgroundColor('#84F2C3')
+          .borderRadius(20)
 
           // 学业专长标题
           Text('学业专长')
@@ -164,7 +195,7 @@ export struct HomeView {
           .scrollable(ScrollDirection.Horizontal);
 
         }
-        .width(343)
+        .width(340)
         .alignItems(HorizontalAlign.Center);
       }
       .scrollable(ScrollDirection.Vertical)

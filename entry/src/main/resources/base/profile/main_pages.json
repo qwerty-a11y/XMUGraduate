@@ -6,6 +6,7 @@
     "pages/setting",
     "pages/changepassword",
     "pages/changecontactinformation",
-    "pages/feedback"
+    "pages/feedback",
+    "pages/supermanagerhome"
   ]
 }

@@ -29,7 +29,7 @@ struct  Setting {
               //.flexGrow(1)
               .margin({ left: 8 })// 图标左侧间距
               .onClick(() => {
-                router.pushUrl({ url: 'pages/main' ,params:{targetView:1,targetSubPage:this.ParentPage}}); // 直接写目标页面路径
+                router.pushUrl({ url: 'pages/main'}); // 直接写目标页面路径
               });
 
             // 文字在整个Row组件的中间位置

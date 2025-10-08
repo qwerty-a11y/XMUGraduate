@@ -164,7 +164,7 @@ export struct FeatureCard {
       Text(this.item.title)
         .fontSize(16)
         .width(120) // 固定宽度：避免标题过长换行
-        .margin({ top: 5, bottom: 15 })
+        .margin({ top: 5, bottom: 5})
         .textAlign(TextAlign.Start); // 文字左对齐（符合阅读习惯）
 
       // ---------------- 4.3 分数与加分按钮 ----------------
@@ -172,24 +172,31 @@ export struct FeatureCard {
         // 分数显示（如"0分"）
         Text(`${this.item.score}分`)
           .fontSize(16)
+          .margin({bottom:10})
           .flexGrow(1); // 占满剩余宽度：使加分按钮靠右对齐
 
         // 加分按钮图标（如"+"号）
-        Image(this.item.addIcon)
-          .width(32)
-          .height(32)
-          .objectFit(ImageFit.Contain);
+        // Image(this.item.addIcon)
+        //   .width(32)
+        //   .height(32)
+        //   .objectFit(ImageFit.Contain);
       }
       .width(120)
       .margin({ top: 5 })
       .justifyContent(FlexAlign.SpaceBetween); // 两端对齐：分数左、按钮右
     }
     .width(150) // 卡片固定宽度
-    .height(224) // 卡片固定高度
+    //.height() // 卡片固定高度
     .backgroundColor('#FFFFFF') // 卡片背景色（白色）
-    .borderRadius(10) // 卡片整体圆角
+    .borderRadius(20) // 卡片整体圆角
     .padding(10) // 内边距：避免内容贴边
-    .shadow({ radius: 5, color: '#00000014' }) // 卡片阴影：增强立体感
+    .shadow({
+      // 卡片阴影，增强立体感
+      radius: 4,
+      color: '#D9D9D9', // 浅灰色阴影
+      offsetX: 2,
+      offsetY: 4 // 阴影向下偏移2px
+    })
     .margin({ right: 10 }) // 右侧外边距：卡片之间留间隙（适合横向滚动布局）
     .alignItems(HorizontalAlign.Center); // 卡片内所有内容水平居中
   }
@@ -199,15 +206,14 @@ export struct FeatureCard {
 // ====================== 5. 审核页顶部栏组件（top）======================
 /**
  * 审核页顶部栏组件
- * 功能：集成筛选、搜索、设置入口，支持搜索输入同步与筛选触发
- * 设计：上下布局（筛选+设置行 + 搜索框），白色背景+阴影
+ * 功能：集成筛选、搜索、支持搜索输入同步与筛选触发,排序
  */
 @Component
 export struct top {
   // 筛选更新回调（可选）：点击筛选按钮时，触发父组件的筛选逻辑
   public onFilterUpdate?: () => void = undefined;
   // 顶部栏图标资源（@Prop修饰：可外部自定义，默认用内置资源）
-  @Prop image_setting: ResourceStr = $r('app.media.set'); // 设置图标
+  @Prop image_arrange: ResourceStr = $r('app.media.arrange'); // 排序图标
   @Prop image_search: ResourceStr = $r('app.media.Search'); // 搜索图标
   @Prop image_filter: ResourceStr = $r('app.media.filter'); // 筛选图标
   // 搜索框输入文本（@State修饰：组件内部状态，变化时触发重渲染）
@@ -217,38 +223,8 @@ export struct top {
   private inactiveColor: string = '#FFFFFF';
 
   build() {
-    Column() {
+    Row() {
       // ---------------- 5.1 筛选+设置按钮行 ----------------
-      Row() {
-        // 筛选按钮：点击触发筛选回调
-        Image(this.image_filter)
-          .width(24)
-          .height(24)
-          .backgroundImagePosition(Alignment.End)
-          .margin({ right: 8 }) // 与右侧设置按钮保持间距
-          .onClick(() => {
-            this.onFilterUpdate && this.onFilterUpdate(); // 触发父组件筛选逻辑
-          });
-
-        // 空白列：占满中间空间，使设置按钮靠右
-        Column()
-          .flexGrow(1);
-
-        // 设置按钮：点击跳转到设置页
-        Image(this.image_setting)
-          .width(24)
-          .height(24)
-          .backgroundImagePosition(Alignment.End)
-          .margin({ right: 8 })
-          .onClick(() => {
-            // 路由跳转：跳转到"pages/setting"页面（需在config.json中配置该页面路径）
-            router.pushUrl({ url: 'pages/setting' });
-          });
-      }
-      .width(343) // 固定宽度：与下方搜索框对齐
-      .height(52) // 固定高度
-      .margin({ bottom: 15, top: 10 }); // 与上下内容保持间距
-
       // ---------------- 5.2 搜索框 ----------------
       Row() {
         // 搜索图标：固定在搜索框左侧
@@ -256,7 +232,7 @@ export struct top {
           .width(24)
           .height(24)
           .margin({ left: 12 }) // 与搜索框左侧保持间距
-          .objectFit(ImageFit.Contain);
+          //.objectFit(ImageFit.Contain);
 
         // 搜索输入框：支持文本输入、提交触发筛选
         TextInput({
@@ -268,7 +244,7 @@ export struct top {
           .backgroundColor('white') // 输入框背景色（白色）
           .placeholderColor('#999999') // 占位文本颜色（灰色）
           .margin({ left: 8 }) // 与搜索图标保持间距
-          .flexGrow(1) // 占满剩余宽度：适配搜索框
+          //.flexGrow(1) // 占满剩余宽度：适配搜索框
           // 输入变化事件：同步输入文本到全局数据服务（UploadsData）
           .onChange((value: string) => {
             UploadsData.SearchText = value;
@@ -276,13 +252,14 @@ export struct top {
           // 提交事件（如按回车）：触发筛选逻辑
           .onSubmit(() => {
             this.onFilterUpdate && this.onFilterUpdate();
-          });
+          })
+          .width('220.00vp');
       }
-      .justifyContent(FlexAlign.Center) // 搜索框内容垂直居中
+      //.justifyContent(FlexAlign.Center) // 搜索框内容垂直居中
       .backgroundColor('white') // 搜索框整体背景色（白色）
       .borderRadius(20) // 搜索框圆角：优化视觉
       .height(52) // 搜索框固定高度
-      .width(343) // 搜索框固定宽度（与上方按钮行对齐）
+      .width(270)
       .shadow({
         // 搜索框阴影：增强层次感
         radius: 4,
@@ -290,12 +267,31 @@ export struct top {
         offsetX: 0,
         offsetY: 2
       })
-      .margin({ bottom: 10 }); // 与下方内容保持间距
-    }
-    .width('100%') // 顶部栏宽度占满屏幕
-    .height('100%') // 顶部栏高度由父组件控制（通常为屏幕20%）
-    .backgroundColor('#fff4fafa') // 顶部栏背景色（浅蓝灰）
-    .shadow({ radius: 10, color: '#00000010' }); // 顶部栏阴影：区分页面区域
+      .margin({ left:15,bottom: 10 }); // 与下方内容保持间距
+
+
+      Image(this.image_filter)
+        .width(24)
+        .height(24)
+        .backgroundImagePosition(Alignment.End)
+        .margin({ left:8,right: 5 }) // 与右侧设置按钮保持间距
+        .onClick(() => {
+          this.onFilterUpdate && this.onFilterUpdate(); // 触发父组件筛选逻辑
+        });
+
+      Image(this.image_arrange)
+        .width(24)
+        .height(24)
+
+      }
+      //.width(343) // 固定宽度：与下方搜索框对齐
+      //.height(52) // 固定高度
+      .margin({ bottom: 15, top: 10 }) // 与上下内容保持间距
+      .width('100%') // 顶部栏宽度占满屏幕
+      .height('100%') // 顶部栏高度由父组件控制（通常为屏幕20%）
+      .backgroundColor('#fff4fafa') // 顶部栏背景色（浅蓝灰）
+      .shadow({ radius: 10, color: '#00000010' }); // 顶部栏阴影：区分页面区域
+
   }
 }
 
@@ -444,8 +440,15 @@ export struct CategoryComponent {
  * 功能：展示单条审核记录的详细信息
  * 包含：审核状态、活动名称、发布时间、加分情况、提交时间
  */
+
 @Component
 export struct ActivityCardComponent {
+  @Prop image_true: ResourceStr = $r('app.media.true'); // 设置图标
+  @Prop image_flase: ResourceStr = $r('app.media.false'); // 设置图标
+  @Prop image_going: ResourceStr = $r('app.media.going'); // 设置图标
+  @Prop image_draft: ResourceStr = $r('app.media.draft'); // 设置图标
+  @Prop image_upload: ResourceStr = $r('app.media.Upload'); // 设置图标
+  @Prop image_edit: ResourceStr = $r('app.media.edit'); // 设置图标
   // 接收父组件传递的卡片数据（单向绑定）
   // @Prop：父组件数据变化时，子组件自动更新
   @Prop card: ActivityCard;
@@ -455,45 +458,75 @@ export struct ActivityCardComponent {
    * 设计：白色背景卡片，带阴影效果，信息分区域展示
    */
   build() {
-    Column() {
-      // 第一行：审核状态 + 发布时间
-      Row() {
-        Text(this.card.status)
-          .fontSize(14)
-          // 审核失败时文字标红，其他状态默认黑色
-          .fontColor(this.card.status.includes('失败') ? '#FF0000' : '#000000')
-          .flexGrow(1); // 占满左侧空间，使发布时间靠右
-
-        Text(this.card.publishTime)
-          .fontSize(12); // 时间文字使用较小字号
+    Row() {
+      Column(){}
+      .width(10)
+      if (this.card.status.includes('成功')) {
+        Image(this.image_true)
+          .width(30)
+          .height(30);
+      } else if (this.card.status.includes('失败')) {
+        Image(this.image_flase)
+          .width(30)
+          .height(30);
+      } else if (this.card.status.includes('中')) {
+        Image(this.image_going)
+          .width(30)
+          .height(30);
+      } else if (this.card.status.includes('待')) {
+        Image(this.image_draft)
+          .width(30)
+          .height(30);
       }
-      .width(330) // 内容宽度（小于卡片宽度，预留边距）
-      .margin({ bottom: 5, top: 10 }); // 与上下内容保持间距
 
-      // 第二行：活动名称 + 分数与提交时间组合
-      Row() {
-        Text(this.card.activityName)
-          .fontSize(20)
-          .fontWeight(FontWeight.Medium) // 活动名称加粗突出显示
-          .flexGrow(1); // 占满左侧空间
+      Text(this.card.activityName)
+        .fontSize(24)
+        .fontWeight(FontWeight.Medium)
+        .margin({ left: 5 })
+        .flexGrow(1)
 
-        // 右侧垂直布局：分数 + 提交时间
-        Column() {
-          Text(this.card.score)
-            .fontSize(20); // 分数使用大字号突出显示
+      Text(this.card.score)
+        .fontSize(16)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(this.card.status.includes('成功') ? '#000000' : '#707070')
+        .margin({ left: 'auto' })
+        .flexGrow(1)
+        .decoration({
+          type: this.card.status.includes('失败')
+            ? TextDecorationType.LineThrough
+            : TextDecorationType.None // 不包含 '失败' 时，无装饰
+        });
+
+      Column() {
+        Row() {
+          Image(this.image_upload)
+            .width(10)
+            .height(10)
+            .margin({ right: 3 })
+          Text(this.card.publishTime)
+            .fontSize(12); // 时间文字使用较小字号
+        }
+
+        Row() {
+          Image(this.image_edit)
+            .width(10)
+            .height(10)
+            .margin({ right: 3 })
           Text(this.card.submitTime)
             .fontSize(12); // 提交时间使用小字号
         }
       }
-      .width(330)
-      .margin({ bottom: 10 }); // 与底部保持间距
+      .flexGrow(1)
+      .margin({ right: 10 })
     }
-    .width(343) // 卡片固定宽度
+    .width(338) // 卡片固定宽度
+    .height(74)
+    .borderRadius(20) // 圆角设计
     .backgroundColor('#FFFFFF') // 白色背景
-    .borderRadius(8) // 圆角设计
-    .shadow({ // 卡片阴影，增强立体感
+    .shadow({
+    // 卡片阴影，增强立体感
       radius: 4,
-      color: '#00000010', // 浅灰色阴影
+      color: '#D9D9D9', // 浅灰色阴影
       offsetX: 0,
       offsetY: 2 // 阴影向下偏移2px
     })
