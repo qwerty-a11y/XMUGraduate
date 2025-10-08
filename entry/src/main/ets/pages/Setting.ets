@@ -29,7 +29,7 @@ struct  Setting {
               //.flexGrow(1)
               .margin({ left: 8 })// 图标左侧间距
               .onClick(() => {
-                router.pushUrl({ url: 'pages/main'}); // 直接写目标页面路径
+                router.pushUrl({ url: 'pages/Main'}); // 直接写目标页面路径
               });
 
             // 文字在整个Row组件的中间位置
@@ -130,7 +130,7 @@ struct  Setting {
                     .height(20)
                     .margin({right:12})
                     .onClick(()=>{
-                      router.pushUrl({url: 'pages/changecontactinformation'});
+                      router.pushUrl({url: 'pages/ChangeContactInformation'});
                     });
 
                 }
@@ -164,7 +164,7 @@ struct  Setting {
                     .height(20)
                     .margin({right:12})
                     .onClick(() => {
-                      router.pushUrl({ url: 'pages/changepassword' }); // 直接写目标页面路径
+                      router.pushUrl({ url: 'pages/ChangePassword' }); // 直接写目标页面路径
                     });
                 }
                 //.margin({bottom:5})
@@ -197,7 +197,7 @@ struct  Setting {
                     .height(20)
                     .margin({right:12})
                     .onClick(() => {
-                      router.pushUrl({ url: 'pages/feedback' }); // 直接写目标页面路径
+                      router.pushUrl({ url: 'pages/Feedback' }); // 直接写目标页面路径
                     });
                 }
                 .margin({bottom:5})
@@ -256,7 +256,7 @@ struct  Setting {
                     .borderRadius(8)
                     .backgroundColor('#ffff')
                     .onClick(() => {
-                      router.pushUrl({ url: 'pages/login' }); // 直接写目标页面路径
+                      router.pushUrl({ url: 'pages/Login' }); // 直接写目标页面路径
                     });
                   }
                   .width(320)

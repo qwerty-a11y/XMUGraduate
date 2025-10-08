@@ -1,5 +1,5 @@
 // 导入自定义组件（海报、导航栏、功能卡片、卡片数据结构）
-import { Poster, NavigationBar, FeatureCard, CardItem } from '../components/usu';
+import {NavigationBar} from '../components/Navigator';
 // 导入核心视图组件（首页视图、审核页视图）
 import {HomeView} from '../components/MainViews/Home'
 import {UploadsView} from '../components/MainViews/Uploads'
@@ -43,22 +43,6 @@ struct Main {
   @State UpdateTrigger:boolean = false;
   // 状态：控制审核页子页面（预留扩展，当前未使用）
   @State ActiveSubPage:number = 0;
-
-  // 状态：学业类卡片数据（类型为CardItem数组，与FeatureCard组件适配）
-  @State academicCards: Array<CardItem> = [
-    { icon: $r('app.media.icon_1'), title: '学业竞赛', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_2'), title: '创新创业训练', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_3'), title: '学术研究', score: 0, addIcon: $r('app.media.Plus') }
-  ];
-
-  // 状态：综合表现类卡片数据（同上，用于展示不同类型的功能卡片）
-  @State performanceCards: Array<CardItem> = [
-    { icon: $r('app.media.icon_4'), title: '荣誉称号', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_5'), title: '社会工作', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_6'), title: '志愿服务', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_7'), title: '国际组织学习', score: 0, addIcon: $r('app.media.Plus') },
-    { icon: $r('app.media.icon_8'), title: '参军入伍', score: 0, addIcon: $r('app.media.Plus') }
-  ];
 
   /**
    * 页面显示时触发的生命周期方法

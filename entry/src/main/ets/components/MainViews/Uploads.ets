@@ -1,5 +1,5 @@
 // 导入通用组件库：包含导航栏、顶部栏、类别组件等可复用UI元素
-import { NavigationBar, top, Category, ActivityCard, CategoryComponent, ActivityCardComponent } from '../../components/usu';
+import {top, CategoryComponent} from './UploadsComponents/RecordList'
 // 导入鸿蒙路由模块：用于页面跳转（当前组件暂未直接使用，预留扩展）
 import router from '@ohos.router';
 // 导入测试数据：用于开发阶段模拟审核记录数据（避免依赖真实后端）
@@ -8,6 +8,7 @@ import { TestData } from '../../debug/TestData';
 import * as TypeRecord from '../../datatypes/Record';
 // 导入审核页数据服务：全局管理审核数据（存储、筛选），实现数据与UI解耦
 import { UploadsData } from '../../service/UploadsData';
+import {FilterDialog} from './UploadsComponents/Filter'
 
 // 审核页视图组件（页面级组件，对应"审核"导航项的内容）
 @Component
@@ -46,6 +47,28 @@ export struct UploadsView {
   // 数据更新触发器（双向绑定）
   // @Link：与父组件（Main.ets）的UpdateTrigger状态同步，父组件可触发审核页更新
   // 核心作用：当筛选、搜索等操作触发数据变化时，通过反转布尔值（!this.UpdateTrigger）触发子组件（CategoryComponent）重新渲染
+  FilterModifyHandler(NewFilter:TypeRecord.Filter){
+    UploadsData.Filters=NewFilter
+    // 1. 调用UploadsData服务的筛选方法：根据当前搜索关键词（UploadsData.SearchText）更新筛选后的列表（FilteredList）
+    UploadsData.Filter();
+    // 2. 触发数据更新：通过反转布尔值改变UpdateTrigger状态，进而触发子组件（CategoryComponent）重新渲染
+    this.UpdateTrigger = !this.UpdateTrigger;
+  }
+
+  FilterDialogInstance:CustomDialogController=new CustomDialogController({
+    builder: FilterDialog(
+      {
+        confirm: (NewFilter:TypeRecord.Filter) => {
+          this.FilterModifyHandler(NewFilter)
+          this.FilterDialogInstance.close()
+        },
+        cancel:() => {
+          this.FilterDialogInstance.close()
+        }
+      }),
+    alignment: DialogAlignment.Center,
+    autoCancel: true
+  })
   @Link UpdateTrigger: boolean;
 
   /**
@@ -71,10 +94,7 @@ export struct UploadsView {
       top({
         // 筛选/搜索回调：点击筛选按钮或提交搜索时触发
         onFilterUpdate: () => {
-          // 1. 调用UploadsData服务的筛选方法：根据当前搜索关键词（UploadsData.SearchText）更新筛选后的列表（FilteredList）
-          UploadsData.Filter();
-          // 2. 触发数据更新：通过反转布尔值改变UpdateTrigger状态，进而触发子组件（CategoryComponent）重新渲染
-          this.UpdateTrigger = !this.UpdateTrigger;
+          this.FilterDialogInstance.open()
         }
       })
         .width('100%') // 顶部栏宽度占满屏幕
@@ -101,7 +121,7 @@ export struct UploadsView {
 
           // 渲染类别组件：传递UpdateTrigger状态，实现数据更新联动
           // 核心作用：展示筛选后的审核记录列表（通过CategoryComponent内部遍历UploadsData.FilteredList实现）
-          CategoryComponent({ UpdateTrigger: this.UpdateTrigger });
+          CategoryComponent();
         }
         .width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
         .justifyContent(FlexAlign.Start); // 列表项靠上排列（避免内容为空时居中）
