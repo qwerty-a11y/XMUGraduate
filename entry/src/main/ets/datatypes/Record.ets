@@ -43,14 +43,20 @@ export class RecordEntry{
 }
 
 export class Filter{
-  public ReviewStatus:boolean[]=[true,true,true,true]
-  public Type:boolean[]=[true,true,true,true,true,true,true,true]
-  public TimeSpan:TimeSpan=new TimeSpan()
+  public ReviewStatus:boolean[]=[false,false,false,false]
+  public EnableStatus:boolean = false
+  public Type:boolean[]=[false,false,false,false,false,false,false,false]
+  public EnableType:boolean = false
+  public UploadTime:TimeSpan=new TimeSpan()
+  public ModifyTime:TimeSpan=new TimeSpan()
   public clone():Filter{
     let NewFilter=new Filter()
-    NewFilter.ReviewStatus=this.ReviewStatus.slice()
-    NewFilter.Type=this.Type.slice()
-    NewFilter.TimeSpan=new TimeSpan(this.TimeSpan.start,this.TimeSpan.end)
+    NewFilter.ReviewStatus = this.ReviewStatus.slice()
+    NewFilter.EnableStatus = this.EnableStatus
+    NewFilter.Type = this.Type.slice()
+    NewFilter.EnableType = this.EnableType
+    NewFilter.UploadTime = new TimeSpan(this.UploadTime.start,this.UploadTime.end)
+    NewFilter.ModifyTime = new TimeSpan(this.ModifyTime.start, this.ModifyTime.end)
     return NewFilter
   }
 }

@@ -121,7 +121,7 @@ export struct UploadsView {
 
           // 渲染类别组件：传递UpdateTrigger状态，实现数据更新联动
           // 核心作用：展示筛选后的审核记录列表（通过CategoryComponent内部遍历UploadsData.FilteredList实现）
-          CategoryComponent();
+          CategoryComponent({UpdateTrigger:this.UpdateTrigger});
         }
         //.width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
         .justifyContent(FlexAlign.Start); // 列表项靠上排列（避免内容为空时居中）

@@ -110,11 +110,15 @@ export struct top {
 @Component
 export struct CategoryComponent {
   @State FilteredList:TypeRecord.RecordEntry[]=UploadsData.FilteredList
-
+  @Watch('ForceUpdate')
+  @Link UpdateTrigger:boolean
   /**
    * 组件构建方法：定义UI结构
    * 布局：垂直容器，内部循环渲染所有活动卡片
    */
+  ForceUpdate(){
+    this.FilteredList=[...UploadsData.FilteredList]
+  }
   build() {
     Column() {
       // 循环渲染卡片列表
@@ -145,6 +149,7 @@ export struct ActivityCardComponent {
   private uploadTime: string=''; // 提交时间（格式化后的字符串，如"2024-05-20"）
   private modifyTime: string=''; // 更改时间（格式化后的字符串）
   private score: string=''; // 加分情况（如"加5分"）
+  private typeList:string[] = ['学业竞赛','创新创业训练','学术研究','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍']
 
   aboutToAppear(): void {
     switch (this.entry.ReviewStatus.valueOf()) {
@@ -180,15 +185,18 @@ export struct ActivityCardComponent {
    @Prop image_uploadtime: ResourceStr = $r("app.media.RecordEntry_UploadTime"); // 设置图标
    @Prop image_modifytime: ResourceStr = $r("app.media.RecordEntry_ModifyTime"); // 设置图标
    build() {
-     Row() {
-       Column(){}
-       .width(10)
+     RelativeContainer() {
+       Text(this.typeList[this.entry.Type.valueOf()])
+         .fontSize(14)
+         .margin({ left:15,top:15 })
+
+       Column(){
        if (this.entry.ReviewStatus.valueOf() == 3) {
-         Image(this.image_accepted)
+         Image(this.image_denied)
            .width(30)
            .height(30);
        } else if (this.entry.ReviewStatus.valueOf() == 2) {
-         Image(this.image_denied)
+         Image(this.image_accepted)
            .width(30)
            .height(30);
        } else if (this.entry.ReviewStatus.valueOf() == 1) {
@@ -199,27 +207,37 @@ export struct ActivityCardComponent {
          Image(this.image_draft)
            .width(30)
            .height(30);
-       }
+       }}
+       .id('icon')
+       .margin({left:10,bottom:20})
+       .alignRules({
+         left:{anchor:'__container__',align:HorizontalAlign.Start},
+         bottom:{anchor:'__container__',align:VerticalAlign.Bottom}
+       })
+
 
        Text(this.activityName)
          .fontSize(24)
          .fontWeight(FontWeight.Medium)
          .margin({ left: 5 })
          .flexGrow(1)
-
-       Text(this.score)
-         .fontSize(16)
-         .fontWeight(FontWeight.Medium)
-         .fontColor(this.status.includes('成功') ? '#000000' : '#707070')
-         .margin({ left: 'auto' })
-         .flexGrow(1)
-         .decoration({
-           type: this.status.includes('失败')
-             ? TextDecorationType.LineThrough
-             : TextDecorationType.None // 不包含 '失败' 时，无装饰
-         });
+         .alignRules({
+           left:{anchor:'icon',align:HorizontalAlign.End},
+           center:{anchor:'icon',align:VerticalAlign.Center}
+         })
 
        Column() {
+         Text(this.score)
+           .fontSize(18)
+           .fontWeight(FontWeight.Medium)
+           .fontColor(this.status.includes('成功') ? '#000000' : '#707070')
+           .margin({ right:20,bottom:10})
+           .flexGrow(1)
+           .decoration({
+             type: this.status.includes('失败')
+               ? TextDecorationType.LineThrough
+               : TextDecorationType.None // 不包含 '失败' 时，无装饰
+           })
          Row() {
            Image(this.image_uploadtime)
              .width(10)
@@ -237,12 +255,20 @@ export struct ActivityCardComponent {
            Text(this.uploadTime)
              .fontSize(12); // 提交时间使用小字号
          }
-       }
+       }.alignItems(HorizontalAlign.End)
+       .id('time')
        .flexGrow(1)
        .margin({ right: 10 })
+       .alignRules({
+         right:{anchor:'__container__',align:HorizontalAlign.End},
+         center:{anchor:'__container__',align:VerticalAlign.Center}
+       })
+
+
+
      }
-     .width(338) // 卡片固定宽度
-     .height(74)
+     .width('95%') // 卡片固定宽度
+     .height(90)
      .borderRadius(20) // 圆角设计
      .backgroundColor('#FFFFFF') // 白色背景
      .shadow({
