@@ -128,15 +128,15 @@ struct  Setting {
                   Image(this.image_go)
                     .width(20)
                     .height(20)
-                    .margin({right:12})
-                    .onClick(()=>{
-                      router.pushUrl({url: 'pages/ChangeContactInformation'});
-                    });
+                    .margin({right:12});
 
                 }
                 //.margin({bottom:5})
                 .width(320)
                 .height(52)
+                .onClick(()=>{
+                  router.pushUrl({url: 'pages/ChangeContactInformation'});
+                })
 
                 Row() {
                   Divider()
@@ -162,14 +162,14 @@ struct  Setting {
                   Image(this.image_go)
                     .width(20)
                     .height(20)
-                    .margin({right:12})
-                    .onClick(() => {
-                      router.pushUrl({ url: 'pages/ChangePassword' }); // 直接写目标页面路径
-                    });
+                    .margin({right:12});
                 }
                 //.margin({bottom:5})
                 .width(320)
                 .height(52)
+                .onClick(() => {
+                  router.pushUrl({ url: 'pages/ChangePassword' }); // 直接写目标页面路径
+                })
 
                 Row() {
                   Divider()
@@ -195,10 +195,7 @@ struct  Setting {
                   Image(this.image_go)
                     .width(20)
                     .height(20)
-                    .margin({right:12})
-                    .onClick(() => {
-                      router.pushUrl({ url: 'pages/Feedback' }); // 直接写目标页面路径
-                    });
+                    .margin({right:12});
                 }
                 .margin({bottom:5})
                 .width(320)
@@ -208,6 +205,9 @@ struct  Setting {
               .backgroundColor('#ffff')
               .borderRadius(8)
               .margin({bottom:20})
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Feedback' }); // 直接写目标页面路径
+              })
 
               //关于保研小助手
               Column(){
@@ -255,16 +255,16 @@ struct  Setting {
                     .height(52)
                     .borderRadius(8)
                     .backgroundColor('#ffff')
-                    .onClick(() => {
-                      router.pushUrl({ url: 'pages/Login' }); // 直接写目标页面路径
-                    });
+                    ;
                   }
                   .width(320)
                 }
               }
               .width(320)
               .margin({bottom:20})
-
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Login' }); // 直接写目标页面路径
+              })
 
             }
           }
