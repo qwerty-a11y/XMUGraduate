@@ -12,7 +12,8 @@
 @Component
 export struct top {
   // 筛选更新回调（可选）：点击筛选按钮时，触发父组件的筛选逻辑
-  public onFilterUpdate?: () => void = undefined;
+  public onSearchTextUpdate?: () => void = undefined;
+  public onFilterClicked?: () => void = undefined;
   // 顶部栏图标资源（@Prop修饰：可外部自定义，默认用内置资源）
    @Prop image_arrange: ResourceStr = $r("app.media.Sort"); // 排序图标
    @Prop image_search: ResourceStr = $r('app.media.Search'); // 搜索图标
@@ -52,7 +53,7 @@ export struct top {
            })
            // 提交事件（如按回车）：触发筛选逻辑
            .onSubmit(() => {
-             this.onFilterUpdate && this.onFilterUpdate();
+             this.onSearchTextUpdate && this.onSearchTextUpdate();
            })
            .layoutWeight(1)
            //.width('220.00vp');
@@ -78,7 +79,7 @@ export struct top {
          //.backgroundImagePosition(Alignment.End)
          .margin({ left:8,right: 5 }) // 与右侧设置按钮保持间距
          .onClick(() => {
-           this.onFilterUpdate && this.onFilterUpdate(); // 触发父组件筛选逻辑
+           this.onFilterClicked && this.onFilterClicked(); // 触发父组件筛选逻辑
          });
 
        Image(this.image_arrange)

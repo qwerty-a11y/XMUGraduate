@@ -71,7 +71,7 @@ export struct HomeView {
               .margin({ right: 8 })
               .onClick(() => {
                 // 路由跳转：跳转到"pages/setting"页面（需在config.json中配置该页面路径）
-                router.pushUrl({ url: 'pages/setting' });
+                router.pushUrl({ url: 'pages/Setting' });
               });
           }
           // 书本图片组件

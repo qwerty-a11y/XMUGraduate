@@ -93,7 +93,11 @@ export struct UploadsView {
       // ---------------- 1. 审核页顶部栏（筛选+搜索+设置） ----------------
       top({
         // 筛选/搜索回调：点击筛选按钮或提交搜索时触发
-        onFilterUpdate: () => {
+        onSearchTextUpdate: () => {
+          UploadsData.Filter();
+          this.UpdateTrigger = !this.UpdateTrigger;
+        },
+        onFilterClicked: () => {
           this.FilterDialogInstance.open()
         }
       })
