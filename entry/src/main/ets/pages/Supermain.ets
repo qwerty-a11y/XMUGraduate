@@ -1,16 +1,13 @@
-// 导入自定义组件（海报、导航栏、功能卡片、卡片数据结构）
-import {NavigationBar} from '../components/Navigator';
-// 导入核心视图组件（首页视图、审核页视图）
-import {HomeView} from '../components/MainViews/Home'
-import {UploadsView} from '../components/MainViews/Uploads'
-// 导入鸿蒙路由模块，用于页面跳转与参数传递
-import router from '@ohos.router';
+import { Poster } from '../components/MainViews/HomeComponents/TypeCard';
+import router from '@ohos.router'; // 导入路由模块
+import {NavigationBarsuper} from '../components/Navigator';
+import {superHomeView} from '../components/MainViews/Superhome'
+import {superUploadsView} from '../components/MainViews/SuperUploads'
 
-// 入口组件装饰器，标识当前组件为页面入口
 @Entry
 @Component
-struct Main {
-  // 状态：标记是否为首次加载（用于控制首次进入首页的动画）
+export struct supermian {
+
   private isFirstLoad:boolean = true
   // 动画参数配置：时长250ms，缓动曲线为"缓入缓出"（视觉过渡更自然）
   animateParam:AnimateParam = {
@@ -36,8 +33,7 @@ struct Main {
 
   // 状态：首页导航项背景色（当前未使用，预留扩展）
   @State homeNavBgColor: string = '#ffffffff';
-
-  // 核心状态：控制当前激活的视图（0=首页，1=审核页）
+  // 核心状态：控制当前激活的视图（0=首页，1=信息页）
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
@@ -63,23 +59,23 @@ struct Main {
    * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图
    * 作用：封装视图切换逻辑，避免build方法冗余
    */
+
   @Builder
   View(){
     if (this.ActiveView === 0) { // 激活首页
       if (this.isFirstLoad) { // 首次加载：使用首次入场动画
-        HomeView().transition(this.leftAnimationsFirst)
+        superHomeView().transition(this.leftAnimationsFirst)
       } else { // 非首次加载：使用普通动画
-        HomeView().transition(this.leftAnimations)
+        superHomeView().transition(this.leftAnimations)
       }
     } else if (this.ActiveView === 1) { // 激活审核页
       // 传递UpdateTrigger状态（双向绑定），用于触发审核页数据更新
-      UploadsView({UpdateTrigger: this.UpdateTrigger}).transition(this.rightAnimations)
+      superUploadsView()
+      //superUploadsView({UpdateTrigger: this.UpdateTrigger}).transition(this.rightAnimations)
     }
   }
 
-  /**
-   * 组件构建核心方法：定义页面布局结构
-   */
+
   build() {
     // 垂直布局容器（Column）：占满屏幕，背景为浅蓝灰色
     Column() {
@@ -87,7 +83,7 @@ struct Main {
       this.View()
 
       // 底部导航栏组件：接收页面切换回调与当前激活状态
-      NavigationBar({
+      NavigationBarsuper({
         // 页面切换回调：点击导航项时更新ActiveView，并标记为非首次加载
         onPageSwitch: ((index) => {
           this.ActiveView = index

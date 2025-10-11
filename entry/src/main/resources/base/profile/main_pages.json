@@ -2,11 +2,12 @@
   "src": [
     "pages/Launch",
     "pages/Login",
-    "pages/Main",
-    "pages/Setting",
+    "pages/StuMain",
+    "pages/StuSetting",
     "pages/ChangePassword",
     "pages/ChangeContactInformation",
     "pages/Feedback",
-    "pages/supermanagerhome"
+    "pages/Supermain",
+    "pages/Superinform"
   ]
 }
