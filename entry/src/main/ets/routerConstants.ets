@@ -5,7 +5,11 @@ interface RouterConfig {
 }
 
 // 导出符合接口的路由对象
-export const ROUTER: RouterConfig = {
+export const ROUTERstu: RouterConfig = {
   LOGIN: 'pages/Launch',
-  HOME: 'pages/Main'
+  HOME: 'pages/StuMain'
+};
+export const ROUTERsuper: RouterConfig = {
+  LOGIN: 'pages/Launch',
+  HOME: 'pages/Supermain'
 };

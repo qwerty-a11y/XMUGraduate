@@ -1,28 +1,38 @@
 import { Baoyanstartbg } from '../components/Baoyanstart';
 import router from '@ohos.router'; // 导入路由模块
-import { ROUTER } from '../routerConstants'; // 导入路由常量
+import { ROUTERstu, ROUTERsuper } from '../routerConstants'; // 导入路由常量
 import promptAction from '@ohos.promptAction';
+//import { InputType } from '@ohos.input';
+//import { Curve } from '@ohos.animation';
+
+// 定义动画参数类型
+interface AnimateParam {
+  duration: number;
+  curve: Curve;
+}
 
 @Entry
 @Component
 struct login {
-  @State selectedValue: string = 'student';
+  @State selectedValue: string = 'student'; // 初始选择学生身份
   @State account: string = '';   // 账号状态
   @State password: string = '';  // 密码状态
-  CustomAnimate:AnimateParam={
-    duration:250,
-    curve:Curve.EaseInOut
-  }
+  CustomAnimate: AnimateParam = {
+    duration: 250,
+    curve: Curve.EaseInOut
+  };
 
   // 登录方法：验证账号密码，跳转首页
   login() {
     if (this.selectedValue === 'student' && this.account && this.password) {
-      router.pushUrl({ url: ROUTER.HOME });
+      router.pushUrl({ url: ROUTERstu.HOME });
+    } else if (this.selectedValue === 'super' && this.account && this.password) {
+      router.pushUrl({ url: ROUTERsuper.HOME });
     } else {
-      // 使用 promptAction 替换 prompt
+      // 使用 promptAction 显示提示
       promptAction.showToast({
-        message: '请输入正确的学生账号和密码',
-        duration: 2000 // 可选：设置弹窗显示时间（毫秒）
+        message: '请输入正确的账号和密码',
+        duration: 2000 // 弹窗显示时间（毫秒）
       });
     }
   }
@@ -42,17 +52,17 @@ struct login {
         .margin({ bottom: 500 });
 
       Column() {
-        // 身份选择 Row（学生、教师、超管）
+        // 身份选择 RelativeContainer（学生、教师、超管）
         RelativeContainer() {
           Column()
             .height(42)
             .borderRadius(20)
             .width('33.33%')
             .alignRules({
-              middle:{anchor:this.selectedValue,align:HorizontalAlign.Center}
+              middle: { anchor: this.selectedValue, align: HorizontalAlign.Center }
             })
             .backgroundColor('#AFEEEE')
-            .animation(this.CustomAnimate)
+            .animation(this.CustomAnimate);
 
           Row() {
             Radio({ value: 'student', group: 'identity' })
@@ -97,7 +107,7 @@ struct login {
           .id('teacher')
           .width('33.34%')
           .alignRules({
-            left:{anchor:'student',align:HorizontalAlign.End}
+            left: { anchor: 'student', align: HorizontalAlign.End }
           })
           .flexGrow(1);
 
@@ -121,12 +131,10 @@ struct login {
           }
           .id('super')
           .alignRules({
-            left:{anchor:'teacher',align:HorizontalAlign.End}
+            left: { anchor: 'teacher', align: HorizontalAlign.End }
           })
           .width('33.33%')
           .flexGrow(1);
-
-
         }
         .width('100%')
         .height(42)

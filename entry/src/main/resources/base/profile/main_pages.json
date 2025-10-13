@@ -8,6 +8,9 @@
     "pages/ChangeContactInformation",
     "pages/Feedback",
     "pages/Supermain",
-    "pages/Superinform"
+    "pages/Superfeedback",
+    "pages/Superinform",
+    "pages/Superoperate",
+    "pages/Superadd"
   ]
 }

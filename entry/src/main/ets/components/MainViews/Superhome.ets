@@ -128,7 +128,7 @@ export struct superHomeView {
           .width(24)
           .height(24)
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Superinform' });
+            router.pushUrl({ url: 'pages/Superfeedback' });
           });
       }
       .width('100%')
@@ -165,6 +165,9 @@ export struct superHomeView {
             .height(42)
             .backgroundColor('#84F2C3')
             .borderRadius(20)
+            .onClick(() => {
+              router.pushUrl({ url: 'pages/Superadd' });
+            });
           }
           .width(330)
           .margin({bottom:15})

@@ -1,208 +1,203 @@
 import router from '@ohos.router';
 
-interface CardItem {
-  status: string;
-  statusColor: string;
-  //type: string;
-  from: string;
-  time: string;
+// 定义学生信息接口
+interface StudentItem {
+  no: string;
+  name: string;
+  info: string;
+  score: string;
+  selected: boolean; // 标记是否被选中
 }
 
 @Entry
 @Component
-export struct superUploadsView {
-  @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
-  @Prop image_arrange: ResourceStr = $r("app.media.Sort"); // 排序图标
-  @Prop image_filter: ResourceStr = $r("app.media.Filter"); // 筛选图标
-  @Prop image_search: ResourceStr = $r("app.media.Search");
-  @State SearchText: string = '';
-  @State cardData: Array<CardItem> = [
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      //type: '反馈',
-      from: '**同学',
-      time: '2025-10-11 10:00'
-    },
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      //type: '账号问题',
-      from: '**教师',
-      time: '2025-10-11 09:30'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-      //type: '反馈',
-      from: '**教师',
-      time: '2025-10-10 16:20'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-     // type: '账号问题',
-      from: '**同学',
-      time: '2025-10-10 15:10'
-    }
+export struct superinform {
+  // 图标资源
+  @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
+  @Prop image_check: ResourceStr = $r('app.media.check');
+
+  // 学生数据 - 初始化为全部选中
+  @State studentData: StudentItem[] = [
+    { no: 'No.1', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.2', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.3', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.4', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.5', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.6', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.7', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.8', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.9', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.10', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.11', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.12', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.13', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.14', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.15', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.16', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.17', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.18', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+    { no: 'No.19', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
   ];
 
-  @Builder
-  CardComponent(item: CardItem) {
-    Row() {
-      Column() {
-        Row() {
-          Text(item.status)
-            .fontSize(14)
-            .margin({ right: 5 });
-          // 状态圆点
-          Circle()
-            .width(8)
-            .height(8)
-            .fill(item.statusColor);
-        }
-        .margin({ bottom: 5 });
+  // 状态管理
+  @State currentPage: number = 1;
+  private totalPages: number = 6;
+  @State batchOperationMode: boolean = false; // 批量操作模式开关
+  @State allSelected: boolean = true; // 全选状态
 
-        Text(`来自：${item.from}`)
-          .fontSize(16);
-      }
-      .width('50%')
-      .margin({ bottom: 10 ,top:10 });
+  // 全选方法 - 强制所有项选中
+  selectAll() {
+    this.studentData.forEach((_, index) => {
+      this.studentData[index].selected = true;
+    });
+    this.allSelected = true;
+  }
 
-      Column() {
-        // Text(item.type)
-        //   .fontSize(16)
-        //   .fontWeight(FontWeight.Bold)
-        //   .margin({ bottom: 5 });
-        Text(item.time)
-          .fontSize(12)
-          .fontColor('#999999');
-      }
-      .width('50%')
-      .alignItems(HorizontalAlign.Center)
-      .margin({ right: 10 });
-    }
-    .width('100%')
-    .backgroundColor('#FFFFFF')
-    .borderRadius(10)
-    .shadow({
-      radius: 4,
-      color: '#DDDDDD',
-      offsetX: 0,
-      offsetY: 2
-    })
-    .width(340)
-    //.padding(10)
-    .justifyContent(FlexAlign.Center); // 卡片内容水平居中
+  // 取消全选方法 - 强制所有项未选中
+  deselectAll() {
+    this.studentData.forEach((_, index) => {
+      this.studentData[index].selected = false;
+    });
+    this.allSelected = false;
+  }
+
+  // 检查是否所有项都被选中
+  checkAllSelected(): boolean {
+    return this.studentData.every(item => item.selected);
   }
 
   build() {
     Column() {
-      // 顶部搜索及设置区域
-      Column() {
-        Row() {
-          Image(this.image_back)
-            .width(24)
-            .height(24)
-            .margin({ left: 8 })
-            .onClick(() => {
-              router.pushUrl({ url: 'pages/Supermain' });
-            });
-
-          Text('反馈')
-            .flexGrow(1)
-            .textAlign(TextAlign.Center)
-            .fontSize(18)
-            .fontWeight(FontWeight.Medium);
-
-          Column() {
-          }
+      // 顶部导航栏
+      Row() {
+        Image(this.image_back)
           .width(24)
           .height(24)
-          .margin({ right: 8 });
-        }
-        .width('100%')
-        .height(65)
-        .backgroundColor('#ffffff')
-        .alignItems(VerticalAlign.Center)
-        .shadow({ radius: 2, color: '#00000010' });
+          .margin({ left: 8 })
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/Supermain' });
+          });
 
+        Text('信息与操作')
+          .flexGrow(1)
+          .textAlign(TextAlign.Center)
+          .fontSize(14)
+          .fontWeight(FontWeight.Medium);
 
-        Row() {
-          Row() {
-            Image(this.image_search)
-              .width(24)
-              .height(24)
-              .margin({ left: 12 })
-            TextInput({
-              placeholder: 'Search',
-              text: this.SearchText
-            })
-              .fontSize(16)
-              .height(32)
-              .backgroundColor('white')
-              .placeholderColor('#999999')
-              .margin({ left: 8 })
-              .layoutWeight(1)
-          }
-          .backgroundColor('white')
-          .borderRadius(20)
-          .height(52)
-          .width(270)
-          .shadow({
-            radius: 4,
-            color: '#10000000',
-            offsetX: 0,
-            offsetY: 2
-          })
-          .margin({ left: 15 });
-
-          Image(this.image_filter)
-            .width(24)
-            .height(24)
-            .margin({ left: 8, right: 5 })
-          Image(this.image_arrange)
-            .width(24)
-            .height(24)
-        }
-        .width('100%')
-        .backgroundColor('#fff4fafa')
-        .margin({ top: 10, bottom: 10 })
-        .shadow({ radius: 10, color: '#00000010' })
-
-        //.alignItems(VerticalAlign.Center)
+        Column() {}
+        .width(24)
+        .height(24)
+        .margin({ right: 8 });
       }
       .width('100%')
-      .height('20%')
-      .position({
-        x: 0,
-        y: 0
-      });
+      .height('10%')
+      .position({ top: 0 })
+      .backgroundColor('#ffffff')
+      .alignItems(VerticalAlign.Center)
+      .shadow({ radius: 2, color: '#00000010' });
 
       Column() {
+        // 批量操作与全选控制区
+        Row() {
+          Text('批量操作')
+            .fontSize(14)
+            .backgroundColor(this.batchOperationMode ? '#C5F4F3' : '#E5E5E5')
+            .borderRadius(12)
+            .padding({ left: 8, right: 8, bottom: 4, top: 4 })
+            .margin({ right: 25, left: 5 })
+            .onClick(() => {
+              this.batchOperationMode = !this.batchOperationMode;
+              // 进入批量操作模式时默认全选
+              if (this.batchOperationMode) {
+                this.selectAll();
+              }
+            });
+
+          if (this.batchOperationMode) {
+            Text('全选')
+              .fontSize(14);
+
+            Toggle({ type: ToggleType.Switch, isOn: this.allSelected })
+              .margin({ left: 5 })
+              .onChange((isOn: boolean) => {
+                isOn ? this.selectAll() : this.deselectAll();
+              });
+
+            Image($r('app.media.check'))
+              .width(24)
+              .height(24)
+              .margin({ left: 50, right: 8 })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Superoperate' });
+              });
+          }
+        }
+        .width(300)
+        .margin({ top: 10, bottom: 10, left: 10 });
+
+        // 学生列表
         List() {
-          ForEach(this.cardData, (item: CardItem) => {
+          ForEach(this.studentData, (item: StudentItem, index: number) => {
             ListItem() {
-              this.CardComponent(item);
+              Row() {
+                // 仅在批量操作模式下显示勾选框
+                if (this.batchOperationMode) {
+                  Toggle({
+                    type: ToggleType.Checkbox,
+                    isOn: item.selected  // 勾选状态与数据绑定
+                  })
+                    .margin({ right: 10 })
+                    .onChange((isOn: boolean) => {
+                      // 更新数据状态
+                      this.studentData[index].selected = isOn;
+                      // 同步更新全选开关状态
+                      this.allSelected = this.checkAllSelected();
+                    });
+                }
+
+                // 学号
+                Text(item.no)
+                  .fontSize(14)
+                  .width(this.batchOperationMode ? '15%' : '18%')
+                  .textAlign(TextAlign.Center);
+
+                // 姓名
+                Text(item.name)
+                  .fontSize(14)
+                  .width(this.batchOperationMode ? '20%' : '22%')
+                  .textAlign(TextAlign.Center);
+
+                // 信息
+                Text(item.info)
+                  .fontSize(14)
+                  .width(this.batchOperationMode ? '35%' : '40%')
+                  .textAlign(TextAlign.Center);
+
+                // 分数
+                Text(item.score)
+                  .fontSize(14)
+                  .width(this.batchOperationMode ? '20%' : '20%')
+                  .textAlign(TextAlign.Center);
+              }
+              .width('100%')
+              .backgroundColor('#ffffff')
+              .padding({ left: 8, right: 8, bottom: 6, top: 6 })
+              .margin({ top: 5, bottom: 5 })
+              .borderRadius(8)
+              .shadow({ radius: 1, color: '#00000008' });
             }
-            .margin({ bottom: 10 })
-            .width(340)
           });
         }
-        .width(340)
+        .width('90%')
+        .height('90%');
       }
-      .width(340)
-      .position({
-        top: '20%'
-      })
-      .height('80%')
-      .width('100%') // 让List宽度占满
-      .layoutWeight(1); // 让List占满剩余高度
+      .height('90%')
+      .width('100%')
+      .position({ y: '10%' });
     }
     .width('100%')
     .height('100%')
-    .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor('#f4fafa');
+    .backgroundColor('#F5F5F5');
   }
 }
