@@ -46,7 +46,7 @@ struct FeedbackPage {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Setting' });
+            router.pushUrl({ url: 'pages/StuSetting' });
           });
 
         Text('反馈')

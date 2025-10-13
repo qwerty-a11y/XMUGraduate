@@ -4,13 +4,16 @@
     "pages/Login",
     "pages/StuMain",
     "pages/StuSetting",
-    "pages/ChangePassword",
-    "pages/ChangeContactInformation",
-    "pages/Feedback",
-    "pages/Supermain",
+    "pages/StuChangePassword",
+    "pages/StuChangeContactInformation",
+    "pages/StuFeedback",
     "pages/Superfeedback",
     "pages/Superinform",
     "pages/Superoperate",
-    "pages/Superadd"
+    "pages/Superadd",
+    "pages/Supermain",
+    "pages/Supersetting",
+    "pages/SuperChangeContactInformation",
+    "pages/SuperChangePassword"
   ]
 }

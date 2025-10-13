@@ -135,7 +135,7 @@ struct  Setting {
                 .width(320)
                 .height(52)
                 .onClick(()=>{
-                  router.pushUrl({url: 'pages/ChangeContactInformation'});
+                  router.pushUrl({url: 'pages/StuChangeContactInformation'});
                 })
 
                 Row() {
@@ -168,7 +168,7 @@ struct  Setting {
                 .width(320)
                 .height(52)
                 .onClick(() => {
-                  router.pushUrl({ url: 'pages/ChangePassword' }); // 直接写目标页面路径
+                  router.pushUrl({ url: 'pages/StuChangePassword' }); // 直接写目标页面路径
                 })
 
                 Row() {
@@ -206,7 +206,7 @@ struct  Setting {
               .borderRadius(8)
               .margin({bottom:20})
               .onClick(() => {
-                router.pushUrl({ url: 'pages/Feedback' }); // 直接写目标页面路径
+                router.pushUrl({ url: 'pages/StuFeedback' }); // 直接写目标页面路径
               })
 
               //关于保研小助手

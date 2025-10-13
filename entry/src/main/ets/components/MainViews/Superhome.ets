@@ -123,6 +123,9 @@ export struct superHomeView {
           .width(24)
           .height(24)
           .margin({ left: 8, right: 5 })
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/Supersetting' });
+          });
 
         Image(this.image_inform)
           .width(24)

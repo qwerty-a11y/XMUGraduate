@@ -50,7 +50,7 @@ struct ChangePassword {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Setting' });
+            router.pushUrl({ url: 'pages/Supersetting' });
           });
 
         // 页面标题
