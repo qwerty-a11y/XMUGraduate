@@ -17,7 +17,7 @@ struct login {
   // 登录方法：验证账号密码，跳转首页
   login() {
     if (this.selectedValue === 'student' && this.account && this.password) {
-      router.pushUrl({ url: ROUTER.HOME });
+      router.pushUrl({ url: 'pages/StuMain' });
     } else {
       // 使用 promptAction 替换 prompt
       promptAction.showToast({

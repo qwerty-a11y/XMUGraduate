@@ -1,3 +1,4 @@
+import { DateUtils } from "../utils"
 
 export enum RecordType{
   Competition, //学业竞赛
@@ -10,6 +11,7 @@ export enum RecordType{
   Military //参军入伍
 }
 
+@Observed
 export class TimeSpan{
   constructor(start?:number,end?:number) {
     if (start) this.start=start
@@ -19,6 +21,12 @@ export class TimeSpan{
   }
   public start:number
   public end:number
+  public get ToStringStart():string{
+    return DateUtils._ToStringForTimeSpan(this.start)
+  }
+  public get ToStringEnd():string{
+    return DateUtils._ToStringForTimeSpan(this.end)
+  }
 }
 
 export abstract class TypeInfo{
