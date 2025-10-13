@@ -128,7 +128,7 @@ export struct superHomeView {
           .width(24)
           .height(24)
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Superinform' });
+            router.pushUrl({ url: 'pages/Superfeedback' });
           });
       }
       .width('100%')
