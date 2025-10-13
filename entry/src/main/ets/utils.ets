@@ -8,7 +8,8 @@ export class DateUtils{
     const minute = date.getMinutes().toString().padStart(2,'0')
     return year+'/'+month+'/'+day+' '+hour+':'+minute
   }
-  public static ToStringForTimeSpan(num:number):string {
+  public static _ToStringForTimeSpan(num:number):string {
+    console.log(num.toString())
     if (num<0) return '不限';
     else return DateUtils.ToString(num)
   }
