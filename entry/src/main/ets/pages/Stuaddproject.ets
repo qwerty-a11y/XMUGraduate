@@ -5,7 +5,6 @@ import promptAction from '@ohos.promptAction';
 @Entry
 @Component
 struct AddOptionApplication {
-  @Prop image_open: ResourceStr = $r("app.media.open");
   @Prop image_download: ResourceStr = $r('app.media.Download');
   @Prop image_false: ResourceStr = $r("app.media.false");
   @State isDialogShow: boolean = true;
