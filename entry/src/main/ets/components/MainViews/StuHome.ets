@@ -1,8 +1,10 @@
 import { Poster, FeatureCard, CardItem } from '../../components/MainViews/HomeComponents/TypeCard';
 import router from '@ohos.router'; // 导入路由模块
+//import { AddItemDialog, AddItemDialogConfig } from '../../components/MainViews/StuUploadsComponents/addprojects';
 
 @Component
 export struct HomeView {
+
   // 控制首页导航项背景色
   @State homeNavBgColor: string = '#ffffffff';
   // 为数组添加明确的CardItem类型注解
@@ -130,7 +132,7 @@ export struct HomeView {
           Row(){
             Text("新添加分项")
               .fontSize(18)
-              //.textAlign(TextAlign.Center)
+            //.textAlign(TextAlign.Center)
           }
           //.alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.Center)
@@ -138,6 +140,9 @@ export struct HomeView {
           .height(32)
           .backgroundColor('#84F2C3')
           .borderRadius(20)
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/Stuaddproject' });
+          });
 
           // 学业专长标题
           Text('学业专长')
@@ -211,3 +216,6 @@ export struct HomeView {
     .backgroundImageSize(ImageSize.Cover);
   }
 }
+
+
+

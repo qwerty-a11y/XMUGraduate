@@ -5,6 +5,7 @@
     "pages/StuMain",
     "pages/StuSetting",
     "pages/StuChangePassword",
+    "pages/Stuaddproject",
     "pages/StuChangeContactInformation",
     "pages/StuFeedback",
     "pages/Superfeedback",
@@ -14,6 +15,8 @@
     "pages/Supermain",
     "pages/Supersetting",
     "pages/SuperChangeContactInformation",
-    "pages/SuperChangePassword"
+    "pages/SuperChangePassword",
+    "pages/Superaddstudent",
+    "pages/Superaddteacher"
   ]
 }

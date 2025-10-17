@@ -191,6 +191,9 @@ export struct superHomeView {
               .height(42)
               .backgroundColor('#AAFAFB')
               .borderRadius(20)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Superaddstudent' });
+              });
 
               Column() {
                 Text('新添教师')
@@ -201,6 +204,9 @@ export struct superHomeView {
               .height(42)
               .backgroundColor('#AAFAFB')
               .borderRadius(20)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Superaddteacher' });
+              });
             }
             .width('100%')
             .justifyContent(FlexAlign.SpaceBetween)
@@ -244,3 +250,4 @@ export struct superHomeView {
     .backgroundColor('#f4fafa');
   }
 }
+
