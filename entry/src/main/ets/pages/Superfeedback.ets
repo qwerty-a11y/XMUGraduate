@@ -106,8 +106,9 @@ export struct superUploadsView {
             .height(24)
             .margin({ left: 8 })
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Supermain' });
+              router.pushUrl({ url: 'pages/Supermain'}); // 直接写目标页面路径
             });
+
 
           Text('反馈')
             .flexGrow(1)

@@ -17,6 +17,11 @@
     "pages/SuperChangeContactInformation",
     "pages/SuperChangePassword",
     "pages/Superaddstudent",
-    "pages/Superaddteacher"
+    "pages/Superaddteacher",
+    "pages/Teamain",
+    "pages/Teasetting",
+    "pages/TeaChangeContactInformation",
+    "pages/TeaChangePassword",
+    "pages/TeaFeedback"
   ]
 }

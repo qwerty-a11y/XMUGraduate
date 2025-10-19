@@ -103,7 +103,7 @@ struct ChangeContactInformation {
 
     // 返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/setting' });
+      router.pushUrl({ url: 'pages/Teasetting' });
     }, 1000);
   }
 
@@ -116,9 +116,8 @@ struct ChangeContactInformation {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Supersetting'}); // 直接写目标页面路径
+            router.pushUrl({ url: 'pages/Teasetting' });
           });
-
 
         Text('修改联系方式')
           .flexGrow(1)

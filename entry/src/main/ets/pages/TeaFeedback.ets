@@ -33,7 +33,7 @@ struct FeedbackPage {
 
     // 返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/StuSetting' });
+      router.pushUrl({ url: 'pages/Teasetting' });
     }, 1000);
   }
 
@@ -46,7 +46,7 @@ struct FeedbackPage {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/StuSetting' });
+            router.pushUrl({ url: 'pages/Teasetting' });
           });
 
         Text('反馈')

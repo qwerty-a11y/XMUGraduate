@@ -103,7 +103,7 @@ struct ChangeContactInformation {
 
     // 返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/setting' });
+      router.pushUrl({ url: 'pages/StuSetting' });
     }, 1000);
   }
 

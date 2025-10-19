@@ -1,6 +1,6 @@
 import { Baoyanstartbg } from '../components/Baoyanstart';
 import router from '@ohos.router'; // 导入路由模块
-import { ROUTERstu, ROUTERsuper } from '../routerConstants'; // 导入路由常量
+import { ROUTERstu, ROUTERsuper,ROUTERtea} from '../routerConstants'; // 导入路由常量
 import promptAction from '@ohos.promptAction';
 //import { InputType } from '@ohos.input';
 //import { Curve } from '@ohos.animation';
@@ -28,6 +28,8 @@ struct login {
       router.pushUrl({ url: ROUTERstu.HOME });
     } else if (this.selectedValue === 'super' && this.account && this.password) {
       router.pushUrl({ url: ROUTERsuper.HOME });
+    }else if (this.selectedValue === 'teacher' && this.account && this.password) {
+      router.pushUrl({ url: ROUTERtea.HOME });
     } else {
       // 使用 promptAction 显示提示
       promptAction.showToast({

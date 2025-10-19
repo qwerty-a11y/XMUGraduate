@@ -13,3 +13,8 @@ export const ROUTERsuper: RouterConfig = {
   LOGIN: 'pages/Launch',
   HOME: 'pages/Supermain'
 };
+export const ROUTERtea: RouterConfig = {
+  LOGIN: 'pages/Launch',
+  HOME: 'pages/Teamain'
+};
+

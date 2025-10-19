@@ -128,7 +128,7 @@ export struct superinform {
               .height(24)
               .margin({ left: 50, right: 8 })
               .onClick(() => {
-                router.pushUrl({ url: 'pages/Superoperate' });
+                router.pushUrl({ url: 'pages/Superoperate'});
               });
           }
         }
