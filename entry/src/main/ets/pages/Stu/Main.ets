@@ -49,14 +49,7 @@ struct Main {
    * 功能：接收其他页面跳转时传递的路由参数，更新当前激活的视图与子页面
    */
   onPageShow(): void {
-    // 获取路由参数（类型断言为键值对对象）
-    const params = router.getParams() as Record<string, object>
-    if (params){
-      // 解析目标视图参数（默认值0=首页）
-      this.ActiveView = Number(params['targetView']) || 0;
-      // 解析目标子页面参数（默认值0）
-      this.ActiveSubPage = Number(params['targetSubPage']) || 0;
-    }
+
   }
 
   /**
