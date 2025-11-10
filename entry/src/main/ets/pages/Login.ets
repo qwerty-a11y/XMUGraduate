@@ -1,9 +1,9 @@
 import { Baoyanstartbg } from '../components/Baoyanstart';
 import router from '@ohos.router'; // 导入路由模块
-import { ROUTERstu, ROUTERsuper,ROUTERtea} from '../routerConstants'; // 导入路由常量
+import { ROUTERstu, ROUTERsuper, ROUTERtea } from '../routerConstants'; // 导入路由常量
 import promptAction from '@ohos.promptAction';
 import http from '@ohos.net.http';
-import { StaticData,DynamicData } from '../constants';
+import { StaticData, DynamicData } from '../constants';
 import json from '@ohos.util.json';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -16,59 +16,57 @@ interface AnimateParam {
   curve: Curve;
 }
 
-interface LoginRequest{
-  user_type:string,
-  school_id:string,
-  password:string
+interface LoginRequest {
+  user_type: string,
+  school_id: string,
+  password: string
 }
 
-interface empty{
-
-}
+interface empty {}
 
 @Entry
 @Component
 struct login {
   @State selectedValue: string = 'student'; // 初始选择学生身份
-  @State account: string = '';   // 账号状态
-  @State password: string = '';  // 密码状态
+  @State account: string = ''; // 账号状态
+  @State password: string = ''; // 密码状态
   CustomAnimate: AnimateParam = {
     duration: 250,
     curve: Curve.EaseInOut
   };
 
-  async  request(){
-    if(this.account && this.password){
+  async request() {
+    if (this.account && this.password) {
       let httpRequest = http.createHttp();
-      let user_type:number
-      let RequestData:LoginRequest = {
-        'user_type':this.selectedValue,
-        'school_id':this.account,
-        'password':this.password
+      let user_type: number
+      let RequestData: LoginRequest = {
+        'user_type': this.selectedValue,
+        'school_id': this.account,
+        'password': this.password
       }
-      let RequestDataStr:string = json.stringify(RequestData)
-      try{
-        let Response:http.HttpResponse = await httpRequest.request(
-          StaticData.ServerURL+'/api/auth/login/',
+      let RequestDataStr: string = json.stringify(RequestData)
+      try {
+        let Response: http.HttpResponse = await httpRequest.request(
+          StaticData.ServerURL + '/api/auth/login/',
           {
-            method:http.RequestMethod.POST,
-            extraData:RequestDataStr,
+            method: http.RequestMethod.POST,
+            extraData: RequestDataStr,
             header: {
               'Content-Type': 'application/json', // 关键：添加这个头
               'Accept': 'application/json' // 可选：告诉服务器期望 JSON 响应
             }
           }
         )
-        let DataObj:Object|empty
-        let DataObjTmp:object|null
+        let DataObj: Object | empty
+        let DataObjTmp: object | null
         try {
           DataObjTmp = json.parse(Response.result.toString())
-          DataObj = DataObjTmp?DataObjTmp:{}
-          if (Response.responseCode == 200 && DataObj && !(Object.keys(DataObj).includes('non_field_errors'))){
-            DynamicData.account_id=this.account
-            DynamicData.token=(DataObj as Record<string,string>)['token']
+          DataObj = DataObjTmp ? DataObjTmp : {}
+          if (Response.responseCode == 200 && DataObj && !(Object.keys(DataObj).includes('non_field_errors'))) {
+            DynamicData.account_id = this.account
+            DynamicData.token = (DataObj as Record<string, string>)['token']
             this.login()
-          }else{
+          } else {
             // 使用 promptAction 显示提示
             promptAction.showToast({
               message: '登录失败，请检查账号密码是否正确',
@@ -80,13 +78,13 @@ struct login {
           let msg = error?.message
           // 使用 promptAction 显示提示
           promptAction.showToast({
-            message: '解析错误：'+msg,
+            message: '解析错误：' + msg,
             duration: 2000 // 弹窗显示时间（毫秒）
           });
           return;
         }
-      } catch (e){
-        let err:BusinessError = e as BusinessError
+      } catch (e) {
+        let err: BusinessError = e as BusinessError
         console.log(err.message)
         console.log(err.name)
       }
@@ -107,7 +105,7 @@ struct login {
       router.pushUrl({ url: ROUTERstu.HOME });
     } else if (this.selectedValue === 'super') {
       router.pushUrl({ url: ROUTERsuper.HOME });
-    }else if (this.selectedValue === 'teacher') {
+    } else if (this.selectedValue === 'teacher') {
       router.pushUrl({ url: ROUTERtea.HOME });
     }
   }
@@ -143,9 +141,12 @@ struct login {
             Radio({ value: 'student', group: 'identity' })
               .checked(this.selectedValue === 'student')
               .onChange((isChecked: boolean) => {
-                if (isChecked) this.selectedValue = 'student';
+                if (isChecked) {
+                  this.selectedValue = 'student';
+                }
               })
-              .width(0).height(0)
+              .width(0)
+              .height(0)
               .position({ x: -100, y: 0 });
             Text('学生')
               .fontSize(16)
@@ -165,9 +166,12 @@ struct login {
             Radio({ value: 'teacher', group: 'identity' })
               .checked(this.selectedValue === 'teacher')
               .onChange((isChecked: boolean) => {
-                if (isChecked) this.selectedValue = 'teacher';
+                if (isChecked) {
+                  this.selectedValue = 'teacher';
+                }
               })
-              .width(0).height(0)
+              .width(0)
+              .height(0)
               .position({ x: -100, y: 0 });
             Text('教师')
               .fontSize(16)
@@ -190,9 +194,12 @@ struct login {
             Radio({ value: 'super', group: 'identity' })
               .checked(this.selectedValue === 'super')
               .onChange((isChecked: boolean) => {
-                if (isChecked) this.selectedValue = 'super';
+                if (isChecked) {
+                  this.selectedValue = 'super';
+                }
               })
-              .width(0).height(0)
+              .width(0)
+              .height(0)
               .position({ x: -100, y: 0 });
             Text('超管')
               .fontSize(16)
@@ -223,7 +230,12 @@ struct login {
           .height(40)
           .backgroundColor('#FFFFFF')
           .borderRadius(8)
-          .shadow({ color: '#12000000', radius: 4, offsetX: 2, offsetY: 4 })
+          .shadow({
+            color: '#12000000',
+            radius: 4,
+            offsetX: 2,
+            offsetY: 4
+          })
           .margin({ bottom: 15 })
           .onChange((value: string) => this.account = value); // 输入时更新account
 
@@ -234,7 +246,12 @@ struct login {
           .height(40)
           .backgroundColor('#FFFFFF')
           .borderRadius(8)
-          .shadow({ color: '#12000000', radius: 4, offsetX: 2, offsetY: 4 })
+          .shadow({
+            color: '#12000000',
+            radius: 4,
+            offsetX: 2,
+            offsetY: 4
+          })
           .margin({ bottom: 15 })
           .onChange((value: string) => this.password = value); // 输入时更新password
 
@@ -252,6 +269,7 @@ struct login {
           .backgroundColor('#ff77f0ec')
           .borderRadius(16)
           .onClick(() => this.request()); // 点击登录
+          //.onClick(() => this.login()); // 点击登录
       }
       .width(257)
       .height(300)

@@ -1,6 +1,38 @@
 import { Poster, FeatureCard, CardItem } from './HomeComponents/TypeCard';
 import router from '@ohos.router'; // 导入路由模块
+import { BasicData } from '../../../service/Stu/BasicData';
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { StaticData,DynamicData } from '../../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { promptAction } from '@kit.ArkUI';
+
 //import { AddItemDialog, AddItemDialogConfig } from '../../components/MainViews/StuUploadsComponents/addprojects';
+
+interface empty {}
+export interface BasicResponse {
+  academic_expertise_score: number;
+  academic_score: number;
+  college: string;
+  comprehensive_performance_score: number;
+  created_at: string;
+  failed_courses: number;
+  gpa: number;
+  gpa_ranking: number;
+  id: string;
+  major: string;
+  name: string;
+  ranking_dimension: string;
+  school_id: string;
+  total_comprehensive_score: number;
+  total_courses: number;
+  total_credits: number;
+  updated_at: string;
+  weighted_score: number;
+  cet4: number;
+  cet6: number;
+  applications_score: number[];
+}
 
 @Component
 export struct HomeView {
@@ -53,6 +85,77 @@ export struct HomeView {
       score: 0
     }
   ];
+
+  @State GPA:number = BasicData.GPA
+  @State score:number = BasicData.score
+  @State estimated_score:number = BasicData.estimated_score
+  @State CET:number[] = BasicData.CET
+  @State applications:number[] = BasicData.applications
+
+  async refresh(){
+    let httpRequest = http.createHttp();
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/score/student-performance/my_performance/',
+        {
+          method: http.RequestMethod.POST,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Aothorization': 'Token '+DynamicData.token
+          }
+        }
+      )
+      let DataObj: BasicResponse | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && (Object.keys(DataObj).length>0)) {
+          BasicData.GPA=(DataObj as BasicResponse).gpa
+          BasicData.score=(DataObj as BasicResponse).total_comprehensive_score
+          BasicData.CET=[(DataObj as BasicResponse).cet4,(DataObj as BasicResponse).cet6]
+          BasicData.applications=(DataObj as BasicResponse).applications_score
+          this.GPA = BasicData.GPA
+          this.score = BasicData.score
+          this.estimated_score = BasicData.estimated_score
+          this.CET = BasicData.CET
+          this.applications = BasicData.applications
+        } else if (Object && Object.keys(DataObj).includes('detail')){
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '登录失效，请重新登录',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          router.pushUrl({ url: 'pages/Login' })
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '刷新失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+    }
+  }
+
+  aboutToAppear(): void {
+
+  }
+
   @Prop image_setting: ResourceStr = $r("app.media.Settings"); // 设置图标
   build() {
     Column() {
@@ -105,11 +208,22 @@ export struct HomeView {
             }
             .width('90%')
             .margin({ bottom: 5 });
-
+/*
             Row() {
               Text('预计综测')
                 .fontSize(16);
               Text('80/100')
+                .fontSize(20)
+                .textAlign(TextAlign.End)
+                .flexGrow(1);
+            }
+            .width('90%')
+            .margin({ bottom: 5 });
+*/
+            Row() {
+              Text('CET-4/CET-6')
+                .fontSize(16);
+              Text('425/425')
                 .fontSize(20)
                 .textAlign(TextAlign.End)
                 .flexGrow(1);

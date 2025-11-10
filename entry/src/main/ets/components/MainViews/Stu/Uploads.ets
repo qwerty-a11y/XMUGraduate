@@ -7,7 +7,7 @@ import { TestData } from '../../../debug/TestData';
 // 导入审核记录数据类型：约束数据格式，确保类型安全
 import * as TypeRecord from '../../../datatypes/Record';
 // 导入审核页数据服务：全局管理审核数据（存储、筛选），实现数据与UI解耦
-import { UploadsData } from '../../../service/UploadsData';
+import { UploadsData } from '../../../service/Stu/UploadsData';
 import {FilterDialog} from './UploadsComponents/Filter'
 
 // 审核页视图组件（页面级组件，对应"审核"导航项的内容）

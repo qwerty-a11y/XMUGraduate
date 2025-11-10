@@ -1,6 +1,6 @@
  import * as TypeRecord from '../../../../datatypes/Record'
  import {DateUtils} from '../../../../utils'
- import {UploadsData} from '../../../../service/UploadsData'
+ import {UploadsData} from '../../../../service/Stu/UploadsData'
  import router from '@ohos.router';
 
 // ====================== 5. 审核页顶部栏组件（top）======================

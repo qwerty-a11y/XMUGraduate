@@ -1,5 +1,5 @@
 import List from "@ohos.util.List";
-import * as TypeRecord from '../datatypes/Record'
+import * as TypeRecord from '../../datatypes/Record'
 
 @Observed
 export class UploadsData{

@@ -1,6 +1,6 @@
 import * as TypeRecord from '../../../../datatypes/Record'
 import { LengthMetrics } from '@kit.ArkUI'
-import { UploadsData } from '../../../../service/UploadsData'
+import { UploadsData } from '../../../../service/Stu/UploadsData'
 import { DateUtils } from '../../../../utils'
 import { TimeSpan } from '../../../../datatypes/Record'
 
