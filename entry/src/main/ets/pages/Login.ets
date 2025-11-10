@@ -3,6 +3,10 @@ import router from '@ohos.router'; // 导入路由模块
 import { ROUTERstu, ROUTERsuper,ROUTERtea} from '../routerConstants'; // 导入路由常量
 import promptAction from '@ohos.promptAction';
 import http from '@ohos.net.http';
+import { StaticData,DynamicData } from '../constants';
+import json from '@ohos.util.json';
+import { BusinessError } from '@kit.BasicServicesKit';
+
 //import { InputType } from '@ohos.input';
 //import { Curve } from '@ohos.animation';
 
@@ -10,6 +14,16 @@ import http from '@ohos.net.http';
 interface AnimateParam {
   duration: number;
   curve: Curve;
+}
+
+interface LoginRequest{
+  user_type:string,
+  school_id:string,
+  password:string
+}
+
+interface empty{
+
 }
 
 @Entry
@@ -23,21 +37,78 @@ struct login {
     curve: Curve.EaseInOut
   };
 
-  // 登录方法：验证账号密码，跳转首页
-  login() {
-    if (this.selectedValue === 'student' && this.account && this.password) {
+  async  request(){
+    if(this.account && this.password){
+      let httpRequest = http.createHttp();
+      let user_type:number
+      let RequestData:LoginRequest = {
+        'user_type':this.selectedValue,
+        'school_id':this.account,
+        'password':this.password
+      }
+      let RequestDataStr:string = json.stringify(RequestData)
+      try{
+        let Response:http.HttpResponse = await httpRequest.request(
+          StaticData.ServerURL+'/api/auth/login/',
+          {
+            method:http.RequestMethod.POST,
+            extraData:RequestDataStr,
+            header: {
+              'Content-Type': 'application/json', // 关键：添加这个头
+              'Accept': 'application/json' // 可选：告诉服务器期望 JSON 响应
+            }
+          }
+        )
+        let DataObj:Object|empty
+        let DataObjTmp:object|null
+        try {
+          DataObjTmp = json.parse(Response.result.toString())
+          DataObj = DataObjTmp?DataObjTmp:{}
+          if (Response.responseCode == 200 && DataObj && !(Object.keys(DataObj).includes('non_field_errors'))){
+            DynamicData.account_id=this.account
+            DynamicData.token=(DataObj as Record<string,string>)['token']
+            this.login()
+          }else{
+            // 使用 promptAction 显示提示
+            promptAction.showToast({
+              message: '登录失败，请检查账号密码是否正确',
+              duration: 2000 // 弹窗显示时间（毫秒）
+            });
+          }
+        } catch (e) {
+          let error = e as BusinessError
+          let msg = error?.message
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '解析错误：'+msg,
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return;
+        }
+      } catch (e){
+        let err:BusinessError = e as BusinessError
+        console.log(err.message)
+        console.log(err.name)
+      }
 
-      router.pushUrl({ url: ROUTERstu.HOME });
-    } else if (this.selectedValue === 'super' && this.account && this.password) {
-      router.pushUrl({ url: ROUTERsuper.HOME });
-    }else if (this.selectedValue === 'teacher' && this.account && this.password) {
-      router.pushUrl({ url: ROUTERtea.HOME });
+
     } else {
       // 使用 promptAction 显示提示
       promptAction.showToast({
         message: '请输入正确的账号和密码',
         duration: 2000 // 弹窗显示时间（毫秒）
       });
+    }
+  }
+
+  // 登录方法：验证账号密码，跳转首页
+  login() {
+    if (this.selectedValue === 'student') {
+      router.pushUrl({ url: ROUTERstu.HOME });
+    } else if (this.selectedValue === 'super') {
+      router.pushUrl({ url: ROUTERsuper.HOME });
+    }else if (this.selectedValue === 'teacher') {
+      router.pushUrl({ url: ROUTERtea.HOME });
     }
   }
 
@@ -180,7 +251,7 @@ struct login {
           .height(45)
           .backgroundColor('#ff77f0ec')
           .borderRadius(16)
-          .onClick(() => this.login()); // 点击登录
+          .onClick(() => this.request()); // 点击登录
       }
       .width(257)
       .height(300)
