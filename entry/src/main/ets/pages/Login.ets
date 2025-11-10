@@ -88,8 +88,6 @@ struct login {
         console.log(err.message)
         console.log(err.name)
       }
-
-
     } else {
       // 使用 promptAction 显示提示
       promptAction.showToast({
