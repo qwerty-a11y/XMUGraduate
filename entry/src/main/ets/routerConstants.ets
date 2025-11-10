@@ -7,14 +7,14 @@ interface RouterConfig {
 // 导出符合接口的路由对象
 export const ROUTERstu: RouterConfig = {
   LOGIN: 'pages/Launch',
-  HOME: 'pages/StuMain'
+  HOME: 'pages/Stu/Main'
 };
 export const ROUTERsuper: RouterConfig = {
   LOGIN: 'pages/Launch',
-  HOME: 'pages/Supermain'
+  HOME: 'pages/Super/Main'
 };
 export const ROUTERtea: RouterConfig = {
   LOGIN: 'pages/Launch',
-  HOME: 'pages/Teamain'
+  HOME: 'pages/Tea/Main'
 };
 

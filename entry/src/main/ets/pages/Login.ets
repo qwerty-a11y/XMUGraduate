@@ -2,6 +2,7 @@ import { Baoyanstartbg } from '../components/Baoyanstart';
 import router from '@ohos.router'; // 导入路由模块
 import { ROUTERstu, ROUTERsuper,ROUTERtea} from '../routerConstants'; // 导入路由常量
 import promptAction from '@ohos.promptAction';
+import http from '@ohos.net.http';
 //import { InputType } from '@ohos.input';
 //import { Curve } from '@ohos.animation';
 
@@ -25,6 +26,7 @@ struct login {
   // 登录方法：验证账号密码，跳转首页
   login() {
     if (this.selectedValue === 'student' && this.account && this.password) {
+
       router.pushUrl({ url: ROUTERstu.HOME });
     } else if (this.selectedValue === 'super' && this.account && this.password) {
       router.pushUrl({ url: ROUTERsuper.HOME });
