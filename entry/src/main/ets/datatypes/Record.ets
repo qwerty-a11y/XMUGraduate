@@ -3,7 +3,7 @@ import { DateUtils } from "../utils"
 export enum RecordType{
   Competition, //学业竞赛
   Innovation, //创新创业训练
-  Research, //学术研究
+  Research, //科研成果
   Honor, //荣誉称号
   SocialWork, //社会工作
   Volunteer, //志愿服务
@@ -37,7 +37,7 @@ export class Extras{
   //创新创业训练
   project_name:string = ''
   project_level:string = ''
-  //学术研究
+  //科研成果
   paper_doi:string = ''
   //荣誉称号
   title_name:string = ''

@@ -183,6 +183,7 @@ export struct SuperInform {
               .backgroundColor('#ffffff')
               .padding({ left: 8, right: 8, bottom: 6, top: 6 })
               .margin({ top: 5, bottom: 5 })
+              .height(40)
               .borderRadius(8)
               .shadow({ radius: 1, color: '#00000008' });
             }
