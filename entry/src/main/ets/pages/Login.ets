@@ -38,7 +38,6 @@ struct login {
   async request() {
     if (this.account && this.password) {
       let httpRequest = http.createHttp();
-      let user_type: number
       let RequestData: LoginRequest = {
         'user_type': this.selectedValue,
         'school_id': this.account,
@@ -54,7 +53,8 @@ struct login {
             header: {
               'Content-Type': 'application/json', // 关键：添加这个头
               'Accept': 'application/json' // 可选：告诉服务器期望 JSON 响应
-            }
+            },
+            connectTimeout:5000
           }
         )
         let DataObj: Object | empty

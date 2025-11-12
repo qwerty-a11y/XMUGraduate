@@ -1,5 +1,8 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
+import {Extras} from '../../datatypes/Record'
+import { request } from '@kit.BasicServicesKit';
+
 //import { FlexAlign, VerticalAlign, InputType } from '@ohos.util'; // 导入所需枚举类型
 
 @Entry
@@ -12,26 +15,117 @@ struct AddOptionApplication {
   @State typeOptions: string[] = [
     '学业竞赛', '创新创业训练', '学术研究',
     '荣誉称号', '社会工作', '志愿服务',
-    '国际组织学习', '参军入伍'
+    '国际组织学习', '参军入伍', '体育比赛'
   ];
+  @State SelectedTypeIndex:number = 0;
   @State isTypeDropdownOpen: boolean = false;
   @State nameValue: string = '';
   @State descValue: string = '';
   @State scoreValue: string = '';
   @State fileUploaded: boolean = false;
+  @State TypeFontColor: string = '#ff8f8d8d';
+  @State Extras: Extras =  new Extras()
 
   @Builder ApplicationType(){
     Column() {
-      ForEach(this.typeOptions, (option: string) => { // 明确循环变量类型
+      ForEach(this.typeOptions, (option: string, index: number) => { // 明确循环变量类型
         Text(option)
           .width('100%')
           .padding(10)
-          .onClick(() => this.handleTypeSelect(option))
+          .onClick(() => {
+            this.handleTypeSelect(option)
+            this.TypeFontColor = '#ff000000'
+            this.SelectedTypeIndex = index+1
+          })
       })
     }
     .backgroundColor(Color.White)
     .border({ width: 1, color: '#EEEEEE', radius: 4 })
     .width('40%')
+  }
+
+  @Builder ExtraData(){
+    if (this.SelectedTypeIndex == 1) {
+      Column() {
+        Row() {
+          Text('竞赛级别')
+            .fontSize(16)
+            .margin({ right: 10 })
+          TextInput({ placeholder: '校级/市级/省级/国家级...' })
+            .width(200)
+            .onChange((value: string) => { // 明确参数类型
+              this.Extras.competition_level = value;
+            })
+
+        }
+        .width('100%')
+        .padding({top: 10, bottom: 10 })
+        .margin({ top: 10 })
+        Row(){
+          Text('竞赛名称')
+            .fontSize(16)
+            .margin({ right: 10 })
+          TextInput({ placeholder: '竞赛完整名称' })
+            .width(200)
+            .onChange((value: string) => { // 明确参数类型
+              this.Extras.competition_name_academic = value;
+            })
+        }
+        .width('100%')
+        .padding({ top: 10, bottom: 10 })
+        .margin({ top: 10 })
+      }
+      .width('100%')
+      .padding({ left: 15, right: 15, bottom: 10 })
+      .margin({ top: 10 })
+    } else if (this.SelectedTypeIndex == 2) {
+      Column() {
+        Row() {
+          Text('项目级别')
+            .fontSize(16)
+            .margin({ right: 10 })
+          TextInput({ placeholder: '校级/市级/省级/国家级...' })
+            .width(200)
+            .onChange((value: string) => { // 明确参数类型
+              this.Extras.project_level = value;
+            })
+
+        }
+        .width('100%')
+        .padding({top: 10, bottom: 10 })
+        .margin({ top: 10 })
+        Row(){
+          Text('项目名称')
+            .fontSize(16)
+            .margin({ right: 10 })
+          TextInput({ placeholder: '竞赛完整名称' })
+            .width(200)
+            .onChange((value: string) => { // 明确参数类型
+              this.Extras.project_name = value;
+            })
+        }
+        .width('100%')
+        .padding({ top: 10, bottom: 10 })
+        .margin({ top: 10 })
+      }
+      .width('100%')
+      .padding({ left: 15, right: 15, bottom: 10 })
+      .margin({ top: 10 })
+    } else if (this.SelectedTypeIndex == 3) {
+
+    } else if (this.SelectedTypeIndex == 4) {
+
+    } else if (this.SelectedTypeIndex == 5) {
+
+    } else if (this.SelectedTypeIndex == 6) {
+
+    } else if (this.SelectedTypeIndex == 7) {
+
+    } else if (this.SelectedTypeIndex == 8) {
+
+    } else if (this.SelectedTypeIndex == 9) {
+
+    }
   }
 
   // 明确参数和返回值类型
@@ -98,7 +192,7 @@ struct AddOptionApplication {
               .margin({ right: 10 })
             Button(this.selectedType)
               .backgroundColor('#fff6f5f5')
-              .fontColor('#ff8f8d8d')
+              .fontColor(this.TypeFontColor)
               .onClick(() => {
                 this.isTypeDropdownOpen = !this.isTypeDropdownOpen;
               })
@@ -166,6 +260,8 @@ struct AddOptionApplication {
           .width('100%')
           .padding({ left: 15, right: 15, top: 10, bottom: 10 })
           .margin({ top: 10 })
+
+          this.ExtraData()
 
           // 证明文件上传行（修正对齐方式类型）
           Column() {

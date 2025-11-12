@@ -5,7 +5,7 @@
     "pages/Stu/Main",
     "pages/Stu/Setting",
     "pages/Stu/ChangePassword",
-    "pages/Stu/addproject",
+    "pages/Stu/AddProject",
     "pages/Stu/ChangeContactInformation",
     "pages/Stu/Feedback",
     "pages/Super/Feedback",

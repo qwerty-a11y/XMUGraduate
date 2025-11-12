@@ -8,7 +8,8 @@ export enum RecordType{
   SocialWork, //社会工作
   Volunteer, //志愿服务
   International, //国际组织学习
-  Military //参军入伍
+  Military, //参军入伍
+  Sports //体育比赛
 }
 
 @Observed
@@ -27,6 +28,38 @@ export class TimeSpan{
   public get ToStringEnd():string{
     return DateUtils._ToStringForTimeSpan(this.end)
   }
+}
+
+export class Extras{
+  //学业竞赛
+  competition_level:string = ''
+  competition_name_academic:string = ''
+  //创新创业训练
+  project_name:string = ''
+  project_level:string = ''
+  //学术研究
+  paper_doi:string = ''
+  //荣誉称号
+  title_name:string = ''
+  awarding_organization:string = ''
+  awarding_date:number = -1
+  //社会工作
+  organization:string = ''
+  work_period:number[] = [-1,-1]
+  //志愿服务
+  activity_name:string = ''
+  activity_date:number = -1
+  //国际组织学习
+  organization_name:string = ''
+  internship_duration:number[] = [-1,-1]
+  //参军入伍
+  service_start_date:number = -1
+  service_end_date:number = -1
+  military_unit:string = ''
+  //体育比赛
+  competition_name_sports:string = ''
+  competition_date:number = -1
+  achievement:string = ''
 }
 
 export abstract class TypeInfo{
@@ -53,7 +86,7 @@ export class RecordEntry{
 export class Filter{
   public ReviewStatus:boolean[]=[false,false,false,false]
   public EnableStatus:boolean = false
-  public Type:boolean[]=[false,false,false,false,false,false,false,false]
+  public Type:boolean[]=[false,false,false,false,false,false,false,false,false]
   public EnableType:boolean = false
   public UploadTime:TimeSpan=new TimeSpan()
   public ModifyTime:TimeSpan=new TimeSpan()

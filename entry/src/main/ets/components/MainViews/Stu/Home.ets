@@ -6,6 +6,7 @@ import json from '@ohos.util.json';
 import { StaticData,DynamicData } from '../../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
+import { ApplicationStateChangeCallback } from '@kit.AbilityKit';
 
 //import { AddItemDialog, AddItemDialogConfig } from '../../components/MainViews/StuUploadsComponents/addprojects';
 
@@ -37,6 +38,11 @@ export interface BasicResponse {
 @Component
 export struct HomeView {
 
+  @State GPA:number = BasicData.GPA
+  @State score:number = BasicData.score
+  @State estimated_score:number = BasicData.estimated_score
+  @State CET:number[] = BasicData.CET
+  @State applications:number[] = BasicData.applications
   // 控制首页导航项背景色
   @State homeNavBgColor: string = '#ffffffff';
   // 为数组添加明确的CardItem类型注解
@@ -44,17 +50,17 @@ export struct HomeView {
     {
       icon: $r('app.media.icon_1'),
       title: '学业竞赛',
-      score: 0
+      score: this.applications[0]
     },
     {
       icon: $r('app.media.icon_2'),
       title: '创新创业训练',
-      score: 0
+      score: this.applications[1]
     },
     {
       icon: $r('app.media.icon_3'),
       title: '学术研究',
-      score: 0
+      score: this.applications[2]
     },
   ];
   // 综合表现卡片数据
@@ -62,35 +68,36 @@ export struct HomeView {
     {
       icon: $r('app.media.icon_4'),
       title: '荣誉称号',
-      score: 0
+      score: this.applications[3]
     },
     {
       icon: $r('app.media.icon_5'),
       title: '社会工作',
-      score: 0
+      score: this.applications[4]
     },
     {
       icon: $r('app.media.icon_6'),
       title: '志愿服务',
-      score: 0
+      score: this.applications[5]
     },
     {
       icon: $r('app.media.icon_7'),
       title: '国际组织学习',
-      score: 0
+      score: this.applications[6]
     },
     {
       icon: $r('app.media.icon_8'),
       title: '参军入伍',
-      score: 0
+      score: this.applications[7]
+    },
+    {
+      icon: $r('app.media.icon_9'),
+      title: '体育比赛',
+      score: this.applications[8]
     }
   ];
 
-  @State GPA:number = BasicData.GPA
-  @State score:number = BasicData.score
-  @State estimated_score:number = BasicData.estimated_score
-  @State CET:number[] = BasicData.CET
-  @State applications:number[] = BasicData.applications
+
 
   async refresh(){
     let httpRequest = http.createHttp();
@@ -98,11 +105,11 @@ export struct HomeView {
       let Response: http.HttpResponse = await httpRequest.request(
         StaticData.ServerURL + '/api/score/student-performance/my_performance/',
         {
-          method: http.RequestMethod.POST,
+          method: http.RequestMethod.GET,
           header: {
             'Content-Type': 'application/json', // 关键：添加这个头
             'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
-            'Aothorization': 'Token '+DynamicData.token
+            'Authorization': 'Token '+DynamicData.token
           }
         }
       )
@@ -121,6 +128,17 @@ export struct HomeView {
           this.estimated_score = BasicData.estimated_score
           this.CET = BasicData.CET
           this.applications = BasicData.applications
+          this.academicCards[0].score=this.applications[0]
+          this.academicCards[1].score=this.applications[1]
+          this.academicCards[2].score=this.applications[2]
+          this.performanceCards[0].score=this.applications[3]
+          this.performanceCards[1].score=this.applications[4]
+          this.performanceCards[2].score=this.applications[5]
+          this.performanceCards[3].score=this.applications[6]
+          this.performanceCards[4].score=this.applications[7]
+          this.performanceCards[5].score=this.applications[8]
+          this.academicCards=[...this.academicCards]
+          this.performanceCards=[...this.performanceCards]
         } else if (Object && Object.keys(DataObj).includes('detail')){
           // 使用 promptAction 显示提示
           promptAction.showToast({
@@ -153,7 +171,7 @@ export struct HomeView {
   }
 
   aboutToAppear(): void {
-
+    this.refresh()
   }
 
   @Prop image_setting: ResourceStr = $r("app.media.Settings"); // 设置图标
@@ -190,7 +208,7 @@ export struct HomeView {
             Row() {
               Text('GPA')
                 .fontSize(16);
-              Text('3.8/4.0')
+              Text(`${this.GPA}/4.0`)
                 .fontSize(20)
                 .textAlign(TextAlign.End)
                 .flexGrow(1);
@@ -201,7 +219,7 @@ export struct HomeView {
             Row() {
               Text('综测')
                 .fontSize(16);
-              Text('80/100')
+              Text(`${this.score}/100`)
                 .fontSize(20)
                 .textAlign(TextAlign.End)
                 .flexGrow(1);
@@ -223,7 +241,7 @@ export struct HomeView {
             Row() {
               Text('CET-4/CET-6')
                 .fontSize(16);
-              Text('425/425')
+              Text(`${this.CET[0]}/${this.CET[1]}`)
                 .fontSize(20)
                 .textAlign(TextAlign.End)
                 .flexGrow(1);
@@ -255,7 +273,7 @@ export struct HomeView {
           .backgroundColor('#84F2C3')
           .borderRadius(20)
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Stu/addproject' });
+            router.pushUrl({ url: 'pages/Stu/AddProject' });
           });
 
           // 学业专长标题
@@ -330,6 +348,3 @@ export struct HomeView {
     .backgroundImageSize(ImageSize.Cover);
   }
 }
-
-
-

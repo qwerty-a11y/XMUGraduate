@@ -100,7 +100,7 @@ export struct FilterDialog{
   @State @Watch('UpdateUpload') UploadTime:TimeSpan= UploadsData.Filters.UploadTime
   @State @Watch('UpdateModify') ModifyTime:TimeSpan = UploadsData.Filters.ModifyTime
   statusList:string[] = ['待提交','审核中','审核成功','审核失败']
-  typeList:string[] = ['学业竞赛','创新创业训练','学术研究','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍']
+  typeList:string[] = ['学业竞赛','创新创业训练','学术研究','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
   animateParams:AnimateParam[] = [
     {
       duration:125,
@@ -206,7 +206,7 @@ export struct FilterDialog{
 
             Text('综合表现').fontSize(18).margin({ top: 10, bottom: 10 })
             Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.px(15), cross: LengthMetrics.px(15) } }) {
-              ForEach(this.typeList.slice(3, 8), (text: string, index: number) => {
+              ForEach(this.typeList.slice(3, 9), (text: string, index: number) => {
                 this.typeSwitch(text, index + 3)
               })
             }
