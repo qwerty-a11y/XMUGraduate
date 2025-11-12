@@ -8,6 +8,7 @@
     "pages/Stu/AddProject",
     "pages/Stu/ChangeContactInformation",
     "pages/Stu/Feedback",
+    "pages/Stu/Records",
     "pages/Super/Feedback",
     "pages/Super/Inform",
     "pages/Super/Operate",

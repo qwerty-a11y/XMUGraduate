@@ -54,7 +54,7 @@ export struct superUploadsView {
         Column() {
           Text('自定义操作')
             .fontSize(18)
-            .width('100%')
+            .width('90%')
 
           Column() {
             // 顶部提示文本
@@ -70,7 +70,7 @@ export struct superUploadsView {
               });
           }
           .backgroundColor('#C5F4F3')
-          .margin({ top: 10, bottom: 20 });
+          .margin({ top: 10, bottom: 20,left:10,right:10 });
         }
         .width('100%')
 

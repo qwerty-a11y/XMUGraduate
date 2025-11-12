@@ -279,6 +279,9 @@ export struct ActivityCardComponent {
        offsetX: 0,
        offsetY: 2 // 阴影向下偏移2px
      })
-     .margin({ bottom: 10 }); // 卡片之间的垂直间距
+     .margin({ bottom: 10 })
+     .onClick(() => {
+       router.pushUrl({ url: 'pages/Stu/Records' });
+     });
    }
  }
