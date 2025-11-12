@@ -70,7 +70,7 @@ export struct teamain {
       }
     } else if (this.ActiveView === 1) { // 激活审核页
       // 传递UpdateTrigger状态（双向绑定），用于触发审核页数据更新
-      teaUploadsView()
+      teaUploadsView().transition(this.rightAnimations)
       //superUploadsView({UpdateTrigger: this.UpdateTrigger}).transition(this.rightAnimations)
     }
   }

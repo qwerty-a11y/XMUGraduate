@@ -1,12 +1,8 @@
 import { Poster } from '../Stu/HomeComponents/TypeCard';
+import {Request} from  '../../../datatypes/PasswordResetRequest'
+import {DateUtils} from '../../../utils'
 import router from '@ohos.router'; // 导入路由模块
 
-interface CardItem {
-  status: string;
-  statusColor: string;
-  from: string;
-  time: string;
-}
 
 @Component
 export struct superHomeView {
@@ -16,57 +12,31 @@ export struct superHomeView {
   @Prop image_search: ResourceStr = $r("app.media.Search");
   @State SearchText: string = '';
 
-  @State cardData: Array<CardItem> = [
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      from: '**同学',
-      time: '2025-10-11 10:00'
-    },
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      from: '**教师',
-      time: '2025-10-11 09:30'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-      from: '**教师',
-      time: '2025-10-10 16:20'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-      from: '**同学',
-      time: '2025-10-10 15:10'
-    }
-  ];
-
+  @State cardData: Array<Request> = [];
   @Builder
-  CardComponent(item: CardItem) {
+  CardComponent(item: Request) {
     Row() {
       Column() {
         Row() {
-          Text(item.status)
+          Text('待处理')
             .fontSize(14)
             .margin({ right: 5 });
           // 状态圆点
           Circle()
             .width(8)
             .height(8)
-            .fill(item.statusColor);
+            .fill(Color.Red);
         }
         .margin({ bottom: 5 });
 
-        Text(`来自：${item.from}`)
+        Text(`来自：${item.Name} ${item.Identity?'老师':'学生'}`)
           .fontSize(16);
       }
       .width('50%')
       .margin({ bottom: 10, top: 10 });
 
       Column() {
-        Text(item.time)
+        Text(DateUtils.ToString(item.UploadTime))
           .fontSize(12)
           .fontColor('#999999');
       }
@@ -84,6 +54,9 @@ export struct superHomeView {
       offsetY: 2
     })
     .width(340)
+    .onClick(()=>{
+      router.pushUrl({url:'pages/Super/StudentAccountIssue',params:item})
+    })
     .justifyContent(FlexAlign.Center); // 卡片内容水平居中
   }
 
@@ -223,19 +196,25 @@ export struct superHomeView {
             .width(330)
 
             Column(){
-              List() {
-                ForEach(this.cardData, (item: CardItem) => {
-                  ListItem() {
-                    this.CardComponent(item);
-                  }
-                  .margin({ bottom: 5, top: 5 })
-                  .width(340)
-                });
+              if (this.cardData.length == 0){
+                Text("暂无账号问题反馈").margin({top:40}).fontColor(Color.Gray)
+              } else {
+                List() {
+                  ForEach(this.cardData, (item: Request) => {
+                    ListItem() {
+                      this.CardComponent(item);
+                    }
+                    .margin({ bottom: 5, top: 5 })
+                    .width(340)
+                  });
+                }
+                .width(330)
               }
-              .width(330)
             }
-            .backgroundColor('#E5E5E5')
+            .backgroundColor('#ffffff')
             .width(340)
+            .constraintSize({minHeight:100})
+
           }
           // 增加一个大的底部边距，确保Scroll内容高度超过自身高度，可滑动
           .margin({ bottom: 100 })

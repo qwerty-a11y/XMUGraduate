@@ -62,7 +62,7 @@ export struct top {
        .backgroundColor('white') // 搜索框整体背景色（白色）
        .borderRadius(20) // 搜索框圆角：优化视觉
        .height(52) // 搜索框固定高度
-       .width(270)
+       .width(314)
        .shadow({
          // 搜索框阴影：增强层次感
          radius: 4,
@@ -81,11 +81,11 @@ export struct top {
          .onClick(() => {
            this.onFilterClicked && this.onFilterClicked(); // 触发父组件筛选逻辑
          });
-
+/*
        Image(this.image_arrange)
          .width(24)
          .height(24)
-
+*/
      }
      //.width(343) // 固定宽度：与下方搜索框对齐
      //.height(52) // 固定高度
@@ -150,7 +150,7 @@ export struct ActivityCardComponent {
   private uploadTime: string=''; // 提交时间（格式化后的字符串，如"2024-05-20"）
   private modifyTime: string=''; // 更改时间（格式化后的字符串）
   private score: string=''; // 加分情况（如"加5分"）
-  private typeList:string[] = ['学业竞赛','创新创业训练','学术研究','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍']
+  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍']
 
   aboutToAppear(): void {
     switch (this.entry.ReviewStatus.valueOf()) {

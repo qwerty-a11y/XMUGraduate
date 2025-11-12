@@ -13,7 +13,7 @@ struct AddOptionApplication {
   @State isDialogShow: boolean = true;
   @State selectedType: string = '选择申请类型';
   @State typeOptions: string[] = [
-    '学业竞赛', '创新创业训练', '学术研究',
+    '学业竞赛', '创新创业训练', '科研成果',
     '荣誉称号', '社会工作', '志愿服务',
     '国际组织学习', '参军入伍', '体育比赛'
   ];

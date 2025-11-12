@@ -59,7 +59,7 @@ export struct HomeView {
     },
     {
       icon: $r('app.media.icon_3'),
-      title: '学术研究',
+      title: '科研成果',
       score: this.applications[2]
     },
   ];
