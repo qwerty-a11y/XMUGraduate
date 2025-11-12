@@ -112,7 +112,10 @@ export struct teaHomeView {
       }
       .width('100%')
       .height(80)
-      .alignItems(VerticalAlign.Center);
+      .alignItems(VerticalAlign.Center)
+      .onClick(() => {
+        router.pushUrl({ url: 'pages/Tea/Review' });
+      });
 
       // 底部分隔线（最后一项不加）
       if (item.id !== this.reviewList.length) {
@@ -166,6 +169,9 @@ export struct teaHomeView {
         .backgroundColor('#84F2C3')
         .borderRadius(20)
         .margin({ top: 10, bottom: 10 })
+        .onClick(() => {
+          router.pushUrl({ url: 'pages/Tea/Rules' });
+        });
 
         Text('您有新的审核，请及时处理')
           .fontSize(14)

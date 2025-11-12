@@ -22,6 +22,9 @@
     "pages/Tea/Setting",
     "pages/Tea/ChangeContactInformation",
     "pages/Tea/ChangePassword",
-    "pages/Tea/Feedback"
+    "pages/Tea/Feedback",
+    "pages/Tea/Rules",
+    "pages/Tea/Review",
+    "pages/Tea/Records"
   ]
 }

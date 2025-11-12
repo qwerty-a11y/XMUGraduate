@@ -109,7 +109,10 @@ export struct teaUploadsView {
             .width('90%')
             .backgroundColor('white')
             .borderRadius(10)
-            .margin({ bottom: 8 });
+            .margin({ bottom: 8 })
+            .onClick(() => {
+              router.pushUrl({ url: 'pages/Tea/Records' });
+            });
           });
         }
         .width('100%')
