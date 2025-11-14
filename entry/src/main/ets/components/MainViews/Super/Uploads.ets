@@ -48,7 +48,11 @@ export struct superUploadsView {
           color: '#ff5a5555',
           offsetX: 2,
           offsetY: 4
+        })
+        .onClick(() => {
+          router.pushUrl({ url: 'pages/Super/Alloperate' });
         });
+
 
       Column() {
         Column() {

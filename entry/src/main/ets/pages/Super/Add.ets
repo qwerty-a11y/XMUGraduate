@@ -86,19 +86,18 @@ struct NewAddPage {
           });
 
         // 专业班级输入框，仅学生可见
-        if (!this.isTeacher) {
-          Text('专业班级：')
+
+          Text('单位：')
             .width('96%')
             .fontSize(16)
             .margin({ top: 16});
-          TextInput({ placeholder: '请输入专业班级（仅学生）' })
+          TextInput({ placeholder: '请输入院系，学生还要输入班级' })
             .width('90%')
-            .height(40)
             .margin({ left: 16, right: 16, top: 4 })
             .onChange((value: string) => {
               this.majorClass = value;
             });
-        }
+
 
         Text(`生成密码为：123456`)
           .fontSize(16)
