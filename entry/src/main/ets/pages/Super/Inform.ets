@@ -185,7 +185,11 @@ export struct SuperInform {
               .margin({ top: 5, bottom: 5 })
               .height(40)
               .borderRadius(8)
-              .shadow({ radius: 1, color: '#00000008' });
+              .shadow({ radius: 1, color: '#00000008' })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Super/Individual' });
+              });
+
             }
           });
         }
