@@ -27,7 +27,7 @@ struct OperationPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Inform' });
+            router.pushUrl({ url: 'pages/Super/Main' });
           });
 
         Text('对所有账号操作')
