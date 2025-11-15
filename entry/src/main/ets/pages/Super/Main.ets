@@ -26,6 +26,10 @@ export struct SuperMain {
     TransitionEffect.translate({x:'-100%'}).animation(this.animateParam),
     TransitionEffect.translate({x:'-100%'}).animation(this.animateParam)
   )
+  rightAnimationsFirst = TransitionEffect.asymmetric(
+    TransitionEffect.IDENTITY.animation(this.animateParam),
+    TransitionEffect.translate({x:'100%'}).animation(this.animateParam)
+  )
   // 审核页动画：入场/离场均向右移出
   rightAnimations = TransitionEffect.asymmetric(
     TransitionEffect.translate({x:'100%'}).animation(this.animateParam),
@@ -46,7 +50,7 @@ export struct SuperMain {
   ]
 /*
   aboutToAppear(): void {
-    const params = router.getParams() as Record<string, object>
+    const params = router.getParams() as number
     this.AnimateType=params?Number(params?.['AnimateType']):0
   }
 
@@ -62,13 +66,8 @@ export struct SuperMain {
    */
   onPageShow(): void {
     // 获取路由参数（类型断言为键值对对象）
-    const params = router.getParams() as Record<string, object>
-    if (params){
-      // 解析目标视图参数（默认值0=首页）
-      this.ActiveView = Number(params['targetView']) || 0;
-      // 解析目标子页面参数（默认值0）
-      this.ActiveSubPage = Number(params['targetSubPage']) || 0;
-    }
+    let page = router.getParams()?(router.getParams() as Record<string,number>)['page']:0
+    this.ActiveView = page
   }
 
   /**
@@ -86,7 +85,11 @@ export struct SuperMain {
       }
     } else if (this.ActiveView === 1) { // 激活审核页
       // 传递UpdateTrigger状态（双向绑定），用于触发审核页数据更新
-      superUploadsView().transition(this.rightAnimations)
+      if (this.isFirstLoad) { // 首次加载：使用首次入场动画
+        superUploadsView().transition(this.rightAnimationsFirst)
+      } else { // 非首次加载：使用普通动画
+        superUploadsView().transition(this.rightAnimations)
+      }
     }
   }
 

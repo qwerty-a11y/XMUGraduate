@@ -70,7 +70,7 @@ export struct superHomeView {
             .height(24)
             .margin({ left: 12 })
           TextInput({
-            placeholder: 'Search',
+            placeholder: '输入学号查询学生信息',
             text: this.SearchText
           })
             .fontSize(16)
@@ -79,6 +79,7 @@ export struct superHomeView {
             .placeholderColor('#999999')
             .margin({ left: 8 })
             .layoutWeight(1)
+            .onSubmit(()=>{})
         }
         .backgroundColor('white')
         .borderRadius(20)

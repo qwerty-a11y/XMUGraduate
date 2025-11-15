@@ -1,10 +1,19 @@
 import router from '@ohos.router';
+import { RecordEntry } from '../../datatypes/Record';
 
 @Entry
 @Component
 struct ScoreApplyReviewPage {
   @Prop image_world: ResourceStr = $r("app.media.world");
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
+  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
+  private statusList:string[] = ['草稿','审核中','审核通过','审核失败']
+  @State data?:RecordEntry=undefined;
+
+  aboutToAppear(): void {
+    this.data = router.getParams() as RecordEntry
+  }
+
   build() {
     Column({ space: 16 }) {
       // 头部标题栏
@@ -35,7 +44,7 @@ struct ScoreApplyReviewPage {
             .width('90%')
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("学术竞赛")
+          Text(this.typeList[this.data!.ReviewStatus.valueOf()])
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -50,7 +59,7 @@ struct ScoreApplyReviewPage {
             .fontColor('#666666')
             .width('90%')
             .margin({ left: 16 });
-          Text("全国大学生数学竞赛")
+          Text(this.data!.Title)
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -65,7 +74,7 @@ struct ScoreApplyReviewPage {
             .width('90%')
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("决赛一等奖")
+          Text(this.data!.Description)
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -82,7 +91,7 @@ struct ScoreApplyReviewPage {
               .width('60%')
               .fontColor('#666666')
               .margin({ left: 20 });
-            Text("2")
+            Text(this.data!.ApplyScore.toString())
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -125,14 +134,17 @@ struct ScoreApplyReviewPage {
               .width('60%')
               .fontColor('#333333')
               .margin({ left: 20 });
-            Text("2")
+            TextInput()
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
               .width(60)
               .height(36)
               .textAlign(TextAlign.Center)
-              .borderRadius(8);
+              .borderRadius(8)
+              .onChange((text)=>{
+                this.data!.RealScore = Number(text)
+              });
           }
           .width('100%')
           .alignItems(VerticalAlign.Center);
@@ -142,7 +154,7 @@ struct ScoreApplyReviewPage {
             .fontSize(14)
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("没有盖章")
+          TextArea()
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -150,7 +162,10 @@ struct ScoreApplyReviewPage {
             .height(80)
             .textAlign(TextAlign.Start)
             .borderRadius(8)
-            .padding({ left: 12, top: 12 });
+            .padding({ left: 12, top: 12 })
+            .onChange((text)=>{
+              this.data!.FeedBack = text
+            });
 
           // 操作按钮
           Row({ space: 20 }) {

@@ -1,5 +1,6 @@
 import router from '@ohos.router';
 import { LengthMetrics } from '@kit.ArkUI'
+import { AccountList } from '../../../service/Super/AccountList';
 
 @Component
 export struct superUploadsView {
@@ -36,7 +37,7 @@ export struct superUploadsView {
   build() {
     Column() {
       // 选择所有账号操作按钮
-      Button('选择所有账号操作')
+      Button('对所有账号操作')
         .width('80%')
         .height(50)
         .backgroundColor('#84F2C3')
@@ -99,7 +100,6 @@ export struct superUploadsView {
                 .onClick(() => {
                   // 切换教师选择状态
                   this.StuOrTch = false
-
                   // 选择教师时，自动取消学生和所有专业选择
                   this.resetMajors();
                 });
@@ -218,7 +218,7 @@ export struct superUploadsView {
                       }
                     });
 
-                  // 网安专业选择
+                  // 全部专业选择
                   Text('全部')
                     .margin({ left: 10, right: 10 })
                     .padding({
@@ -234,6 +234,8 @@ export struct superUploadsView {
                       if (this.StuOrTch) {
                         this.StuMajor = [false, false, false, false, false]
                         this.StuMajor[4] = true
+                        AccountList.StuMajor = this.StuMajor
+                        AccountList.Type=1
                       }
                     });
                 }
@@ -268,6 +270,10 @@ export struct superUploadsView {
             .backgroundColor('#84F2C3')
             .borderRadius(20)
             .onClick(() => {
+              if (this.StuOrTch==false) AccountList.Type = 2
+              else if (this.StuMajor[4]==true) AccountList.Type = 1
+              else AccountList.Type=0
+              AccountList.StuMajor = this.StuMajor
               //console.log('选择的状态：', this.selectState);
               router.pushUrl({ url: 'pages/Super/Inform' });
             });

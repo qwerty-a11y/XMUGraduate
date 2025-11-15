@@ -1,13 +1,6 @@
 import router from '@ohos.router';
-
-// 定义学生信息接口
-interface StudentItem {
-  no: string;
-  name: string;
-  info: string;
-  score: string;
-  selected: boolean; // 标记是否被选中
-}
+import { Account, Student, Teacher } from '../../datatypes/Account';
+import { AccountList } from '../../service/Super/AccountList';
 
 @Entry
 @Component
@@ -17,27 +10,15 @@ export struct SuperInform {
   @Prop image_check: ResourceStr = $r('app.media.check');
 
   // 学生数据 - 初始化为全部选中
-  @State studentData: StudentItem[] = [
-    { no: 'No.1', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.2', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.3', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.4', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.5', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.6', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.7', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.8', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.9', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.10', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.11', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.12', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.13', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.14', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.15', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.16', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.17', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.18', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
-    { no: 'No.19', name: 'XXX', info: 'xxxxxxxxxxxxx', score: 'XX分', selected: true },
+  @State AccountData: Account[] = [
+    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
+    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
+    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
+    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
+    //new Teacher("XXX","xxxxxxxxxxxxxxx")
   ];
+
+  @State AccountSelect: boolean[]=[]
 
   // 状态管理
   @State currentPage: number = 1;
@@ -45,25 +26,32 @@ export struct SuperInform {
   @State batchOperationMode: boolean = false; // 批量操作模式开关
   @State allSelected: boolean = true; // 全选状态
 
+  @State ListType:number=AccountList.Type
+
+  aboutToAppear(): void {
+    //GetAccountData();
+    this.AccountSelect = new Array(this.AccountData.length).fill(true)
+  }
+
   // 全选方法 - 强制所有项选中
   selectAll() {
-    this.studentData.forEach((_, index) => {
-      this.studentData[index].selected = true;
+    this.AccountSelect.forEach((_, index) => {
+      this.AccountSelect[index] = true;
     });
     this.allSelected = true;
   }
 
   // 取消全选方法 - 强制所有项未选中
   deselectAll() {
-    this.studentData.forEach((_, index) => {
-      this.studentData[index].selected = false;
+    this.AccountSelect.forEach((_, index) => {
+      this.AccountSelect[index] = false;
     });
     this.allSelected = false;
   }
 
   // 检查是否所有项都被选中
   checkAllSelected(): boolean {
-    return this.studentData.every(item => item.selected);
+    return this.AccountSelect.every(item => item);
   }
 
   build() {
@@ -75,7 +63,7 @@ export struct SuperInform {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Main' },router.RouterMode.Single);
+            router.pushUrl({ url: 'pages/Super/Main' ,params:{page:1}},router.RouterMode.Single);
           });
 
         Text('信息与操作')
@@ -137,60 +125,68 @@ export struct SuperInform {
 
         // 学生列表
         List() {
-          ForEach(this.studentData, (item: StudentItem, index: number) => {
+          ForEach(this.AccountData, (item: Student|Teacher, index: number) => {
             ListItem() {
-              Row() {
+              Row(){
                 // 仅在批量操作模式下显示勾选框
                 if (this.batchOperationMode) {
                   Toggle({
                     type: ToggleType.Checkbox,
-                    isOn: item.selected  // 勾选状态与数据绑定
+                    isOn: this.AccountSelect[index]  // 勾选状态与数据绑定
                   })
-                    .margin({ right: 10 })
+                    .width('5%')
+                    //.height(40)
                     .onChange((isOn: boolean) => {
                       // 更新数据状态
-                      this.studentData[index].selected = isOn;
+                      this.AccountSelect[index] = isOn;
                       // 同步更新全选开关状态
                       this.allSelected = this.checkAllSelected();
                     });
                 }
+                Row() {
 
-                // 学号
-                Text(item.no)
-                  .fontSize(14)
-                  .width(this.batchOperationMode ? '15%' : '18%')
-                  .textAlign(TextAlign.Center);
+                  if (this.ListType==0) {
+                    // 排名
+                    Text("No." + (index+1).toString())
+                      .fontSize(14)
+                      .textAlign(TextAlign.Center);
+                  }
 
-                // 姓名
-                Text(item.name)
-                  .fontSize(14)
-                  .width(this.batchOperationMode ? '20%' : '22%')
-                  .textAlign(TextAlign.Center);
+                  // 姓名
+                  Text(item.Name)
+                    .fontSize(14)
+                    .textAlign(TextAlign.Center);
 
-                // 信息
-                Text(item.info)
-                  .fontSize(14)
-                  .width(this.batchOperationMode ? '35%' : '40%')
-                  .textAlign(TextAlign.Center);
-
-                // 分数
-                Text(item.score)
-                  .fontSize(14)
-                  .width(this.batchOperationMode ? '20%' : '20%')
-                  .textAlign(TextAlign.Center);
+                  // 学号/工号
+                  Text(item.ID)
+                    .fontSize(14)
+                    .textAlign(TextAlign.Center);
+                  if (this.ListType<2) {
+                    // 分数
+                    Text((item as Student).Score.toString()+"分")
+                      .fontSize(14)
+                      .textAlign(TextAlign.Center);
+                  }
+                }
+                .width(this.batchOperationMode?'92%':'100%')
+                .flexGrow(1)
+                .backgroundColor('#ffffff')
+                .padding({ left: 16, right: 16, bottom: 6, top: 6 })
+                //.margin({ top: 5, bottom: 5 })
+                .height(40)
+                .borderRadius(8)
+                .shadow({ radius: 1, color: '#00000008' })
+                .justifyContent(FlexAlign.SpaceBetween)
+                .onClick(() => {
+                  router.pushUrl({ url: 'pages/Super/Individual' ,params:item});
+                });
               }
-              .width('100%')
-              .backgroundColor('#ffffff')
-              .padding({ left: 8, right: 8, bottom: 6, top: 6 })
               .margin({ top: 5, bottom: 5 })
+              .padding({ top:0,bottom:0 })
               .height(40)
-              .borderRadius(8)
-              .shadow({ radius: 1, color: '#00000008' })
-              .onClick(() => {
-                router.pushUrl({ url: 'pages/Super/Individual' });
-              });
 
-            }
+
+            }.padding(0)
           });
         }
         .width('90%')

@@ -1,4 +1,5 @@
 import router from '@ohos.router';
+import { Account, Student } from '../../datatypes/Account';
 
 interface OperationItem {
   name: string;
@@ -15,6 +16,7 @@ interface ProjectItem {
 @Component
 struct OperationPage {
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
+  @State account?:Account=undefined
   // 显式标注数组类型，约束所有项符合ProjectItem结构
   private projectList: ProjectItem[] = [
     { name: '学业竞赛', score: '*分' },
@@ -28,6 +30,10 @@ struct OperationPage {
     { name: '体育比赛', score: '*分' }
   ];
 
+  aboutToAppear(): void {
+    this.account = router.getParams() as Student
+  }
+
   build() {
     Column() {
       // 头部区域
@@ -37,7 +43,7 @@ struct OperationPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Individual' });
+            router.pushUrl({ url: 'pages/Super/Individual' ,params:this.account});
           });
 
         Text('个人信息')
@@ -301,10 +307,7 @@ struct OperationPage {
                           .margin({ top: 5, bottom: 5, left: 8 })
                       }
                       .width(320)
-                      .height(52)
-                      .onClick(() => {
-                        router.pushUrl({ url: 'pages/Super/Projects' });
-                      });
+                      .height(52);
 
                       Row() {
                         Divider()

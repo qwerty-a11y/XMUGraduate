@@ -17,6 +17,8 @@ struct NewAddPage {
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
   @State account: string = ''; // 账号
   @State majorClass: string = ''; // 专业班级
+  @State score: number = 0;
+  @State cet: number[] = [-1,-1];
   //@State dataExportPermission: boolean = false; // 数据导出权限状态
 
   build() {
@@ -89,16 +91,55 @@ struct NewAddPage {
 
         // 专业班级输入框，仅学生可见
 
-          Text('单位：')
-            .width('96%')
-            .fontSize(16)
-            .margin({ top: 16});
-          TextInput({ placeholder: '请输入院系，学生还要输入班级' })
-            .width('90%')
-            .margin({ left: 16, right: 16, top: 4 })
-            .onChange((value: string) => {
-              this.majorClass = value;
-            });
+        Text('单位：')
+          .width('96%')
+          .fontSize(16)
+          .margin({ top: 16});
+        TextInput({ placeholder: '请输入院系，学生还要输入班级' })
+          .width('90%')
+          .margin({ left: 16, right: 16, top: 4 })
+          .onChange((value: string) => {
+            this.majorClass = value;
+          });
+
+        if (!this.isTeacher) {
+          Row() {
+            Text('绩点/4.0：')
+              .fontSize(16)
+            TextInput()
+              .width('25%')
+              .onChange((value: string) => {
+                this.score = Number(value);
+              })
+              .margin({ right: 16 });
+          }.width('96%')
+          .justifyContent(FlexAlign.SpaceBetween)
+          .alignItems(VerticalAlign.Center)
+          .margin({ top: 16 });
+
+          Row() {
+            Text('四级：')
+              .fontSize(16)
+            TextInput()
+              .width('24%')
+              .onChange((value: string) => {
+                this.cet[0] = Number(value);
+              })
+              .type(InputType.Number);
+            Text('六级：')
+              .fontSize(16)
+            TextInput()
+              .width('24%')
+              .margin({ right: 16 })
+              .onChange((value: string) => {
+                this.cet[1] = Number(value);
+              })
+              .type(InputType.Number);
+          }.width('96%')
+          .justifyContent(FlexAlign.SpaceBetween)
+          .alignItems(VerticalAlign.Center)
+          .margin({ top: 16 });
+        }
 
 
         Text(`生成密码为：123456`)

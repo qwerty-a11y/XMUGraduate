@@ -1,17 +1,9 @@
 import { Poster } from '../Stu/HomeComponents/TypeCard';
 import router from '@ohos.router';
+import { RecordEntry } from '../../../datatypes/Record';
+import { DateUtils } from '../../../utils';
+import { TestData } from '../../../debug/TestData';
 
-// 定义包含所需字段的列表项类型
-interface ReviewItem {
-  id: number;
-  name: string;        // 姓名
-  studentId: string;   // 学号
-  submitTime: string;  // 提交时间
-  category: string;    // 加分类别
-  handleTime?: string; // 处理时间（可选，未处理时为空）
-  status: string;      // 状态
-  statusColor: string; // 状态颜色
-}
 
 @Component
 export struct teaHomeView {
@@ -20,88 +12,30 @@ export struct teaHomeView {
   @Prop image_world: ResourceStr = $r("app.media.world");
   @Prop image_set: ResourceStr = $r("app.media.Settings");
   @Prop image_search: ResourceStr = $r("app.media.Search");
+  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
 
   // 列表数据，包含所有所需字段
-  @State reviewList: ReviewItem[] = [
-    {
-      id: 1,
-      name: '张三',
-      studentId: '2022001001',
-      submitTime: '2025-10-19 09:00',
-      category: '学术论文',
-      status: '待审核',
-      statusColor: '#FF4D4F'
-    },
-    {
-      id: 2,
-      name: '李四',
-      studentId: '2022002005',
-      submitTime: '2025-10-18 14:30',
-      category: '竞赛获奖',
-      handleTime: '2025-10-18 16:45',
-      status: '已通过',
-      statusColor: '#52C41A'
-    },
-    {
-      id: 3,
-      name: '王五',
-      studentId: '2022003128',
-      submitTime: '2025-10-17 10:15',
-      category: '社会实践',
-      status: '待审核',
-      statusColor: '#FF4D4F'
-    },
-    {
-      id: 4,
-      name: '赵六',
-      studentId: '2022001076',
-      submitTime: '2025-10-16 08:20',
-      category: '学术论文',
-      handleTime: '2025-10-16 11:30',
-      status: '已驳回',
-      statusColor: '#FAAD14'
-    },
-    {
-      id: 5,
-      name: '孙七',
-      studentId: '2022004032',
-      submitTime: '2025-10-15 15:40',
-      category: '竞赛获奖',
-      handleTime: '2025-10-15 17:20',
-      status: '已通过',
-      statusColor: '#52C41A'
-    }
-  ];
+  @State reviewList: RecordEntry[] = TestData.RecordList;
 
   // 列表项组件
   @Builder
-  ReviewItemComponent(item: ReviewItem) {
+  ReviewItemComponent(item: RecordEntry, index: number) {
     Column() {
       Row() {
         // 左侧主要信息区
         Column() {
-          // 姓名和学号
-          Row() {
-            Text(`姓名：${item.name}`)
-              .fontSize(14)
-              .fontWeight(FontWeight.Medium)
-              .margin({ right: 20 });
-            Text(`学号：${item.studentId}`)
-              .fontSize(14)
-              .fontColor('#666666');
-          }
-          .margin({ bottom: 8 });
-
+          Text(`${item.Title}`)
+            .fontSize(14)
+            .fontColor('#000000')
+            .margin({ right: 20 ,bottom:10});
           // 加分类别和提交时间
-          Row() {
-            Text(`类别：${item.category}`)
-              .fontSize(14)
-              .fontColor('#666666')
-              .margin({ right: 20 });
-            Text(`提交：${item.submitTime}`)
-              .fontSize(14)
-              .fontColor('#666666');
-          }
+          Text(`类别：${this.typeList[item.Type.valueOf()]}`)
+            .fontSize(14)
+            .fontColor('#666666')
+            .margin({ right: 20 });
+          Text(`上传时间：${DateUtils.ToString(item.UploadTime)}`)
+            .fontSize(14)
+            .fontColor('#666666');
         }
         .flexGrow(1)
         .padding({ left: 15 })
@@ -114,11 +48,11 @@ export struct teaHomeView {
       .height(80)
       .alignItems(VerticalAlign.Center)
       .onClick(() => {
-        router.pushUrl({ url: 'pages/Tea/Review' });
+        router.pushUrl({ url: 'pages/Tea/Review' ,params:item});
       });
 
       // 底部分隔线（最后一项不加）
-      if (item.id !== this.reviewList.length) {
+      if (index+1 != this.reviewList.length) {
         Divider()
           .width('90%')
           .height(0.5)
@@ -173,7 +107,7 @@ export struct teaHomeView {
           router.pushUrl({ url: 'pages/Tea/Rules' });
         });
 
-        Text('您有新的审核，请及时处理')
+        Text('若有新的审核，请及时处理')
           .fontSize(14)
           .width('86%')
           .margin({ top: 10, bottom: 10 })
@@ -186,13 +120,13 @@ export struct teaHomeView {
         Column() {
           // 列表容器
           Column() {
-            ForEach(this.reviewList, (item: ReviewItem) => {
-              this.ReviewItemComponent(item)
+            ForEach(this.reviewList, (item: RecordEntry, index: number) => {
+              this.ReviewItemComponent(item, index)
                 // .onClick(() => {
                 //   // 点击列表项跳转到详情页
                 //   router.pushUrl({ url: `pages/ReviewDetail?id=${item.id}` });
                 // });
-            }, (item: ReviewItem) => item.id.toString())
+            })
           }
           .width('90%')
           .backgroundColor('#FFFFFF')
