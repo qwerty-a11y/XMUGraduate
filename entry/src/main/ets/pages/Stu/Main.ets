@@ -29,6 +29,11 @@ struct Main {
     TransitionEffect.translate({x:'-100%'}).animation(this.animateParam)
   )
   // 审核页动画：入场/离场均向右移出
+  rightAnimationsFirst = TransitionEffect.asymmetric(
+    TransitionEffect.IDENTITY.animation(this.animateParam),
+    TransitionEffect.translate({x:'100%'}).animation(this.animateParam)
+  )
+  // 审核页动画：入场/离场均向右移出
   rightAnimations = TransitionEffect.asymmetric(
     TransitionEffect.translate({x:'100%'}).animation(this.animateParam),
     TransitionEffect.translate({x:'100%'}).animation(this.animateParam)
@@ -48,8 +53,9 @@ struct Main {
    * 页面显示时触发的生命周期方法
    * 功能：接收其他页面跳转时传递的路由参数，更新当前激活的视图与子页面
    */
-  onPageShow(): void {
-
+  aboutToAppear(): void {
+    let page = router.getParams()?(router.getParams() as Record<string,number>)['page']:0
+    this.ActiveView = page
   }
 
   /**
@@ -66,7 +72,11 @@ struct Main {
       }
     } else if (this.ActiveView === 1) { // 激活审核页
       // 传递UpdateTrigger状态（双向绑定），用于触发审核页数据更新
-      UploadsView({UpdateTrigger: this.UpdateTrigger}).transition(this.rightAnimations)
+      if (this.isFirstLoad){
+        UploadsView({ UpdateTrigger: this.UpdateTrigger }).transition(this.rightAnimationsFirst)
+      }else {
+        UploadsView({ UpdateTrigger: this.UpdateTrigger }).transition(this.rightAnimations)
+      }
     }
   }
 

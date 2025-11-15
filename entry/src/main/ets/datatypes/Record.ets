@@ -1,4 +1,5 @@
 import { DateUtils } from "../utils"
+import * as TypeInfoEnums from './TypeInfoEnums'
 
 export enum RecordType{
   Competition, //学业竞赛
@@ -30,57 +31,124 @@ export class TimeSpan{
   }
 }
 
-export class Extras{
-  //学业竞赛
-  competition_level:string = ''
-  competition_name_academic:string = ''
-  //创新创业训练
-  project_name:string = ''
-  project_level:string = ''
-  //科研成果
-  paper_doi:string = ''
-  //荣誉称号
-  title_name:string = ''
-  awarding_organization:string = ''
-  awarding_date:number = -1
-  //社会工作
-  organization:string = ''
-  work_period:number[] = [-1,-1]
-  //志愿服务
-  activity_name:string = ''
-  activity_date:number = -1
-  //国际组织学习
-  organization_name:string = ''
-  internship_duration:number[] = [-1,-1]
-  //参军入伍
-  service_start_date:number = -1
-  service_end_date:number = -1
-  military_unit:string = ''
-  //体育比赛
-  competition_name_sports:string = ''
-  competition_date:number = -1
-  achievement:string = ''
-}
-
 export abstract class TypeInfo{
 }
 
+export class Competition extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public type?:TypeInfoEnums.CompetitionTypes
+  public data_general?:TypeInfoEnums.Competition_general
+  public data_ccf?:TypeInfoEnums.Competition_ccf
+  public get data():TypeInfoEnums.Competition_general|TypeInfoEnums.Competition_ccf|undefined{
+    if (!this.type) return undefined
+    if (this.type == TypeInfoEnums.CompetitionTypes.general) return this.data_general
+    if (this.type == TypeInfoEnums.CompetitionTypes.ccf) return this.data_ccf
+    return undefined
+  }
+}
+
+export class Innovation extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.Innovation
+}
+
+export class Research extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public type?:TypeInfoEnums.ResearchTypes
+  public data_paper?:TypeInfoEnums.Research_paper
+  public data_patent?:TypeInfoEnums.Research_patent
+  public get data():TypeInfoEnums.Research_paper|TypeInfoEnums.Research_patent|undefined{
+    if (!this.type) return undefined
+    if (this.type == TypeInfoEnums.ResearchTypes.paper) return this.data_paper
+    if (this.type == TypeInfoEnums.ResearchTypes.patent) return this.data_patent
+    return undefined
+  }
+}
+
+export class Honor extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.Honor
+}
+
+export class SocialWork extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.SocialWork
+}
+
+export class Volunteer extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public type?:TypeInfoEnums.VolunteerTypes
+  public data_service?:TypeInfoEnums.Volunteer_service
+  public data_award?:TypeInfoEnums.Volunteer_award
+  public get data():TypeInfoEnums.Volunteer_service|TypeInfoEnums.Volunteer_award|undefined{
+    if (!this.type) return undefined
+    if (this.type == TypeInfoEnums.VolunteerTypes.service) return this.data_service
+    if (this.type == TypeInfoEnums.VolunteerTypes.award) return this.data_award
+    return undefined
+  }
+}
+
+export class International extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.International
+}
+
+export class Military extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.Military
+}
+
+export class Sports extends TypeInfo{
+  constructor() {
+    super()
+  }
+  public data?:TypeInfoEnums.Sports
+}
+
+export interface Attachment{
+  id:string,
+  name:string
+}
+
 export class RecordEntry{
-  constructor(Type:RecordType,Title:string,Score:number,ReviewStatus:number,UploadTime:number,ModifyTime?:number) {
+  constructor(Type:RecordType,Title:string,Score:number,ReviewStatus:number,Description:string,UploadTime:number,ModifyTime?:number) {
     this.Type=Type
     this.Title=Title
-    this.Score=Score
+    this.ApplyScore=Score
+    this.RealScore=-1
     this.ReviewStatus=ReviewStatus
     this.UploadTime=UploadTime
     if (ModifyTime) this.ModifyTime=ModifyTime
     else this.ModifyTime=UploadTime
+    this.Description=Description
   }
   public Type:RecordType
   public Title:string
-  public Score:number
+  public ApplyScore:number
+  public RealScore:number
   public ReviewStatus:number //0=未提交，1=审核中，2=审核通过，3=审核失败
   public UploadTime:number
   public ModifyTime:number
+  public Description:string
+  public Attachments:string[]=[]
+  public FeedBack:string = ''
+  public extra_data?:TypeInfo
 }
 
 export class Filter{

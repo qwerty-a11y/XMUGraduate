@@ -25,7 +25,7 @@ export struct top {
   private inactiveColor: string = '#FFFFFF';
 
    build() {
-     Row() {
+     RelativeContainer() {
        // ---------------- 5.1 筛选+设置按钮行 ----------------
        // ---------------- 5.2 搜索框 ----------------
        Row() {
@@ -62,13 +62,17 @@ export struct top {
        .backgroundColor('white') // 搜索框整体背景色（白色）
        .borderRadius(20) // 搜索框圆角：优化视觉
        .height(52) // 搜索框固定高度
-       .width(314)
+       .width(300)
        .shadow({
          // 搜索框阴影：增强层次感
          radius: 4,
          color: '#10000000',
          offsetX: 0,
          offsetY: 2
+       })
+       .alignRules({
+         left:{anchor:"__container__",align:HorizontalAlign.Start},
+         center:{anchor:'__container__',align:VerticalAlign.Center}
        })
        .margin({ left:15,bottom: 10 }); // 与下方内容保持间距
 
@@ -77,7 +81,11 @@ export struct top {
          .width(24)
          .height(24)
          //.backgroundImagePosition(Alignment.End)
-         .margin({ left:8,right: 5 }) // 与右侧设置按钮保持间距
+         .margin({ left:8,right: 15 }) // 与右侧设置按钮保持间距
+         .alignRules({
+           right:{anchor:"__container__",align:HorizontalAlign.End},
+           center:{anchor:'__container__',align:VerticalAlign.Center}
+         })
          .onClick(() => {
            this.onFilterClicked && this.onFilterClicked(); // 触发父组件筛选逻辑
          });
@@ -94,7 +102,6 @@ export struct top {
      .height('100%') // 顶部栏高度由父组件控制（通常为屏幕20%）
      .backgroundColor('#fff4fafa') // 顶部栏背景色（浅蓝灰）
      .shadow({ radius: 10, color: '#00000010' }) // 顶部栏阴影：区分页面区域
-     .alignItems(VerticalAlign.Center)
    }
  }
 
@@ -150,7 +157,7 @@ export struct ActivityCardComponent {
   private uploadTime: string=''; // 提交时间（格式化后的字符串，如"2024-05-20"）
   private modifyTime: string=''; // 更改时间（格式化后的字符串）
   private score: string=''; // 加分情况（如"加5分"）
-  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍']
+  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
 
   aboutToAppear(): void {
     switch (this.entry.ReviewStatus.valueOf()) {
@@ -173,7 +180,7 @@ export struct ActivityCardComponent {
     this.activityName=this.entry.Title
     this.uploadTime=DateUtils.ToString(this.entry.UploadTime)
     this.modifyTime=DateUtils.ToString(this.entry.ModifyTime)
-    this.score='加'+this.entry.Score.toString()+'分'
+    this.score='加'+((this.entry.RealScore != -1)?this.entry.RealScore.toString():this.entry.ApplyScore.toString())+'分'
   }
   /**
    * 组件构建方法：定义单条审核记录的UI布局
@@ -231,11 +238,11 @@ export struct ActivityCardComponent {
          Text(this.score)
            .fontSize(18)
            .fontWeight(FontWeight.Medium)
-           .fontColor(this.status.includes('成功') ? '#000000' : '#707070')
+           .fontColor((this.entry.ReviewStatus == 2) ? '#000000' : '#707070')
            .margin({ right:20,bottom:10})
            .flexGrow(1)
            .decoration({
-             type: this.status.includes('失败')
+             type: (this.entry.ReviewStatus == 3)
                ? TextDecorationType.LineThrough
                : TextDecorationType.None // 不包含 '失败' 时，无装饰
            })
@@ -281,7 +288,7 @@ export struct ActivityCardComponent {
      })
      .margin({ bottom: 10 })
      .onClick(() => {
-       router.pushUrl({ url: 'pages/Stu/Records' });
+       router.pushUrl({ url: 'pages/Stu/Records' ,params:this.entry});
      });
    }
  }

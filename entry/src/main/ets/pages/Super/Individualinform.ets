@@ -203,6 +203,27 @@ struct OperationPage {
               //-------------------学生------------------------
               Column() {
                 Row() {
+                  Text('专业排名：')
+                    .fontSize(16)
+                    .margin({ top: 5, bottom: 5, left: 8 })
+                  Text('*/75')
+                    .flexGrow(1)
+                    .fontSize(16)
+                    .margin({ top: 5, bottom: 5, left: 8 })
+                }
+                .width(320)
+                .height(52)
+
+                Row() {
+                  Divider()
+                    .width(230)
+                    .color('#cccccc')
+                    .height(2)
+                }
+                .justifyContent(FlexAlign.End)
+                .width('80%')
+
+                Row() {
                   Text('绩点：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })

@@ -266,8 +266,8 @@ struct login {
           .height(45)
           .backgroundColor('#ff77f0ec')
           .borderRadius(16)
-          .onClick(() => this.request()); // 点击登录
-          //.onClick(() => this.login()); // 点击登录
+          //.onClick(() => this.request()); // 点击登录
+          .onClick(() => this.login()); // 点击登录
       }
       .width(257)
       .height(300)

@@ -17,7 +17,7 @@ struct NewAddPage {
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
   @State account: string = ''; // 账号
   @State majorClass: string = ''; // 专业班级
-  @State dataExportPermission: boolean = false; // 数据导出权限状态
+  //@State dataExportPermission: boolean = false; // 数据导出权限状态
 
   build() {
     Column() {
@@ -54,19 +54,21 @@ struct NewAddPage {
           .margin({ top: 32 });
 
         Row() {
-          Text('教师')
+          Button('教师')
             .fontSize(16)
-            //.margin({ left: 32 });
-          Toggle({ type: ToggleType.Switch, isOn: this.isTeacher })
-            .onChange((isOn: boolean) => {
-              this.isTeacher = isOn;
+            .backgroundColor(this.isTeacher == true ? '#C5F4F3' : '#E5E5E5')
+            .fontColor('#000000')
+            .width(80)
+            .onClick(() => {
+              this.isTeacher = true;
             });
-          Text('学生')
+          Button('学生')
             .fontSize(16)
-            .margin({ left: 32 });
-          Toggle({ type: ToggleType.Switch, isOn: !this.isTeacher })
-            .onChange((isOn: boolean) => {
-              this.isTeacher = !isOn;
+            .backgroundColor(this.isTeacher == false ? '#C5F4F3' : '#E5E5E5')
+            .fontColor('#000000')
+            .width(80)
+            .onClick(() => {
+              this.isTeacher = false;
             });
         }
         .width('80%')
@@ -103,19 +105,21 @@ struct NewAddPage {
           .fontSize(16)
           .width('96%')
           .margin({ top: 32 });
-
+/*
         Row() {
           Text('数据导出权限')
             .fontSize(16)
             .margin({ top: 16,bottom:10 });
           Toggle({ type: ToggleType.Switch, isOn: this.dataExportPermission })
-            .margin({ top: 16, right: 16 })
+            .margin({right: 16 })
             .onChange((isOn: boolean) => {
               this.dataExportPermission = isOn;
             });
         }
         .width('96%')
-
+        .alignItems(VerticalAlign.Center)
+        .justifyContent(FlexAlign.SpaceBetween)
+*/
         Button('确定')
           .width(120)
           .height(40)
