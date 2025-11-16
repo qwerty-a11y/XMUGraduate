@@ -10,14 +10,6 @@ struct  Setting {
   @Prop image_about: ResourceStr = $r("app.media.Settings_About");
   @Prop image_out: ResourceStr = $r("app.media.Settings_Logout");
   @Prop image_go: ResourceStr = $r("app.media.RightArrow");
-  private ParentPage:number = 0;
-
-  onPageShow(): void {
-    const params = router.getParams() as Record<string, object>;
-    if (params){
-      this.ParentPage = Number(params['ParentPage']) || 0;
-    }
-  }
 
   build() {
     Column(){
@@ -29,7 +21,7 @@ struct  Setting {
           //.flexGrow(1)
           .margin({ left: 8 })// 图标左侧间距
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Tea/Main'}); // 直接写目标页面路径
+            router.back()
           });
 
         // 文字在整个Row组件的中间位置

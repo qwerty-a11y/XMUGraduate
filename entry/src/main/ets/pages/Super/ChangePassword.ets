@@ -36,7 +36,7 @@ struct ChangePassword {
     this.errorMessage = '';
     // 模拟修改成功后返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/setting' });
+      router.back()
     }, 500);
   }
 
@@ -50,7 +50,7 @@ struct ChangePassword {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Setting'});
+            router.back()
           });
 
         // 页面标题

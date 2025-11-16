@@ -13,7 +13,7 @@ struct PushScoreRulesPage {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Tea/Main' });
+            router.back()
           });
 
         // 页面标题

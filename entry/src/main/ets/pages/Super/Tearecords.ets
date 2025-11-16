@@ -1,10 +1,41 @@
 import router from '@ohos.router';
+import { RecordEntry } from '../../datatypes/Record';
+import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
 
 @Entry
 @Component
 struct Records {
   @Prop image_world: ResourceStr = $r("app.media.world");
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
+  private typeList: string[] = ['学业竞赛', '创新创业训练', '科研成果', '荣誉称号', '社会工作', '志愿服务', '国际组织学习', '参军入伍', '体育比赛']
+  @State data?: RecordEntry = undefined;
+
+  aboutToAppear(): void {
+    this.data = router.getParams() as RecordEntry;
+  }
+
+  @Builder ExtraData(){
+    if (this.data && this.data.Type.valueOf() == 0) {
+      ReviewComponents.Competition({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 1) {
+      ReviewComponents.Innovation({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 2) {
+      ReviewComponents.Research({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 3) {
+      ReviewComponents.Honor({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 4) {
+      ReviewComponents.SocialWork({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 5) {
+      ReviewComponents.Volunteer({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 6) {
+      ReviewComponents.International({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 7) {
+      ReviewComponents.Military({tmpentry:this.data})
+    } else if (this.data && this.data.Type.valueOf() == 8) {
+      ReviewComponents.Sports({tmpentry:this.data})
+    }
+  }
+
   build() {
     Column({ space: 16 }) {
       // 头部标题栏
@@ -14,7 +45,7 @@ struct Records {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Teacheck' });
+            router.back();
           });
         Text("审核记录")
           .fontSize(16)
@@ -35,7 +66,7 @@ struct Records {
             .width('90%')
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("学术竞赛")
+          Text(this.data ? this.typeList[this.data.Type.valueOf()] : '')
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -50,7 +81,7 @@ struct Records {
             .fontColor('#666666')
             .width('90%')
             .margin({ left: 16 });
-          Text("全国大学生数学竞赛")
+          Text(this.data ? this.data.Title : '')
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -65,15 +96,15 @@ struct Records {
             .width('90%')
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("决赛一等奖")
+          Text(this.data ? this.data.Description : '')
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
             .width('90%')
-
+            .constraintSize({ minHeight: 80 })
             .textAlign(TextAlign.Start)
             .borderRadius(8)
-            .padding({ left: 12, top: 12 ,bottom:12});
+            .padding({ left: 12, top: 12, bottom: 12 });
 
           // 申请分值
           Row({ space: 10 }) {
@@ -81,8 +112,7 @@ struct Records {
               .fontSize(14)
               .width('60%')
               .fontColor('#666666')
-              .margin({ left: 20 });
-            Text("2")
+            Text(this.data ? this.data.ApplyScore.toString() : '')
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -90,10 +120,13 @@ struct Records {
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
-              .margin({ right: 16 });
           }
-          .width('100%')
+          .width('90%')
+          .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center);
+
+          // 自定义条件渲染控件
+          this.ExtraData()
 
           // 证明文件
           Text("证明文件")
@@ -124,8 +157,7 @@ struct Records {
               .fontSize(14)
               .width('60%')
               .fontColor('#333333')
-              .margin({ left: 20 });
-            Text("2")
+            Text(this.data ? this.data.RealScore.toString() : '')
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -134,20 +166,21 @@ struct Records {
               .textAlign(TextAlign.Center)
               .borderRadius(8);
           }
-          .width('100%')
+          .width('90%')
+          .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center);
 
           // 反馈
-          Text("反馈 (给分不等于申请分值或不通过时写)")
+          Text("反馈")
             .fontSize(14)
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text("没有盖章")
+          Text(this.data ? this.data.FeedBack : '')
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
             .width('90%')
-            .height(80)
+            .constraintSize({ minHeight: 80 })
             .textAlign(TextAlign.Start)
             .borderRadius(8)
             .padding({ left: 12, top: 12 });

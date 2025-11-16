@@ -50,7 +50,7 @@ struct ChangePassword {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Stu/Setting' });
+            router.back()
           });
 
         // 页面标题

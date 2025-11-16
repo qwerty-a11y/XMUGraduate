@@ -103,7 +103,7 @@ struct ChangeContactInformation {
 
     // 返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/Tea/Setting' });
+      router.back()
     }, 1000);
   }
 
@@ -116,7 +116,7 @@ struct ChangeContactInformation {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Tea/Setting' });
+            router.back()
           });
 
         Text('修改联系方式')

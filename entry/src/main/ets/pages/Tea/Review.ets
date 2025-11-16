@@ -1,5 +1,6 @@
 import router from '@ohos.router';
 import { RecordEntry } from '../../datatypes/Record';
+import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
 
 @Entry
 @Component
@@ -7,11 +8,32 @@ struct ScoreApplyReviewPage {
   @Prop image_world: ResourceStr = $r("app.media.world");
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
   private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
-  private statusList:string[] = ['草稿','审核中','审核通过','审核失败']
   @State data?:RecordEntry=undefined;
 
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
+  }
+
+  @Builder ExtraData(){
+    if (this.data!.Type.valueOf() == 0) {
+      ReviewComponents.Competition({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 1) {
+      ReviewComponents.Innovation({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 2) {
+      ReviewComponents.Research({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 3) {
+      ReviewComponents.Honor({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 4) {
+      ReviewComponents.SocialWork({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 5) {
+      ReviewComponents.Volunteer({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 6) {
+      ReviewComponents.International({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 7) {
+      ReviewComponents.Military({tmpentry:this.data})
+    } else if (this.data!.Type.valueOf() == 8) {
+      ReviewComponents.Sports({tmpentry:this.data})
+    }
   }
 
   build() {
@@ -23,7 +45,7 @@ struct ScoreApplyReviewPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Tea/Main' });
+            router.back()
           });
         Text("审核")
           .fontSize(16)
@@ -44,7 +66,7 @@ struct ScoreApplyReviewPage {
             .width('90%')
             .fontColor('#666666')
             .margin({ left: 16 });
-          Text(this.typeList[this.data!.ReviewStatus.valueOf()])
+          Text(this.typeList[this.data!.Type.valueOf()])
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -79,7 +101,7 @@ struct ScoreApplyReviewPage {
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
             .width('90%')
-
+            .constraintSize({minHeight:80})
             .textAlign(TextAlign.Start)
             .borderRadius(8)
             .padding({ left: 12, top: 12 ,bottom:12});
@@ -104,12 +126,13 @@ struct ScoreApplyReviewPage {
           .width('100%')
           .alignItems(VerticalAlign.Center);
 
+          this.ExtraData()
+
           // 证明文件
           Text("证明文件")
             .fontSize(14)
             .width('90%')
             .fontColor('#666666')
-            .margin({ left: 16 });
           Column({ space: 10 }) {
             Image(this.image_world)
               .width(24)
@@ -133,7 +156,7 @@ struct ScoreApplyReviewPage {
               .fontSize(14)
               .width('60%')
               .fontColor('#333333')
-              .margin({ left: 20 });
+              .margin({ left: 8 });
             TextInput()
               .fontSize(14)
               .fontColor('#333333')
@@ -146,11 +169,15 @@ struct ScoreApplyReviewPage {
                 this.data!.RealScore = Number(text)
               });
           }
-          .width('100%')
+          .width('90%')
+          .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center);
+
+
 
           // 反馈
           Text("反馈 (给分不等于申请分值或不通过时写)")
+            .width('90%')
             .fontSize(14)
             .fontColor('#666666')
             .margin({ left: 16 });

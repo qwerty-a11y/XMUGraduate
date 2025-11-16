@@ -15,6 +15,7 @@ export struct Competition{
   @State GENERAL_TeamNumberMENU:boolean = false
   @State GENERAL_TeamRoleMENU:boolean = false
   @State CCF_CCFRankingsMENU:boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data)!=typeof(RecordType.Competition)){
@@ -153,12 +154,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.competition_level.valueOf())
           .onClick(() => {
-            this.GENERAL_CompetitionLevelsMENU = !this.GENERAL_CompetitionLevelsMENU
+            if (!this.isReadonly) {
+              this.GENERAL_CompetitionLevelsMENU = !this.GENERAL_CompetitionLevelsMENU
+            }
           })
           .bindMenu(this.GENERAL_CompetitionLevelsMENU,this.GENERAL_CompetitionLevels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -167,12 +171,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.competition_grade.valueOf())
           .onClick(() => {
-            this.GENERAL_CompetitionGradesMENU = !this.GENERAL_CompetitionGradesMENU
+            if (!this.isReadonly) {
+              this.GENERAL_CompetitionGradesMENU = !this.GENERAL_CompetitionGradesMENU
+            }
           })
           .bindMenu(this.GENERAL_CompetitionGradesMENU,this.GENERAL_CompetitionGrades)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -181,12 +188,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.award_level.valueOf())
           .onClick(() => {
-            this.GENERAL_AwardLevelsMENU = !this.GENERAL_AwardLevelsMENU
+            if (!this.isReadonly) {
+              this.GENERAL_AwardLevelsMENU = !this.GENERAL_AwardLevelsMENU
+            }
           })
           .bindMenu(this.GENERAL_AwardLevelsMENU,this.GENERAL_AwardLevels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -195,12 +205,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.team_number.valueOf())
           .onClick(() => {
-            this.GENERAL_TeamNumberMENU = !this.GENERAL_TeamNumberMENU
+            if (!this.isReadonly) {
+              this.GENERAL_TeamNumberMENU = !this.GENERAL_TeamNumberMENU
+            }
           })
           .bindMenu(this.GENERAL_TeamNumberMENU,this.GENERAL_TeamNumber)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -209,12 +222,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.team_role.valueOf())
           .onClick(() => {
-            this.GENERAL_TeamRoleMENU = !this.GENERAL_TeamRoleMENU
+            if (!this.isReadonly) {
+              this.GENERAL_TeamRoleMENU = !this.GENERAL_TeamRoleMENU
+            }
           })
           .bindMenu(this.GENERAL_TeamRoleMENU,this.GENERAL_TeamRole)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -229,12 +245,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_ccf!.ccf_ranking.valueOf())
           .onClick(() => {
-            this.CCF_CCFRankingsMENU = !this.CCF_CCFRankingsMENU
+            if (!this.isReadonly) {
+              this.CCF_CCFRankingsMENU = !this.CCF_CCFRankingsMENU
+            }
           })
           .bindMenu(this.CCF_CCFRankingsMENU,this.CCF_CCFRankings)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -249,12 +268,15 @@ export struct Competition{
           .fontSize(16)
         Button((this.tmpentry.extra_data as RecordType.Competition).type!.valueOf())
           .onClick(() => {
-            this.TypeMenu = !this.TypeMenu
+            if (!this.isReadonly) {
+              this.TypeMenu = !this.TypeMenu
+            }
           })
           .bindMenu(this.TypeMenu,this.Type)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .width('100%')
       .margin({bottom:10})
@@ -275,6 +297,7 @@ export struct Innovation {
   @Link tmpentry: RecordType.RecordEntry
   @State INNOVATION_LevelsMENU: boolean = false
   @State INNOVATION_RolesMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Innovation)) {
@@ -326,12 +349,15 @@ export struct Innovation {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Innovation).data!.innovation_level.valueOf())
           .onClick(() => {
-            this.INNOVATION_LevelsMENU = !this.INNOVATION_LevelsMENU
+            if (!this.isReadonly) {
+              this.INNOVATION_LevelsMENU = !this.INNOVATION_LevelsMENU
+            }
           })
           .bindMenu(this.INNOVATION_LevelsMENU, this.INNOVATION_Levels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -341,12 +367,15 @@ export struct Innovation {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Innovation).data!.innovation_role.valueOf())
           .onClick(() => {
-            this.INNOVATION_RolesMENU = !this.INNOVATION_RolesMENU
+            if (!this.isReadonly) {
+              this.INNOVATION_RolesMENU = !this.INNOVATION_RolesMENU
+            }
           })
           .bindMenu(this.INNOVATION_RolesMENU, this.INNOVATION_Roles)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -364,6 +393,7 @@ export struct Research {
   @State PAPER_CategoriesMENU: boolean = false
   @State PAPER_AuthorsMENU: boolean = false
   @State PATENT_AuthorTypesMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Research)) {
@@ -452,12 +482,15 @@ export struct Research {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Research).data_paper!.paper_categorie.valueOf())
           .onClick(() => {
-            this.PAPER_CategoriesMENU = !this.PAPER_CategoriesMENU
+            if (!this.isReadonly) {
+              this.PAPER_CategoriesMENU = !this.PAPER_CategoriesMENU
+            }
           })
           .bindMenu(this.PAPER_CategoriesMENU, this.PAPER_Categories)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -467,12 +500,15 @@ export struct Research {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Research).data_paper!.paper_author.valueOf())
           .onClick(() => {
-            this.PAPER_AuthorsMENU = !this.PAPER_AuthorsMENU
+            if (!this.isReadonly) {
+              this.PAPER_AuthorsMENU = !this.PAPER_AuthorsMENU
+            }
           })
           .bindMenu(this.PAPER_AuthorsMENU, this.PAPER_Authors)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -487,12 +523,15 @@ export struct Research {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Research).data_patent!.patent_author_type.valueOf())
           .onClick(() => {
-            this.PATENT_AuthorTypesMENU = !this.PATENT_AuthorTypesMENU
+            if (!this.isReadonly) {
+              this.PATENT_AuthorTypesMENU = !this.PATENT_AuthorTypesMENU
+            }
           })
           .bindMenu(this.PATENT_AuthorTypesMENU, this.PATENT_AuthorTypes)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -507,12 +546,15 @@ export struct Research {
           .fontSize(16)
         Button((this.tmpentry.extra_data as RecordType.Research).type!.valueOf())
           .onClick(() => {
-            this.TypeMenu = !this.TypeMenu
+            if (!this.isReadonly) {
+              this.TypeMenu = !this.TypeMenu
+            }
           })
           .bindMenu(this.TypeMenu, this.Type)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .width('100%')
       .margin({bottom:10})
@@ -533,6 +575,7 @@ export struct Research {
 export struct Honor {
   @Link tmpentry: RecordType.RecordEntry
   @State HONOR_LevelsMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Honor)) {
@@ -567,12 +610,15 @@ export struct Honor {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Honor).data!.honor_title_level.valueOf())
           .onClick(() => {
-            this.HONOR_LevelsMENU = !this.HONOR_LevelsMENU
+            if (!this.isReadonly) {
+              this.HONOR_LevelsMENU = !this.HONOR_LevelsMENU
+            }
           })
           .bindMenu(this.HONOR_LevelsMENU, this.HONOR_Levels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -582,14 +628,17 @@ export struct Honor {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.Honor).data!.score.toString() })
           .onChange((value: string) => {
-            let numValue = parseInt(value)
-            if (!isNaN(numValue)) {
-              (this.tmpentry.extra_data! as RecordType.Honor).data!.score = numValue
+            if (!this.isReadonly) {
+              let numValue = parseInt(value)
+              if (!isNaN(numValue)) {
+                (this.tmpentry.extra_data! as RecordType.Honor).data!.score = numValue
+              }
             }
           })
           .width(100)
           .backgroundColor("#0C182431")
           .type(InputType.Number)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -602,6 +651,7 @@ export struct Honor {
 @Component
 export struct SocialWork {
   @Link tmpentry: RecordType.RecordEntry
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.SocialWork)) {
@@ -620,10 +670,13 @@ export struct SocialWork {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.SocialWork).data!.social_title })
           .onChange((value: string) => {
-            (this.tmpentry.extra_data! as RecordType.SocialWork).data!.social_title = value
+            if (!this.isReadonly) {
+              (this.tmpentry.extra_data! as RecordType.SocialWork).data!.social_title = value
+            }
           })
           .width(150)
           .backgroundColor("#0C182431")
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -633,14 +686,17 @@ export struct SocialWork {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.SocialWork).data!.score.toString() })
           .onChange((value: string) => {
-            let numValue = parseInt(value)
-            if (!isNaN(numValue)) {
-              (this.tmpentry.extra_data! as RecordType.SocialWork).data!.score = numValue
+            if (!this.isReadonly) {
+              let numValue = parseInt(value)
+              if (!isNaN(numValue)) {
+                (this.tmpentry.extra_data! as RecordType.SocialWork).data!.score = numValue
+              }
             }
           })
           .width(100)
           .backgroundColor("#0C182431")
           .type(InputType.Number)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -659,6 +715,7 @@ export struct Volunteer {
   @State AWARD_RolesMENU: boolean = false
   TimeSpanDialogInstance?:CustomDialogController
   @State TimeSpan:number[] = [-1,-1]
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Volunteer)) {
@@ -748,23 +805,26 @@ export struct Volunteer {
           bottom: 5
         })
         .onClick(() => {
-          this.TimeSpanDialogInstance = new CustomDialogController({
-            builder: TimeSpanDialog(
-              {
-                confirm: (NewTime: number) => {
-                  this.TimeSpan[0] = NewTime
-                  this.TimeSpanDialogInstance?.close()
-                },
-                cancel: () => {
-                  this.TimeSpanDialogInstance?.close()
-                },
-                OldTime: this.TimeSpan[0]
-              }),
-            alignment: DialogAlignment.Bottom,
-            autoCancel: true
-          })
-          this.TimeSpanDialogInstance?.open()
+          if (!this.isReadonly) {
+            this.TimeSpanDialogInstance = new CustomDialogController({
+              builder: TimeSpanDialog(
+                {
+                  confirm: (NewTime: number) => {
+                    this.TimeSpan[0] = NewTime
+                    this.TimeSpanDialogInstance?.close()
+                  },
+                  cancel: () => {
+                    this.TimeSpanDialogInstance?.close()
+                  },
+                  OldTime: this.TimeSpan[0]
+                }),
+              alignment: DialogAlignment.Bottom,
+              autoCancel: true
+            })
+            this.TimeSpanDialogInstance?.open()
+          }
         })
+        .enabled(!this.isReadonly)
 
         Text('-').fontSize(16)
         Button() {
@@ -781,23 +841,26 @@ export struct Volunteer {
           bottom: 5
         })
         .onClick(() => {
-          this.TimeSpanDialogInstance = new CustomDialogController({
-            builder: TimeSpanDialog(
-              {
-                confirm: (NewTime: number) => {
-                  this.TimeSpan[1] = NewTime
-                  this.TimeSpanDialogInstance?.close()
-                },
-                cancel: () => {
-                  this.TimeSpanDialogInstance?.close()
-                },
-                OldTime: this.TimeSpan[1]
-              }),
-            alignment: DialogAlignment.Bottom,
-            autoCancel: true
-          })
-          this.TimeSpanDialogInstance.open()
+          if (!this.isReadonly) {
+            this.TimeSpanDialogInstance = new CustomDialogController({
+              builder: TimeSpanDialog(
+                {
+                  confirm: (NewTime: number) => {
+                    this.TimeSpan[1] = NewTime
+                    this.TimeSpanDialogInstance?.close()
+                  },
+                  cancel: () => {
+                    this.TimeSpanDialogInstance?.close()
+                  },
+                  OldTime: this.TimeSpan[1]
+                }),
+              alignment: DialogAlignment.Bottom,
+              autoCancel: true
+            })
+            this.TimeSpanDialogInstance.open()
+          }
         })
+        .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceAround)
       .width('100%')
@@ -806,14 +869,17 @@ export struct Volunteer {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.Volunteer).data_service!.score.toString() })
           .onChange((value: string) => {
-            let numValue = parseInt(value)
-            if (!isNaN(numValue)) {
-              (this.tmpentry.extra_data! as RecordType.Volunteer).data_service!.score = numValue
+            if (!this.isReadonly) {
+              let numValue = parseInt(value)
+              if (!isNaN(numValue)) {
+                (this.tmpentry.extra_data! as RecordType.Volunteer).data_service!.score = numValue
+              }
             }
           })
           .width(100)
           .backgroundColor("#0C182431")
           .type(InputType.Number)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -828,12 +894,15 @@ export struct Volunteer {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Volunteer).data_award!.volunteer_award_level.valueOf())
           .onClick(() => {
-            this.AWARD_LevelsMENU = !this.AWARD_LevelsMENU
+            if (!this.isReadonly) {
+              this.AWARD_LevelsMENU = !this.AWARD_LevelsMENU
+            }
           })
           .bindMenu(this.AWARD_LevelsMENU, this.AWARD_Levels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -843,12 +912,15 @@ export struct Volunteer {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Volunteer).data_award!.role.valueOf())
           .onClick(() => {
-            this.AWARD_RolesMENU = !this.AWARD_RolesMENU
+            if (!this.isReadonly) {
+              this.AWARD_RolesMENU = !this.AWARD_RolesMENU
+            }
           })
           .bindMenu(this.AWARD_RolesMENU, this.AWARD_Roles)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -863,12 +935,15 @@ export struct Volunteer {
           .fontSize(16)
         Button((this.tmpentry.extra_data as RecordType.Volunteer).type!.valueOf())
           .onClick(() => {
-            this.TypeMenu = !this.TypeMenu
+            if (!this.isReadonly) {
+              this.TypeMenu = !this.TypeMenu
+            }
           })
           .bindMenu(this.TypeMenu, this.Type)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .width('100%')
       .margin({bottom:10})
@@ -889,6 +964,7 @@ export struct Volunteer {
 export struct International {
   @Link tmpentry: RecordType.RecordEntry
   @State INTERNSHIP_DurationsMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.International)) {
@@ -923,12 +999,15 @@ export struct International {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.International).data!.intership_duration.valueOf())
           .onClick(() => {
-            this.INTERNSHIP_DurationsMENU = !this.INTERNSHIP_DurationsMENU
+            if (!this.isReadonly) {
+              this.INTERNSHIP_DurationsMENU = !this.INTERNSHIP_DurationsMENU
+            }
           })
           .bindMenu(this.INTERNSHIP_DurationsMENU, this.INTERNSHIP_Durations)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -938,14 +1017,17 @@ export struct International {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.International).data!.score.toString() })
           .onChange((value: string) => {
-            let numValue = parseInt(value)
-            if (!isNaN(numValue)) {
-              (this.tmpentry.extra_data! as RecordType.International).data!.score = numValue
+            if (!this.isReadonly) {
+              let numValue = parseInt(value)
+              if (!isNaN(numValue)) {
+                (this.tmpentry.extra_data! as RecordType.International).data!.score = numValue
+              }
             }
           })
           .width(100)
           .backgroundColor("#0C182431")
           .type(InputType.Number)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -959,6 +1041,7 @@ export struct International {
 export struct Military {
   @Link tmpentry: RecordType.RecordEntry
   @State MILITARY_DurationsMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Military)) {
@@ -993,12 +1076,15 @@ export struct Military {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Military).data!.military_service_duration.valueOf())
           .onClick(() => {
-            this.MILITARY_DurationsMENU = !this.MILITARY_DurationsMENU
+            if (!this.isReadonly) {
+              this.MILITARY_DurationsMENU = !this.MILITARY_DurationsMENU
+            }
           })
           .bindMenu(this.MILITARY_DurationsMENU, this.MILITARY_Durations)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -1008,14 +1094,17 @@ export struct Military {
           .fontSize(16)
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.Military).data!.score.toString() })
           .onChange((value: string) => {
-            let numValue = parseInt(value)
-            if (!isNaN(numValue)) {
-              (this.tmpentry.extra_data! as RecordType.Military).data!.score = numValue
+            if (!this.isReadonly) {
+              let numValue = parseInt(value)
+              if (!isNaN(numValue)) {
+                (this.tmpentry.extra_data! as RecordType.Military).data!.score = numValue
+              }
             }
           })
           .width(100)
           .backgroundColor("#0C182431")
           .type(InputType.Number)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -1031,6 +1120,7 @@ export struct Sports {
   @State SPORTS_LevelsMENU: boolean = false
   @State SPORTS_RanksMENU: boolean = false
   @State SPORTS_TypesMENU: boolean = false
+  @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
     if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Sports)) {
@@ -1098,12 +1188,15 @@ export struct Sports {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_competition_level.valueOf())
           .onClick(() => {
-            this.SPORTS_LevelsMENU = !this.SPORTS_LevelsMENU
+            if (!this.isReadonly) {
+              this.SPORTS_LevelsMENU = !this.SPORTS_LevelsMENU
+            }
           })
           .bindMenu(this.SPORTS_LevelsMENU, this.SPORTS_Levels)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -1113,12 +1206,15 @@ export struct Sports {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_rank.valueOf())
           .onClick(() => {
-            this.SPORTS_RanksMENU = !this.SPORTS_RanksMENU
+            if (!this.isReadonly) {
+              this.SPORTS_RanksMENU = !this.SPORTS_RanksMENU
+            }
           })
           .bindMenu(this.SPORTS_RanksMENU, this.SPORTS_Ranks)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -1128,12 +1224,15 @@ export struct Sports {
           .fontSize(16)
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_type.valueOf())
           .onClick(() => {
-            this.SPORTS_TypesMENU = !this.SPORTS_TypesMENU
+            if (!this.isReadonly) {
+              this.SPORTS_TypesMENU = !this.SPORTS_TypesMENU
+            }
           })
           .bindMenu(this.SPORTS_TypesMENU, this.SPORTS_Types)
           .width(100)
           .backgroundColor("#0C182431")
           .fontColor(Color.Black)
+          .enabled(!this.isReadonly)
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')

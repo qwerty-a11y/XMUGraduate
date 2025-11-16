@@ -106,7 +106,7 @@ export struct SuperUploadsView {
             .height(24)
             .margin({ left: 8 })
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Super/Main'},router.RouterMode.Single); // 直接写目标页面路径
+              router.back()
             });
 
 

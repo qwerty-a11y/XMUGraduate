@@ -37,23 +37,6 @@ export struct teamain {
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
-  // 状态：控制审核页子页面（预留扩展，当前未使用）
-  @State ActiveSubPage:number = 0;
-
-  /**
-   * 页面显示时触发的生命周期方法
-   * 功能：接收其他页面跳转时传递的路由参数，更新当前激活的视图与子页面
-   */
-  onPageShow(): void {
-    // 获取路由参数（类型断言为键值对对象）
-    const params = router.getParams() as Record<string, object>
-    if (params){
-      // 解析目标视图参数（默认值0=首页）
-      this.ActiveView = Number(params['targetView']) || 0;
-      // 解析目标子页面参数（默认值0）
-      this.ActiveSubPage = Number(params['targetSubPage']) || 0;
-    }
-  }
 
   /**
    * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图

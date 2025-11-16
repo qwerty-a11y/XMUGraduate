@@ -103,7 +103,7 @@ struct ChangeContactInformation {
 
     // 返回设置页
     setTimeout(() => {
-      router.pushUrl({ url: 'pages/Super/Setting' });
+      router.back()
     }, 1000);
   }
 
@@ -116,7 +116,7 @@ struct ChangeContactInformation {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Setting'}); // 直接写目标页面路径
+            router.back() // 直接写目标页面路径
           });
 
 

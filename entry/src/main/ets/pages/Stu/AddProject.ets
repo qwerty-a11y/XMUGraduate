@@ -1,11 +1,30 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import {RecordEntry, RecordType} from '../../datatypes/Record'
-import { request } from '@kit.BasicServicesKit';
+import { BusinessError, request } from '@kit.BasicServicesKit';
 import * as AddProjectComponents from '../../components/MainViews/Stu/AddProjectComponent'
 import { inputConsumer } from '@kit.InputKit';
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
 
 //import { FlexAlign, VerticalAlign, InputType } from '@ohos.util'; // 导入所需枚举类型
+
+interface Application{
+  Type:number
+  Title:string
+  ApplyScore:number
+  RealScore:number
+  ReviewStatus:number //0=未提交，1=审核中，2=审核通过，3=审核失败
+  UploadTime:number
+  ModifyTime:number
+  Description:string
+  Attachments:string[]
+  FeedBack:string
+  extra_data:string
+}
+
+interface empty{}
 
 @Entry
 @Component
@@ -27,6 +46,83 @@ struct AddOptionApplication {
   @State fileUploaded: boolean = false;
   */
   @State tmpentry: RecordEntry = new RecordEntry(RecordType.Competition,'',0,0,'',Date.now())
+
+  async Save(submit:boolean):Promise<boolean>{
+    if (this.tmpentry.Title!='' && this.tmpentry.ApplyScore!=0&&this.tmpentry.Description!='') {
+      let httpRequest = http.createHttp();
+      let RequestData: Application = {
+        'Type': this.tmpentry.Type.valueOf(),
+        'Title': this.tmpentry.Title,
+        'ApplyScore': this.tmpentry.ApplyScore,
+        'RealScore': this.tmpentry.RealScore,
+        'ReviewStatus': Number(submit),
+        'UploadTime': Date.now(),
+        'ModifyTime': Date.now(),
+        'Description': this.tmpentry.Description,
+        'Attachments': this.tmpentry.Attachments,
+        'FeedBack': this.tmpentry.FeedBack,
+        'extra_data': this.tmpentry.extra_data!.toJSON()
+      }
+      let RequestDataStr: string = json.stringify(RequestData)
+      try {
+        let Response: http.HttpResponse = await httpRequest.request(
+          StaticData.ServerURL + '/api/student/material/applications/create/',
+          {
+            method: http.RequestMethod.POST,
+            extraData: RequestDataStr,
+            header: {
+              'Content-Type': 'application/json', // 关键：添加这个头
+              'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+              'Authorization': 'Token '+DynamicData.token
+            },
+            connectTimeout:5000
+          }
+        )
+        let DataObj: Object | empty
+        let DataObjTmp: object | null
+        try {
+          DataObjTmp = json.parse(Response.result.toString())
+          DataObj = DataObjTmp ? DataObjTmp : {}
+          if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+            // 使用 promptAction 显示提示
+            promptAction.showToast({
+              message: '提交成功',
+              duration: 2000 // 弹窗显示时间（毫秒）
+            });
+            return true
+          } else {
+            // 使用 promptAction 显示提示
+            promptAction.showToast({
+              message: '提交失败，请检查网络连接',
+              duration: 2000 // 弹窗显示时间（毫秒）
+            });
+            return false
+          }
+        } catch (e) {
+          let error = e as BusinessError
+          let msg = error?.message
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '解析错误：' + msg,
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false;
+        }
+      } catch (e) {
+        let err: BusinessError = e as BusinessError
+        console.log(err.message)
+        console.log(err.name)
+        return false
+      }
+    } else {
+      // 使用 promptAction 显示提示
+      promptAction.showToast({
+        message: '请正确填写所有内容',
+        duration: 2000 // 弹窗显示时间（毫秒）
+      });
+      return false
+    }
+  }
 
   @Builder ApplicationType(){
     Column() {
@@ -266,8 +362,10 @@ struct AddOptionApplication {
                   .backgroundColor('#4DB6AC')
                   .fontColor(Color.White)
                   // .onClick(() => this.onSaveDraftClick())
-                  .onClick(() => {
-                    router.pushUrl({ url: 'pages/Stu/Main' });
+                  .onClick(async () => {
+                    if (await this.Save(false)) {
+                      router.pushUrl({ url: 'pages/Stu/Main' });
+                    }
                   });
                 Blank()
                 Button('提交')
@@ -276,8 +374,10 @@ struct AddOptionApplication {
                   .backgroundColor('#4DB6AC')
                   .fontColor(Color.White)
                   //.onClick(() => this.onSubmitClick())
-                  .onClick(() => {
-                    router.pushUrl({ url: 'pages/Stu/Main' });
+                  .onClick(async () => {
+                    if (await this.Save(true)) {
+                      router.pushUrl({ url: 'pages/Stu/Main' });
+                    }
                   });
               }
               .width('100%')

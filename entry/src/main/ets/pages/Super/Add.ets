@@ -30,7 +30,7 @@ struct NewAddPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Main' },router.RouterMode.Single);
+            router.back()
           });
 
 
@@ -168,7 +168,7 @@ struct NewAddPage {
           .borderRadius(20)
           .margin({ top: 24, bottom: 32 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Main' },router.RouterMode.Single);
+            router.back()
           });
           // .onClick(() => {
           //   // 确定按钮点击逻辑，使用声明的接口

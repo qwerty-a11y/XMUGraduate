@@ -1,6 +1,21 @@
 import router from '@ohos.router';
 import { Account, Student, Teacher } from '../../datatypes/Account';
 import { AccountList } from '../../service/Super/AccountList';
+import http from '@ohos.net.http';
+import { DynamicData, StaticData } from '../../constants';
+import { promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { AWARD_LEVELS_ARRAY } from '../../datatypes/TypeInfoEnums';
+
+interface AccountData{
+  ID: string;
+  Name: string;
+  Score?: number; // 可选字段
+}
+// 定义返回数据的接口
+interface AccountResponse {
+  AccountList: Array<AccountData>;
+}
 
 @Entry
 @Component
@@ -28,9 +43,82 @@ export struct SuperInform {
 
   @State ListType:number=AccountList.Type
 
+  // 解析函数 - 根据账户类型解析数据
+  parseAccountData(data: AccountResponse, accountType: boolean): Account[] {
+    const accounts: Account[] = [];
+
+    for (const item of data.AccountList) {
+      if (accountType === false) {
+        // 学生类型需要Score，如果不存在则使用默认值0
+        const score = item.Score !== undefined ? item.Score : 0;
+        accounts.push(new Student(item.ID, item.Name, score));
+      } else {
+        // 教师类型不需要Score
+        accounts.push(new Teacher(item.ID, item.Name));
+      }
+    }
+
+    return accounts;
+  }
+
+  // 请求函数
+  async getAccountList(
+  accountType: boolean,
+  majorParam: number
+) {
+  const httpRequest = http.createHttp();
+
+  try {
+    // 构建查询参数
+    const params = `?type=${accountType}&major=${majorParam}`;
+
+    const response: http.HttpResponse = await httpRequest.request(
+      `${StaticData.ServerURL}/api/account/query${params}`, // 请替换为实际API路径
+      {
+        method: http.RequestMethod.GET,
+        header: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Token ${DynamicData.token}`
+        },
+        connectTimeout: 5000
+      }
+    );
+
+    if (response.responseCode === 200) {
+      try {
+        const dataObj: AccountResponse = JSON.parse(response.result.toString());
+
+        // 解析数据并存入数组
+        this.AccountData = this.parseAccountData(dataObj, accountType);
+        this.AccountSelect = new Array(this.AccountData.length).fill(true)
+
+      } catch (parseError) {
+        const error = parseError as BusinessError;
+        promptAction.showToast({
+          message: `数据解析错误: ${error.message}`,
+          duration: 2000
+        });
+      }
+    } else {
+      promptAction.showToast({
+        message: `请求失败，状态码: ${response.responseCode}`,
+        duration: 2000
+      });
+    }
+  } catch (requestError) {
+    const error = requestError as BusinessError;
+    console.log(`请求错误: ${error.message}`);
+    promptAction.showToast({
+      message: '网络请求失败，请检查网络连接',
+      duration: 2000
+    });
+  }
+}
+
+
   aboutToAppear(): void {
-    //GetAccountData();
-    this.AccountSelect = new Array(this.AccountData.length).fill(true)
+    this.getAccountList(AccountList.Type<2,AccountList.Major())
   }
 
   // 全选方法 - 强制所有项选中
@@ -63,7 +151,7 @@ export struct SuperInform {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Main' ,params:{page:1}},router.RouterMode.Single);
+            router.back()
           });
 
         Text('信息与操作')

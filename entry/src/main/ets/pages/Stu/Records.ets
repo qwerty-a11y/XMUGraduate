@@ -1,6 +1,27 @@
 import router from '@ohos.router';
 import { RecordEntry } from '../../datatypes/Record';
 import * as RecordsComponents from '../../components/MainViews/Stu/RecordsComponents'
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { promptAction, PromptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+interface Application{
+  Type:number
+  Title:string
+  ApplyScore:number
+  RealScore:number
+  ReviewStatus:number //0=未提交，1=审核中，2=审核通过，3=审核失败
+  UploadTime:number
+  ModifyTime:number
+  Description:string
+  Attachments:string[]
+  FeedBack:string
+  extra_data:string
+}
+
+interface empty{}
 
 @Entry
 @Component
@@ -30,6 +51,141 @@ struct Records {
     .width('40%')
   }
 
+  async Save(opr:number):Promise<boolean>{
+    if (this.data!.Title!='' && this.data!.ApplyScore!=0&&this.data!.Description!='') {
+      let httpRequest = http.createHttp();
+      let RequestData: Application = {
+        'Type': this.data!.Type.valueOf(),
+        'Title': this.data!.Title,
+        'ApplyScore': this.data!.ApplyScore,
+        'RealScore': this.data!.RealScore,
+        'ReviewStatus': opr,
+        'UploadTime': this.data!.UploadTime,
+        'ModifyTime': Date.now(),
+        'Description': this.data!.Description,
+        'Attachments': this.data!.Attachments,
+        'FeedBack': this.data!.FeedBack,
+        'extra_data': this.data!.extra_data!.toJSON()
+      }
+      let RequestDataStr: string = json.stringify(RequestData)
+      try {
+        let Response: http.HttpResponse = await httpRequest.request(
+          StaticData.ServerURL + '/api/student/material/applications/create/',
+          {
+            method: http.RequestMethod.PUT,
+            extraData: RequestDataStr,
+            header: {
+              'Content-Type': 'application/json', // 关键：添加这个头
+              'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+              'Authorization': 'Token '+DynamicData.token
+            },
+            connectTimeout:5000
+          }
+        )
+        let DataObj: Object | empty
+        let DataObjTmp: object | null
+        try {
+          DataObjTmp = json.parse(Response.result.toString())
+          DataObj = DataObjTmp ? DataObjTmp : {}
+          if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+            // 使用 promptAction 显示提示
+            promptAction.showToast({
+              message: '提交成功',
+              duration: 2000 // 弹窗显示时间（毫秒）
+            });
+            return true
+          } else {
+            // 使用 promptAction 显示提示
+            promptAction.showToast({
+              message: '提交失败，请检查网络连接',
+              duration: 2000 // 弹窗显示时间（毫秒）
+            });
+            return false
+          }
+        } catch (e) {
+          let error = e as BusinessError
+          let msg = error?.message
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '解析错误：' + msg,
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false;
+        }
+      } catch (e) {
+        let err: BusinessError = e as BusinessError
+        console.log(err.message)
+        console.log(err.name)
+        return false
+      }
+    } else {
+      // 使用 promptAction 显示提示
+      promptAction.showToast({
+        message: '请正确填写所有内容',
+        duration: 2000 // 弹窗显示时间（毫秒）
+      });
+      return false
+    }
+  }
+
+  async State(opr:boolean):Promise<boolean>{
+    let httpRequest = http.createHttp();
+    try {
+      let URL:string
+      switch (opr){
+        case false:URL='/api/student/material/applications/withdraw/?UploadTime='+this.data!.UploadTime.toString();break;
+        case true:URL='/api/student/material/applications/destroy/?UploadTime='+this.data!.UploadTime.toString();break;
+      }
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + URL,
+        {
+          method: http.RequestMethod.DELETE,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '操作成功',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return true
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '操作失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+  }
+
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
     if (this.data!.ReviewStatus == 0 || this.data!.ReviewStatus == 3){
@@ -52,21 +208,30 @@ struct Records {
           .width(80)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.Save(0)) router.back()
+          });
         Button("提交")
           .fontSize(14)
           .fontWeight(500)
           .width(80)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.Save(1)) router.back()
+          });
         Button("删除")
           .fontSize(14)
           .fontWeight(500)
           .width(80)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.State(true)) router.back()
+          });
       }
       .width('100%')
       .justifyContent(FlexAlign.Center)
@@ -80,7 +245,10 @@ struct Records {
           //.width(120)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.State(false)) router.back()
+          });
       }
       .width('100%')
       .justifyContent(FlexAlign.Center)
@@ -95,14 +263,20 @@ struct Records {
           .width(120)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.Save(1)) router.back()
+          });
         Button("撤销")
           .fontSize(14)
           .fontWeight(500)
           .width(120)
           .height(44)
           .backgroundColor('#66ccff')
-          .borderRadius(8);
+          .borderRadius(8)
+          .onClick(async ()=>{
+            if (await this.State(false)) router.back()
+          });
       }
       .width('100%')
       .justifyContent(FlexAlign.Center)
@@ -131,25 +305,25 @@ struct Records {
     }
   }
 
-  @Builder ExtraData(){
+  @Builder ExtraData(disabled:boolean){
     if (this.data!.Type.valueOf() == 0) {
-      RecordsComponents.Competition({tmpentry:this.data})
+      RecordsComponents.Competition({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 1) {
-      RecordsComponents.Innovation({tmpentry:this.data})
+      RecordsComponents.Innovation({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 2) {
-      RecordsComponents.Research({tmpentry:this.data})
+      RecordsComponents.Research({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 3) {
-      RecordsComponents.Honor({tmpentry:this.data})
+      RecordsComponents.Honor({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 4) {
-      RecordsComponents.SocialWork({tmpentry:this.data})
+      RecordsComponents.SocialWork({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 5) {
-      RecordsComponents.Volunteer({tmpentry:this.data})
+      RecordsComponents.Volunteer({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 6) {
-      RecordsComponents.International({tmpentry:this.data})
+      RecordsComponents.International({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 7) {
-      RecordsComponents.Military({tmpentry:this.data})
+      RecordsComponents.Military({tmpentry:this.data,isReadonly:disabled})
     } else if (this.data!.Type.valueOf() == 8) {
-      RecordsComponents.Sports({tmpentry:this.data})
+      RecordsComponents.Sports({tmpentry:this.data,isReadonly:disabled})
     }
   }
 
@@ -162,7 +336,7 @@ struct Records {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Stu/Main' ,params:{'page':1}});
+            router.back();
           });
         Text("记录")
           .fontSize(16)
@@ -187,7 +361,7 @@ struct Records {
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
-              .width(60)
+              .width(80)
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
@@ -270,6 +444,7 @@ struct Records {
           .alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.SpaceBetween);
 
+          this.ExtraData(!this.AllowEdit)
           // 证明文件
           Text("证明文件")
             .fontSize(14)
@@ -315,7 +490,7 @@ struct Records {
 
 
 
-          this.ExtraData()
+
           this.FeedBack()
           this.Buttons()
 

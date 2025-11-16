@@ -27,7 +27,7 @@ struct OperationPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Main' , params:{page:1}});
+            router.back()
           });
 
         Text('对所有账号操作')
@@ -89,7 +89,7 @@ struct OperationPage {
           // 这里可以添加后续操作逻辑，如调用接口等
         })
         .onClick(() => {
-          router.pushUrl({ url: 'pages/Super/Main' },router.RouterMode.Single);
+          router.back()
         });
     }
     .width('100%')

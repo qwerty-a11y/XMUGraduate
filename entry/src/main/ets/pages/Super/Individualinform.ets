@@ -1,15 +1,10 @@
 import router from '@ohos.router';
 import { Account, Student } from '../../datatypes/Account';
+import { StudentDetail, TeacherDetail } from '../../datatypes/AccountDetail';
 
 interface OperationItem {
   name: string;
   isSelected: boolean;
-}
-
-// 显式定义项目数据接口
-interface ProjectItem {
-  name: string;
-  score: string;
 }
 
 @Entry
@@ -17,21 +12,13 @@ interface ProjectItem {
 struct OperationPage {
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
   @State account?:Account=undefined
-  // 显式标注数组类型，约束所有项符合ProjectItem结构
-  private projectList: ProjectItem[] = [
-    { name: '学业竞赛', score: '*分' },
-    { name: '创新创业训练', score: '*分' },
-    { name: '科研成果', score: '*分' },
-    { name: '荣誉称号', score: '**/**' },
-    { name: '社会工作', score: '*分' },
-    { name: '志愿服务', score: '*分' },
-    { name: '国际组织学习', score: '*分' },
-    { name: '参军入伍', score: '*分' },
-    { name: '体育比赛', score: '*分' }
-  ];
+  @State detail?:StudentDetail = undefined
+  private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
 
   aboutToAppear(): void {
-    this.account = router.getParams() as Student
+    let params = router.getParams() as Record<string,object>
+    this.account = params['account'] as Account
+    this.detail = params['detail'] as StudentDetail
   }
 
   build() {
@@ -97,7 +84,7 @@ struct OperationPage {
                   Text('姓名：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('***')
+                  Text(this.account!.Name)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -118,7 +105,7 @@ struct OperationPage {
                   Text('单位：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('**学院**系**班')
+                  Text(this.detail?.department)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -139,7 +126,7 @@ struct OperationPage {
                   Text('账号：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('************')
+                  Text(this.account!.ID)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -160,7 +147,7 @@ struct OperationPage {
                   Text('手机号：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('************')
+                  Text(this.detail?.phone)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -181,7 +168,7 @@ struct OperationPage {
                   Text('邮箱：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('************')
+                  Text(this.detail?.email)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -212,7 +199,7 @@ struct OperationPage {
                   Text('专业排名：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('*/75')
+                  Text(`${this.detail?.rank[0].toString()}/${this.detail?.rank[1].toString()}`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -233,7 +220,7 @@ struct OperationPage {
                   Text('绩点：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('*/4')
+                  Text(`${this.detail?.academy_score.toString()}/4.0`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -254,7 +241,7 @@ struct OperationPage {
                   Text('综测：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('**分')
+                  Text(`${this.detail?.score.toString()}分`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -275,7 +262,7 @@ struct OperationPage {
                   Text('四六级：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('**/**')
+                  Text(`${this.detail?.cet4.toString()}/${this.detail?.cet6.toString()}`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -294,14 +281,14 @@ struct OperationPage {
 
                 // 循环渲染9个项目（移除泛型参数，保留item显式类型）
                 ForEach(
-                  this.projectList,
-                  (item: ProjectItem) => { // 显式标注item类型
+                  this.typeList,
+                  (item: string,index:number) => { // 显式标注item类型
                     Column() {
                       Row() {
-                        Text(`${item.name}：`)
+                        Text(`${item}：`)
                           .fontSize(16)
                           .margin({ top: 5, bottom: 5, left: 8 })
-                        Text(item.score)
+                        Text(this.detail?.applications_score[index].toString())
                           .flexGrow(1)
                           .fontSize(16)
                           .margin({ top: 5, bottom: 5, left: 8 })
@@ -318,8 +305,7 @@ struct OperationPage {
                       .justifyContent(FlexAlign.End)
                       .width('80%')
                     }
-                  },
-                  (item: ProjectItem): string => item.name // 显式标注返回类型
+                  }
                 )
               }
               .width(320)
@@ -333,7 +319,7 @@ struct OperationPage {
                   Text('已通过：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('**份')
+                  Text(`${this.detail?.applications_approved.toString()}份`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
@@ -354,7 +340,7 @@ struct OperationPage {
                   Text('已驳回：')
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })
-                  Text('**份')
+                  Text(`${this.detail?.applications_rejected.toString()}份`)
                     .flexGrow(1)
                     .fontSize(16)
                     .margin({ top: 5, bottom: 5, left: 8 })

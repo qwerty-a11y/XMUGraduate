@@ -24,7 +24,7 @@ struct Setting {
           .margin({ left: 8 })// 图标左侧间距
           .onClick(() => {
             //router.pushUrl({ url: 'pages/Super/Main' ,params:{AnimateType:1}},router.RouterMode.Single); // 直接写目标页面路径
-            router.pushUrl({ url: 'pages/Super/Main'});
+            router.back()
           });
 
         // 文字在整个Row组件的中间位置

@@ -1,6 +1,11 @@
 import router from '@ohos.router';
 import { Account, Student, Teacher } from '../../datatypes/Account';
+import { StudentDetail, TeacherDetail } from '../../datatypes/AccountDetail';
 import { AccountList } from '../../service/Super/AccountList';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { promptAction } from '@kit.ArkUI';
+import http from '@ohos.net.http';
+import { DynamicData, StaticData } from '../../constants';
 
 interface OperationItem {
   name: string;
@@ -21,15 +26,65 @@ struct OperationPage {
   ];
   @State account?:Account=undefined
   @State isStudent:boolean = true
+  @State Details:StudentDetail|TeacherDetail|undefined = undefined
+
+  // 网络请求函数
+  async getAccountDetail(
+  type: boolean, // 0-学生，1-教师
+  id: string
+) {
+  const httpRequest = http.createHttp();
+
+  try {
+    // 构建查询参数
+    const params = `?type=${type ? 1 : 0}&id=${encodeURIComponent(id)}`;
+
+    const response: http.HttpResponse = await httpRequest.request(
+      `${StaticData.ServerURL}/api/account/admin/retrieve/${params}`, // 请替换为实际API路径
+      {
+        method: http.RequestMethod.GET,
+        header: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Token ${DynamicData.token}`
+        },
+        connectTimeout: 5000
+      }
+    );
+
+    if (response.responseCode === 200) {
+      try {
+        const responseData:StudentDetail|TeacherDetail = JSON.parse(response.result.toString());
+        if (!type) this.Details=responseData as StudentDetail
+        if (type) this.Details=responseData as TeacherDetail
+      } catch (parseError) {
+        const error = parseError as BusinessError;
+        promptAction.showToast({
+          message: `数据解析错误: ${error.message}`,
+          duration: 2000
+        });
+      }
+    } else {
+      promptAction.showToast({
+        message: `请求失败，状态码: ${response.responseCode}`,
+        duration: 2000
+      });
+    }
+  } catch (requestError) {
+    const error = requestError as BusinessError;
+    console.log(`请求错误: ${error.message}`);
+    promptAction.showToast({
+      message: '网络请求失败，请检查网络连接',
+      duration: 2000
+    });
+  }
+}
 
   aboutToAppear(): void {
     this.isStudent = (AccountList.Type < 2)
     if (this.isStudent) this.account = router.getParams() as Student
     else this.account = router.getParams() as Teacher
-
-    //GetDetail();
-
-
+    this.getAccountDetail(!this.isStudent,this.account!.ID)
   }
 
   @Builder detail(){
@@ -97,7 +152,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('**学院**系**班')
+              Text(this.Details?.department)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -148,7 +203,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('************')
+              Text(this.Details?.phone)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -174,7 +229,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('************')
+              Text(this.Details?.email)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -201,7 +256,7 @@ struct OperationPage {
       .width('90%')
       .margin({ top: 10, bottom: 10 })
       .onClick(() => {
-        router.pushUrl({ url: 'pages/Super/Individualinform' , params:this.account}, router.RouterMode.Single);
+        router.pushUrl({ url: 'pages/Super/Individualinform' , params:{account:this.account,detail:this.Details}}, router.RouterMode.Single);
       })
     } else {
       Column() {
@@ -266,7 +321,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('**学院**系')
+              Text(this.Details?.department)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -317,7 +372,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('************')
+              Text(this.Details?.phone)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -343,7 +398,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text('************')
+              Text(this.Details?.email)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -370,7 +425,7 @@ struct OperationPage {
       .width('90%')
       .margin({top:10,bottom:10})
       .onClick(() => {
-        router.pushUrl({ url: 'pages/Super/Teacheck' }, router.RouterMode.Single);
+        router.pushUrl({ url: 'pages/Super/Teacheck',params:this.account }, router.RouterMode.Single);
       })
     }
   }
@@ -384,7 +439,7 @@ struct OperationPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Inform' });
+            router.back()
           });
 
         Text('个人信息与操作')
@@ -458,7 +513,7 @@ struct OperationPage {
               // 这里可以添加后续操作逻辑，如调用接口等
             })
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Super/Inform' }, router.RouterMode.Single);
+              router.back()
             });
         }
         .width('100%')
