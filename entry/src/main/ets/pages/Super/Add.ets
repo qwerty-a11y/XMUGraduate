@@ -324,8 +324,10 @@ struct NewAddPage {
           .backgroundColor('#87E8DE')
           .borderRadius(20)
           .margin({ top: 24, bottom: 32 })
-          .onClick(() => {
-            router.back()
+          .onClick(async () => {
+            if (await this.submitAccountInfo()) {
+              router.back()
+            }
           });
           // .onClick(() => {
           //   // 确定按钮点击逻辑，使用声明的接口
