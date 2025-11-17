@@ -1,4 +1,6 @@
 import router from '@ohos.router'; // 导入路由模块
+import { DynamicData } from '../../constants';
+import { BasicData } from '../../service/Stu/BasicData';
 
 @Entry
 @Component
@@ -59,7 +61,7 @@ struct  Setting {
                   .margin({bottom:5})
                 Column(){
                   Row(){
-                      Text('单位：**学院**系**班')
+                      Text(`单位：${BasicData.departments}`)
                         .flexGrow(1)
                         .fontSize(16)
                         .margin({top:5,bottom:5,left:8})
@@ -79,7 +81,7 @@ struct  Setting {
                   //.margin({ bottom: 5 })
 
                   Row(){
-                    Text('学号：**************')
+                    Text(`学号：${DynamicData.account_id}`)
                       .flexGrow(1)
                       .fontSize(16)
                       .margin({top:5,bottom:5,left:8})

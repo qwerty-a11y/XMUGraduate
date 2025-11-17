@@ -1,6 +1,16 @@
 import router from '@ohos.router';
 import { RecordEntry } from '../../datatypes/Record';
 import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+interface requestData{
+  id:number,
+  result:boolean,
+  comment:string
+}
 
 @Entry
 @Component
@@ -33,6 +43,40 @@ struct ScoreApplyReviewPage {
       ReviewComponents.Military({tmpentry:this.data})
     } else if (this.data!.Type.valueOf() == 8) {
       ReviewComponents.Sports({tmpentry:this.data})
+    }
+  }
+
+  async sendReviewRequest(id: number, result: boolean, comment: string): Promise<boolean> {
+    const httpRequest = http.createHttp();
+
+    try {
+      const requestData:requestData = {
+        id: id,
+        result: result,
+        comment: comment
+      };
+
+      const response: http.HttpResponse = await httpRequest.request(
+        `${StaticData.ServerURL}/api/student/material/reviews/first_review/`, // 请替换为实际API路径
+        {
+          method: http.RequestMethod.POST,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          extraData: JSON.stringify(requestData),
+          connectTimeout: 5000
+        }
+      );
+
+      // 只需要检查状态码，不需要解析响应内容
+      return response.responseCode === 200;
+
+    } catch (error) {
+      const err = error as BusinessError;
+      console.log(`请求发送失败: ${err.message}`);
+      return false;
     }
   }
 
@@ -112,7 +156,7 @@ struct ScoreApplyReviewPage {
               .fontSize(14)
               .width('60%')
               .fontColor('#666666')
-              .margin({ left: 20 });
+              //.margin({ left: 20 });
             Text(this.data!.ApplyScore.toString())
               .fontSize(14)
               .fontColor('#333333')
@@ -121,9 +165,10 @@ struct ScoreApplyReviewPage {
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
-              .margin({ right: 16 });
+              //.margin({ right: 16 });
           }
-          .width('100%')
+          .width('90%')
+          .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center);
 
           this.ExtraData()
@@ -202,14 +247,24 @@ struct ScoreApplyReviewPage {
               .width(120)
               .height(44)
               .backgroundColor('#66ccff')
-              .borderRadius(8);
+              .borderRadius(8)
+              .onClick(async ()=>{
+                if (await this.sendReviewRequest(this.data!.UploadTime,false,this.data!.FeedBack)){
+                  router.back()
+                }
+              });
             Button("通过")
               .fontSize(14)
               .fontWeight(500)
               .width(120)
               .height(44)
               .backgroundColor('#66ff99')
-              .borderRadius(8);
+              .borderRadius(8)
+              .onClick(async ()=>{
+                if (await this.sendReviewRequest(this.data!.UploadTime,true,this.data!.FeedBack)){
+                  router.back()
+                }
+              });
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)

@@ -3,7 +3,7 @@ import router from '@ohos.router'; // 导入路由模块
 import { BasicData } from '../../../service/Stu/BasicData';
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
-import { StaticData,DynamicData } from '../../../constants';
+import { StaticData,DynamicData} from '../../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
 import { ApplicationStateChangeCallback } from '@kit.AbilityKit';
@@ -123,6 +123,7 @@ export struct HomeView {
           BasicData.score=(DataObj as BasicResponse).total_comprehensive_score
           BasicData.CET=[(DataObj as BasicResponse).cet4,(DataObj as BasicResponse).cet6]
           BasicData.applications=(DataObj as BasicResponse).applications_score
+          BasicData.departments=(DataObj as BasicResponse).college+(DataObj as BasicResponse).major
           this.GPA = BasicData.GPA
           this.score = BasicData.score
           this.estimated_score = BasicData.estimated_score

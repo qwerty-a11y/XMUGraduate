@@ -1,7 +1,20 @@
 import router from '@ohos.router';
 import { RecordEntry } from '../../datatypes/Record';
 import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
 
+interface requestData{
+  id:number,
+  result:boolean,
+  comment:string
+}
+
+interface requestData2{
+  id:number,
+}
 
 @Entry
 @Component
@@ -13,6 +26,71 @@ struct Records {
 
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
+  }
+
+  async editRequest(id: number, result: boolean, comment: string): Promise<boolean> {
+    const httpRequest = http.createHttp();
+
+    try {
+      const requestData:requestData = {
+        id: id,
+        result: result,
+        comment: comment
+      };
+
+      const response: http.HttpResponse = await httpRequest.request(
+        `${StaticData.ServerURL}/api/student/material/reviews/edit/`, // 请替换为实际API路径
+        {
+          method: http.RequestMethod.PUT,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          extraData: JSON.stringify(requestData),
+          connectTimeout: 5000
+        }
+      );
+
+      // 只需要检查状态码，不需要解析响应内容
+      return response.responseCode === 200;
+
+    } catch (error) {
+      const err = error as BusinessError;
+      console.log(`请求发送失败: ${err.message}`);
+      return false;
+    }
+  }
+  async withdrawRequest(id: number): Promise<boolean> {
+    const httpRequest = http.createHttp();
+
+    try {
+      const requestData:requestData2 = {
+        id: id,
+      };
+
+      const response: http.HttpResponse = await httpRequest.request(
+        `${StaticData.ServerURL}/api/student/material/reviews/withdraw/`, // 请替换为实际API路径
+        {
+          method: http.RequestMethod.DELETE,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          extraData: JSON.stringify(requestData),
+          connectTimeout: 5000
+        }
+      );
+
+      // 只需要检查状态码，不需要解析响应内容
+      return response.responseCode === 200;
+
+    } catch (error) {
+      const err = error as BusinessError;
+      console.log(`请求发送失败: ${err.message}`);
+      return false;
+    }
   }
 
   @Builder ExtraData(){
@@ -113,7 +191,7 @@ struct Records {
               .fontSize(14)
               .width('60%')
               .fontColor('#666666')
-              .margin({ left: 20 });
+              //.margin({ left: 20 });
             Text(this.data!.ApplyScore.toString())
               .fontSize(14)
               .fontColor('#333333')
@@ -122,9 +200,10 @@ struct Records {
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
-              .margin({ right: 16 });
+              //.margin({ right: 16 });
           }
-          .width('100%')
+          .width('90%')
+          .justifyContent(FlexAlign.SpaceBetween)
           .alignItems(VerticalAlign.Center);
 
           this.ExtraData()
@@ -158,7 +237,7 @@ struct Records {
               .width('60%')
               .fontColor('#333333')
               .margin({ left: 8 });
-            TextInput()
+            TextInput({text:this.data!.RealScore!=-1?this.data!.RealScore.toString():''})
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -182,7 +261,7 @@ struct Records {
             .fontSize(14)
             .fontColor('#666666')
             .margin({ left: 16 });
-          TextArea()
+          TextArea({text:this.data!.FeedBack})
             .fontSize(14)
             .fontColor('#333333')
             .backgroundColor('#e9e9e9')
@@ -204,14 +283,24 @@ struct Records {
               .width(120)
               .height(44)
               .backgroundColor('#66ccff')
-              .borderRadius(8);
+              .borderRadius(8)
+              .onClick(async ()=>{
+                if (await this.editRequest(this.data!.UploadTime,false,this.data!.FeedBack)){
+                  router.back()
+                }
+              });
             Button("撤销")
               .fontSize(14)
               .fontWeight(500)
               .width(120)
               .height(44)
               .backgroundColor('#66ccff')
-              .borderRadius(8);
+              .borderRadius(8)
+              .onClick(async ()=>{
+                if (await this.withdrawRequest(this.data!.UploadTime)){
+                  router.back()
+                }
+              });
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)

@@ -203,7 +203,7 @@ struct AddOptionApplication {
                   .height(20)
                   .backgroundColor('#ffffff')
                   .onClick(() => {
-                    router.pushUrl({ url: 'pages/Stu/Main' });
+                    router.back()
                   });
               }
               .width('100%')

@@ -1,13 +1,25 @@
 import router from '@ohos.router';
 import { url } from '@kit.ArkTS';
+import http from '@ohos.net.http';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+import promptAction from '@ohos.promptAction';
 
-// 定义提交数据的接口
-interface SubmitData {
-  role: string;
-  account: string;
-  majorClass: string;
-  password: string;
-  dataExportPermission: boolean;
+// 定义请求数据接口
+interface StudentInfoRequest {
+  school_id: string;
+  name: string;
+  department: string;
+  academy_score: number;
+  cet4: number;
+  cet6: number;
+}
+
+// 定义教师请求数据接口
+interface TeacherInfoRequest {
+  school_id: string;
+  name: string;
+  department: string;
 }
 
 @Entry
@@ -16,10 +28,137 @@ struct NewAddPage {
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
   @State account: string = ''; // 账号
+  @State name:string =''
   @State majorClass: string = ''; // 专业班级
   @State score: number = 0;
   @State cet: number[] = [-1,-1];
   //@State dataExportPermission: boolean = false; // 数据导出权限状态
+
+  async submitAccountInfo(): Promise<boolean> {
+    const httpRequest = http.createHttp();
+
+    try {
+      // 根据账户类型选择不同的URL和请求数据
+      const url = this.isTeacher
+        ? `${StaticData.ServerURL}/api/account/admin/create/teacher/`
+        : `${StaticData.ServerURL}/api/account/admin/create/student/`;
+
+      let requestData:StudentInfoRequest|TeacherInfoRequest;
+
+      if (!this.isTeacher) {
+        // 学生类型
+        requestData = {
+          school_id: this.account,
+          name: this.name,
+          department: this.majorClass,
+          academy_score: this.score,
+          cet4: this.cet[0] !== -1 ? this.cet[0] : 0,
+          cet6: this.cet[1] !== -1 ? this.cet[1] : 0
+        } as StudentInfoRequest;
+      } else {
+        // 教师类型
+        requestData = {
+          school_id: this.account,
+          name: this.name,
+          department: this.majorClass
+        } as TeacherInfoRequest;
+      }
+
+      const response: http.HttpResponse = await httpRequest.request(
+        url,
+        {
+          method: http.RequestMethod.POST,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          extraData: JSON.stringify(requestData),
+          connectTimeout: 5000
+        }
+      );
+
+      // 检查状态码
+      if (response.responseCode === 200) {
+        promptAction.showToast({
+          message: `${this.isTeacher ? '教师' : '学生'}账户创建成功`,
+          duration: 2000
+        });
+        return true;
+      } else {
+        promptAction.showToast({
+          message: `创建失败，状态码: ${response.responseCode}`,
+          duration: 2000
+        });
+        return false;
+      }
+
+    } catch (error) {
+      const err = error as BusinessError;
+      console.log(`账户信息提交失败: ${err.message}`);
+      promptAction.showToast({
+        message: '网络请求失败，请检查网络连接',
+        duration: 2000
+      });
+      return false;
+    }
+  }
+
+  // 验证表单数据
+  validateForm(): boolean {
+    if (!this.account.trim()) {
+      promptAction.showToast({
+        message: '请输入账号',
+        duration: 2000
+      });
+      return false;
+    }
+
+    if (!this.name.trim()) {
+      promptAction.showToast({
+        message: '请输入姓名',
+        duration: 2000
+      });
+      return false;
+    }
+
+    if (!this.majorClass.trim()) {
+      promptAction.showToast({
+        message: '请输入单位',
+        duration: 2000
+      });
+      return false;
+    }
+
+    if (!this.isTeacher) {
+      if (this.score < 0 || this.score > 4.0) {
+        promptAction.showToast({
+          message: '请输入有效的绩点(0-4.0)',
+          duration: 2000
+        });
+        return false;
+      }
+
+      if (this.cet[0] < -1 || this.cet[0] > 710) {
+        promptAction.showToast({
+          message: '请输入有效的四级成绩(0-710)',
+          duration: 2000
+        });
+        return false;
+      }
+
+      if (this.cet[1] < -1 || this.cet[1] > 710) {
+        promptAction.showToast({
+          message: '请输入有效的六级成绩(0-710)',
+          duration: 2000
+        });
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 
   build() {
     Column() {
@@ -89,6 +228,18 @@ struct NewAddPage {
             this.account = value;
           });
 
+        Text('姓名：')
+          .fontSize(16)
+          .width('96%')
+          .margin({ top: 16});
+        TextInput({ placeholder: '请输入他/她的姓名' })
+          .width('90%')
+          .height(40)
+          .margin({ left: 16, right: 16, top: 4 })
+          .onChange((value: string) => {
+            this.name = value;
+          });
+
         // 专业班级输入框，仅学生可见
 
         Text('单位：')
@@ -120,16 +271,23 @@ struct NewAddPage {
           Row() {
             Text('四级：')
               .fontSize(16)
-            TextInput()
-              .width('24%')
+            TextInput({ placeholder: '0表示未考' })
+              .width('40%')
+              .margin({ right: 16 })
               .onChange((value: string) => {
                 this.cet[0] = Number(value);
               })
               .type(InputType.Number);
+
+            }.width('96%')
+            .justifyContent(FlexAlign.SpaceBetween)
+            .alignItems(VerticalAlign.Center)
+            .margin({ top: 16 });
+          Row() {
             Text('六级：')
               .fontSize(16)
-            TextInput()
-              .width('24%')
+            TextInput({ placeholder: '0表示未考' })
+              .width('40%')
               .margin({ right: 16 })
               .onChange((value: string) => {
                 this.cet[1] = Number(value);
@@ -140,7 +298,6 @@ struct NewAddPage {
           .alignItems(VerticalAlign.Center)
           .margin({ top: 16 });
         }
-
 
         Text(`生成密码为：123456`)
           .fontSize(16)

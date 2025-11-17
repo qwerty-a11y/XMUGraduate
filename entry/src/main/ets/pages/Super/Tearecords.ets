@@ -1,6 +1,15 @@
 import router from '@ohos.router';
 import { RecordEntry } from '../../datatypes/Record';
 import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
+import http from '@ohos.net.http';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+interface requestData{
+  id:number,
+}
+
 
 @Entry
 @Component
@@ -9,6 +18,38 @@ struct Records {
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
   private typeList: string[] = ['学业竞赛', '创新创业训练', '科研成果', '荣誉称号', '社会工作', '志愿服务', '国际组织学习', '参军入伍', '体育比赛']
   @State data?: RecordEntry = undefined;
+
+  async withdrawRequest(id: number): Promise<boolean> {
+    const httpRequest = http.createHttp();
+
+    try {
+      const requestData:requestData = {
+        id: id,
+      };
+
+      const response: http.HttpResponse = await httpRequest.request(
+        `${StaticData.ServerURL}/api/student/material/reviews/withdraw/`, // 请替换为实际API路径
+        {
+          method: http.RequestMethod.DELETE,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          extraData: JSON.stringify(requestData),
+          connectTimeout: 5000
+        }
+      );
+
+      // 只需要检查状态码，不需要解析响应内容
+      return response.responseCode === 200;
+
+    } catch (error) {
+      const err = error as BusinessError;
+      console.log(`请求发送失败: ${err.message}`);
+      return false;
+    }
+  }
 
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry;
@@ -157,7 +198,7 @@ struct Records {
               .fontSize(14)
               .width('60%')
               .fontColor('#333333')
-            Text(this.data ? this.data.RealScore.toString() : '')
+            Text(this.data!.RealScore!=-1?this.data!.RealScore.toString():'未评分')
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -174,6 +215,7 @@ struct Records {
           Text("反馈")
             .fontSize(14)
             .fontColor('#666666')
+            .width('90%')
             .margin({ left: 16 });
           Text(this.data ? this.data.FeedBack : '')
             .fontSize(14)
@@ -186,25 +228,18 @@ struct Records {
             .padding({ left: 12, top: 12 });
 
           // 操作按钮
-          Row({ space: 20 }) {
-            Button("重新审核")
-              .fontSize(14)
-              .fontWeight(500)
-              .width(120)
-              .height(44)
-              .backgroundColor('#66ccff')
-              .borderRadius(8);
-            Button("撤销")
-              .fontSize(14)
-              .fontWeight(500)
-              .width(120)
-              .height(44)
-              .backgroundColor('#66ccff')
-              .borderRadius(8);
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.Center)
-          .margin({ top: 20, bottom: 30 });
+          Button("撤销")
+            .fontSize(14)
+            .fontWeight(500)
+            .width(300)
+            .height(44)
+            .backgroundColor('#66ccff')
+            .borderRadius(8)
+            .onClick(async ()=>{
+              if (await this.withdrawRequest(this.data!.UploadTime)){
+                router.back()
+              }
+            });
         }
         .width('100%') // 确保内部Column占满宽度
       }
@@ -212,6 +247,7 @@ struct Records {
       .height('100%');
     }
     .width('100%')
+    .height('95%')
     .padding({ top: 16 });
   }
 }
