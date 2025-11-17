@@ -66,6 +66,12 @@ export struct UploadsView {
     autoCancel: true
   })
   @Link UpdateTrigger: boolean;
+  @State List:RecordTypes.RecordEntry[] = []
+
+  update(){
+    UploadsData.Filter()
+    this.List = [...UploadsData.FilteredList]
+  }
 
   async refresh(){
     let httpRequest = http.createHttp();
@@ -159,6 +165,8 @@ export struct UploadsView {
 
             UploadsData.UploadsList.push(recordEntry);
           }
+          this.update()
+
 
         } else if (DataObj && Object.keys(DataObj).includes('detail')) {
           promptAction.showToast({
@@ -194,11 +202,11 @@ export struct UploadsView {
    * 执行时机：页面切换到审核页时（如点击底部导航栏"审核"项）
    */
   aboutToAppear(): void {
-    //this.refresh()
+    this.refresh()
     // 1. 加载测试数据到全局数据服务：将TestData中的模拟审核记录赋值给UploadsData的UploadsList（原始数据池）
-    UploadsData.UploadsList = TestData.RecordList;
+    //UploadsData.UploadsList = TestData.RecordList;
     // 2. 执行首次数据筛选：根据默认筛选条件（如无搜索关键词时显示全部）生成FilteredList（筛选后的数据）
-    UploadsData.Filter();
+    //UploadsData.Filter();
   }
 
   /**
