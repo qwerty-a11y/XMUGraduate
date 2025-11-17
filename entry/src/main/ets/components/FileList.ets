@@ -28,7 +28,7 @@ export struct UploadFile{
           Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
           Text(item.filename).width('70%')
           if (!this.ReadOnly) Image(this.image_remove).width('3%').margin({left:'6%',right:'6%'})
-        }
+        }.height(40)
       })
       if (!this.ReadOnly) {
         Image(this.image_add).height(40)
