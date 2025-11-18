@@ -191,7 +191,7 @@ struct Records {
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
     this.FileList=this.data!.Attachments
-    if (this.data!.ReviewStatus == 0 || this.data!.ReviewStatus == 3){
+    if (this.data!.ReviewStatus == 0){
       this.AllowEdit = true
     }
   }
@@ -245,44 +245,13 @@ struct Records {
       .width('100%')
       .justifyContent(FlexAlign.Center)
       .margin({ top: 20, bottom: 30 });
-    } else if (this.data?.ReviewStatus == 1 || this.data?.ReviewStatus == 2) {
+    } else {
       //----------------非草稿页面---------------------
       Row({ space: 20 }) {
         Button("撤回并保存为草稿")
           .fontSize(14)
           .fontWeight(500)
           //.width(120)
-          .height(44)
-          .backgroundColor('#66ccff')
-          .borderRadius(8)
-          .onClick(async ()=>{
-            if (await this.State(false)) router.back()
-          });
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.Center)
-      .margin({ top: 20, bottom: 30 });
-    } else if (this.data?.ReviewStatus == 3) {
-      //-------------------被驳回-------------------
-      // 操作按钮
-      Row({ space: 20 }) {
-        Button("重新提交")
-          .fontSize(14)
-          .fontWeight(500)
-          .width(120)
-          .height(44)
-          .backgroundColor('#66ccff')
-          .borderRadius(8)
-          .onClick(async ()=>{
-            this.data!.Attachments=this.FileList
-            if (await this.Save(1)) {
-              router.back()
-            }
-          });
-        Button("撤销")
-          .fontSize(14)
-          .fontWeight(500)
-          .width(120)
           .height(44)
           .backgroundColor('#66ccff')
           .borderRadius(8)
