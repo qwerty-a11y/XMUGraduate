@@ -31,14 +31,16 @@ export struct UploadFile{
   build() {
     Column(){
       ForEach(this.FileList,(item:Attachment,index:number)=>{
-        Row({space:10}){
+        Row(){
           Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
           Text(item.name).width('70%')
-          Image(this.image_remove).width('5%').margin({left:'5%',right:'5%'})
-            .onClick(()=>{
-              this.FileList.splice(index,1)
-            })
-        }.height(40).onClick(async ()=>{
+          if (!this.ReadOnly) {
+            Image(this.image_remove).width('5%').margin({ left: '5%', right: '5%' })
+              .onClick(() => {
+                this.FileList.splice(index, 1)
+              })
+          }
+        }.height(40).backgroundColor('#eeeeee').onClick(async ()=>{
           let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
             url:"http://127.0.0.1:8000/api/student/material/applications/filedownload?id="+item.id,
             header:{Authorization:"Token "+DynamicData.token},
@@ -55,7 +57,7 @@ export struct UploadFile{
       if (this.progress>0){
         Stack(){
           Row(){
-            Row().width(`${this.progress}%`).backgroundColor('#AAFFFF').borderRadius(0)
+            Row().width(`${this.progress}%`).backgroundColor('#eeeeee').borderRadius(0)
           }.height(40)
           Row({space:10}){
             Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
@@ -63,48 +65,63 @@ export struct UploadFile{
           }.height(40)
         }
       }
-      Row() {
+      if (!this.ReadOnly) {
+        Row() {
           Button() {
             Row() {
               Image(this.image_add).height(24)
               Text("上传文件")
             }
-          }.height(40).padding({left:10,right:10}).backgroundColor("#0C182431").borderRadius(5).onClick(async ()=>{
-            let file:FileSelectResult = await FilePickerManager.selectSingleDocument(this.context)
+          }
+          .height(40)
+          .padding({ left: 10, right: 10 })
+          .backgroundColor("#0C182431")
+          .borderRadius(5)
+          .onClick(async () => {
+            let file: FileSelectResult = await FilePickerManager.selectSingleDocument(this.context)
             if (file.fileNames?.length) {
-              this.progress=0
-              this.fileonupload=file.fileNames![0]
+              this.progress = 0
+              this.fileonupload = file.fileNames![0]
               await this.Upload({
                 filename: file.fileNames![0],
                 name: file.fileNames![0],
                 uri: file.uris[0],
                 type: 'application/octet-stream'
               })
-              this.FileList.push({name:this.fileonupload,id:await hash.hash(file.uris[0],'sha256')})
-              this.progress=-1
+              this.FileList.push({ name: this.fileonupload, id: await hash.hash(file.uris[0], 'sha256') })
+              this.progress = -1
             }
-          }).enabled(this.progress<0)
+          })
+          .enabled(this.progress < 0)
+
           Button() {
             Row() {
               Image(this.image_add).height(24)
               Text("上传图片")
             }
-          }.height(40).padding({left:10,right:10}).backgroundColor("#0C182431").borderRadius(5).onClick(async ()=>{
-            let file:FileSelectResult = await FilePickerManager.selectSingleImage(this.context)
+          }
+          .height(40)
+          .padding({ left: 10, right: 10 })
+          .backgroundColor("#0C182431")
+          .borderRadius(5)
+          .onClick(async () => {
+            let file: FileSelectResult = await FilePickerManager.selectSingleImage(this.context)
             if (file.fileNames?.length) {
-              this.progress=0
-              this.fileonupload=file.fileNames![0]
+              this.progress = 0
+              this.fileonupload = file.fileNames![0]
               await this.Upload({
                 filename: file.fileNames![0],
                 name: file.fileNames![0],
                 uri: file.uris[0],
                 type: 'application/octet-stream'
               })
-              this.FileList.push({name:this.fileonupload,id:await hash.hash(file.uris[0],'sha256')})
-              this.progress=-1
+              this.FileList.push({ name: this.fileonupload, id: await hash.hash(file.uris[0], 'sha256') })
+              this.progress = -1
             }
-          }).enabled(this.progress<0)
+          })
+          .enabled(this.progress < 0)
         }.width('100%').justifyContent(FlexAlign.SpaceAround)
+      }
     }
   }
 }

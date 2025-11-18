@@ -434,7 +434,7 @@ struct Records {
           Column({ space: 10 }) {
             UploadFile({ReadOnly:!this.AllowEdit,FileList:this.FileList})
           }
-          .backgroundColor('#e9e9e9')
+          //.backgroundColor('#e9e9e9')
           .borderRadius(8)
           .width('90%')
           .alignItems(HorizontalAlign.Center);
