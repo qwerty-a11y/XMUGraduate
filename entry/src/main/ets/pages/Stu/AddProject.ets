@@ -326,7 +326,7 @@ struct AddOptionApplication {
                 }
                 .width('100%')
 
-                UploadFile({FileList:this.FileList})
+                UploadFile({ReadOnly:false,FileList:this.FileList})
 /*
                 Column() {
                   Row() {

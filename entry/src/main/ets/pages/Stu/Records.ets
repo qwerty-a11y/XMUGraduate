@@ -72,7 +72,7 @@ struct Records {
       let RequestDataStr: string = json.stringify(RequestData)
       try {
         let Response: http.HttpResponse = await httpRequest.request(
-          StaticData.ServerURL + '/api/student/material/applications/create/',
+          StaticData.ServerURL + '/api/student/material/applications/update/',
           {
             method: http.RequestMethod.PUT,
             extraData: RequestDataStr,
