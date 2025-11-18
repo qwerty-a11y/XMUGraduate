@@ -1,4 +1,6 @@
 import router from '@ohos.router'; // 导入路由模块
+import { DynamicData } from '../../constants';
+import { BasicData } from '../../service/Tea/BasicData';
 
 @Entry
 @Component
@@ -59,14 +61,18 @@ struct  Setting {
             .margin({bottom:5})
           Column(){
             Row(){
-              Text('单位：**学院**系')
-                .flexGrow(1)
+              Text(`单位：`)
                 .fontSize(16)
+                .width(50)
                 .margin({top:5,bottom:5,left:8})
-            }
+              Text(BasicData.departments)
+                .fontSize(16)
+                .width(254)
+                .margin({top:5,bottom:5,right:8})
+            }.flexGrow(1)
             //.margin({bottom:5})
             .width(320)
-            .height(52)
+            .constraintSize({minHeight:52})
 
             Row() {
               Divider()
@@ -79,7 +85,7 @@ struct  Setting {
             //.margin({ bottom: 5 })
 
             Row(){
-              Text('工号：**************')
+              Text(`工号：${DynamicData.account_id}`)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({top:5,bottom:5,left:8})

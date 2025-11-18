@@ -5,6 +5,7 @@ import {HomeView} from '../../components/MainViews/Stu/Home'
 import {UploadsView} from '../../components/MainViews/Stu/Uploads'
 // 导入鸿蒙路由模块，用于页面跳转与参数传递
 import router from '@ohos.router';
+import { ForceRefresh } from '../../components/MainViews/Stu/UploadsComponents/RecordList';
 
 // 入口组件装饰器，标识当前组件为页面入口
 @Entry
@@ -46,6 +47,7 @@ struct Main {
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
+  @State Controller:ForceRefresh = new ForceRefresh()
 
   /**
    * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图
@@ -62,9 +64,9 @@ struct Main {
     } else if (this.ActiveView === 1) { // 激活审核页
       // 传递UpdateTrigger状态（双向绑定），用于触发审核页数据更新
       if (this.isFirstLoad){
-        UploadsView({ UpdateTrigger: this.UpdateTrigger }).transition(this.rightAnimationsFirst)
+        UploadsView({ Controller:this.Controller }).transition(this.rightAnimationsFirst)
       }else {
-        UploadsView({ UpdateTrigger: this.UpdateTrigger }).transition(this.rightAnimations)
+        UploadsView({ Controller:this.Controller }).transition(this.rightAnimations)
       }
     }
   }

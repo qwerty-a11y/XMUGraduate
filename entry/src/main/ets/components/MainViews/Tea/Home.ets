@@ -9,6 +9,8 @@ import { DynamicData, StaticData } from '../../../constants';
 import * as RecordTypes from  '../../../datatypes/Record'
 import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { BasicData } from '../../../service/Tea/BasicData';
+import { AWARD_LEVELS } from '../../../datatypes/TypeInfoEnums';
 
 interface Application{
   Type:number
@@ -32,6 +34,16 @@ interface empty{
 
 }
 
+export interface BasicResponse {
+  college: string;
+  created_at: string;
+  id: string;
+  major: string;
+  name: string;
+  school_id: string;
+  updated_at: string;
+}
+
 @Component
 export struct teaHomeView {
   @State homeNavBgColor: string = '#ffffffff';
@@ -42,13 +54,13 @@ export struct teaHomeView {
   private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
 
   // 列表数据，包含所有所需字段
-  @State reviewList: RecordEntry[] = TestData.RecordList;
+  @State reviewList: RecordEntry[] = [];
 
-  async refresh(){
+  async getApplications(){
     let httpRequest = http.createHttp();
     try {
       let Response: http.HttpResponse = await httpRequest.request(
-        StaticData.ServerURL + '/api/student/material/applications/list/',
+        StaticData.ServerURL + '/api/student/material/reviews/pending_list/',
         {
           method: http.RequestMethod.GET,
           header: {
@@ -165,8 +177,62 @@ export struct teaHomeView {
     }
   }
 
-  aboutToAppear(): void {
-    this.refresh()
+  async getInformation(){
+    let httpRequest = http.createHttp();
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/account/teacher/information/',
+        {
+          method: http.RequestMethod.GET,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token
+          }
+        }
+      )
+      let DataObj: BasicResponse | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && (Object.keys(DataObj).length>0)) {
+          BasicData.departments=(DataObj as BasicResponse).college+(DataObj as BasicResponse).major
+        } else if (Object && Object.keys(DataObj).includes('detail')){
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '登录失效，请重新登录',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          router.pushUrl({ url: 'pages/Login' })
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '刷新失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+    }
+  }
+
+  async aboutToAppear() {
+    await this.getApplications()
+    await this.getInformation()
+    this.reviewList=[...this.reviewList]
   }
 
   // 列表项组件
@@ -291,6 +357,7 @@ export struct teaHomeView {
           })
         }
         .width('100%')
+        .constraintSize({minHeight:'100%'})
       }
       .height('39%') // 设置滚动区域高度为屏幕的50%，可根据需要调整
       .width('100%')

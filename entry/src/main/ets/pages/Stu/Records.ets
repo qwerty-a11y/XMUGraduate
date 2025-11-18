@@ -8,6 +8,7 @@ import { promptAction, PromptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UploadFile } from '../../components/FileList';
 import { UploadsData } from '../../service/Stu/UploadsData';
+import { ForceRefresh } from '../../components/MainViews/Stu/UploadsComponents/RecordList';
 
 interface Application{
   Type:number
@@ -37,6 +38,7 @@ struct Records {
   @State isTypeDropdownOpen: boolean = false;
   @State AllowEdit:boolean = false;
   @State FileList:Attachment[]=[]
+  @State Controller?:ForceRefresh = undefined
 
   @Builder ApplicationType(){
     Column() {
@@ -92,6 +94,8 @@ struct Records {
           DataObj = DataObjTmp ? DataObjTmp : {}
           if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
             UploadsData.refresh()
+            UploadsData.Filter()
+            //this.Controller!.refresh!()
             // 使用 promptAction 显示提示
             promptAction.showToast({
               message: '提交成功',
@@ -159,6 +163,8 @@ struct Records {
         DataObj = DataObjTmp ? DataObjTmp : {}
         if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
           UploadsData.refresh()
+          UploadsData.Filter()
+          //this.Controller!.refresh!()
           // 使用 promptAction 显示提示
           promptAction.showToast({
             message: '操作成功',
@@ -192,7 +198,9 @@ struct Records {
   }
 
   aboutToAppear(): void {
-    this.data = router.getParams() as RecordEntry
+    let params = router.getParams() as Record<string,object>
+    this.data = params['data'] as RecordEntry
+    this.Controller = params['ref'] as ForceRefresh
     this.FileList=this.data!.Attachments
     if (this.data!.ReviewStatus == 0){
       this.AllowEdit = true
@@ -231,7 +239,7 @@ struct Records {
           .onClick(async ()=>{
             this.data!.Attachments=this.FileList
             if (await this.Save(1)) {
-              router.back()
+              router.back(router.RouterMode.Standard)
             }
           });
         Button("删除")
@@ -242,7 +250,7 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.State(true)) router.back()
+            if (await this.State(true)) router.back(router.RouterMode.Standard)
           });
       }
       .width('100%')
@@ -259,7 +267,7 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.State(false)) router.back()
+            if (await this.State(false)) router.back(router.RouterMode.Standard)
           });
       }
       .width('100%')

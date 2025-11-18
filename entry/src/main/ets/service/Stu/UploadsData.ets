@@ -161,7 +161,7 @@ export class UploadsData{
 
             UploadsData.UploadsList.push(recordEntry);
           }
-
+          UploadsData.Filter()
 
 
         } else if (DataObj && Object.keys(DataObj).includes('detail')) {

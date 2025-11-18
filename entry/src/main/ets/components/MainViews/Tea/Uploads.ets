@@ -1,7 +1,35 @@
 import router from '@ohos.router';
-import { RecordEntry } from '../../../datatypes/Record';
+import { Attachment, RecordEntry } from '../../../datatypes/Record';
 import { TestData } from '../../../debug/TestData';
 import { DateUtils } from '../../../utils';
+import { http } from '@kit.NetworkKit';
+import { DynamicData, StaticData } from '../../../constants';
+import json from '@ohos.util.json';
+import * as RecordTypes from  '../../../datatypes/Record'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { promptAction } from '@kit.ArkUI';
+
+interface Application{
+  Type:number
+  Title:string
+  ApplyScore:number
+  RealScore:number
+  ReviewStatus:number //0=未提交，1=审核中，2=审核通过，3=审核失败
+  UploadTime:number
+  ModifyTime:number
+  Description:string
+  Attachments:Attachment[]
+  FeedBack:string
+  extra_data:string
+}
+
+interface data{
+  ApplyList?: Application[]
+}
+
+interface empty{
+
+}
 
 @Entry
 @Component
@@ -27,6 +55,131 @@ export struct teaUploadsView {
     if (status == 2) return '#00B42A';
     if (status == 3) return '#F53F3F';
     return ''
+  }
+
+  async refresh(){
+    let httpRequest = http.createHttp();
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/student/material/reviews/history/',
+        {
+          method: http.RequestMethod.GET,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Token '+DynamicData.token
+          }
+        }
+      )
+
+      let DataObj: data | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+
+        if (Response.responseCode == 200 && DataObj && (DataObj as data).ApplyList) {
+          const applyList = (DataObj as data).ApplyList;
+          this.historyList = []
+
+          for (const item of applyList!) {
+            // 创建RecordEntry对象
+            const recordEntry = new RecordTypes.RecordEntry(
+              item.Type,
+              item.Title,
+              item.ApplyScore,
+              item.ReviewStatus,
+              item.Description,
+              item.UploadTime,
+              item.ModifyTime
+            );
+
+            recordEntry.RealScore = item.RealScore;
+            recordEntry.Attachments = item.Attachments || [];
+            recordEntry.FeedBack = item.FeedBack || '';
+
+            // 解析extra_data
+            if (item.extra_data && item.extra_data !== '') {
+              try {
+                const extraDataObj:object = JSON.parse(item.extra_data);
+                let typeInfo: RecordTypes.TypeInfo | undefined;
+
+                // 根据Type字段创建对应的TypeInfo对象
+                switch (item.Type) {
+                  case 0: // 学业竞赛
+                    typeInfo = new RecordTypes.Competition();
+                    break;
+                  case 1: // 创新创业训练
+                    typeInfo = new RecordTypes.Innovation();
+                    break;
+                  case 2: // 科研成果
+                    typeInfo = new RecordTypes.Research();
+                    break;
+                  case 3: // 荣誉称号
+                    typeInfo = new RecordTypes.Honor();
+                    break;
+                  case 4: // 社会工作
+                    typeInfo = new RecordTypes.SocialWork();
+                    break;
+                  case 5: // 志愿服务
+                    typeInfo = new RecordTypes.Volunteer();
+                    break;
+                  case 6: // 国际组织学习
+                    typeInfo = new RecordTypes.International();
+                    break;
+                  case 7: // 参军入伍
+                    typeInfo = new RecordTypes.Military();
+                    break;
+                  case 8: // 体育比赛
+                    typeInfo = new RecordTypes.Sports();
+                    break;
+                  default:
+                    console.warn('Unknown record type:', item.Type);
+                }
+
+                if (typeInfo) {
+                  // 调用fromJSON方法解析数据
+                  typeInfo.fromJSON(item.extra_data);
+                  recordEntry.extra_data = typeInfo;
+                }
+              } catch (parseError) {
+                console.error('Error parsing extra_data:', parseError);
+              }
+            }
+
+            this.historyList.push(recordEntry);
+          }
+
+        } else if (DataObj && Object.keys(DataObj).includes('detail')) {
+          promptAction.showToast({
+            message: '登录失效，请重新登录',
+            duration: 2000
+          });
+          router.pushUrl({ url: 'pages/Login' })
+        } else {
+          promptAction.showToast({
+            message: '刷新失败，请检查网络连接',
+            duration: 2000
+          });
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000
+        });
+        return;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+    }
+  }
+
+  aboutToAppear(): void {
+    this.refresh()
   }
 
   build() {
@@ -124,6 +277,8 @@ export struct teaUploadsView {
           });
         }
         .width('100%')
+        .constraintSize({minHeight:'100%'})
+        .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Center);
       }
       .height('75%')

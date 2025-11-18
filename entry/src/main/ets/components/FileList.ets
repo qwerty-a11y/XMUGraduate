@@ -7,6 +7,7 @@ import { DynamicData, StaticData } from '../constants';
 import { Attachment } from '../datatypes/Record';
 import hash from '@ohos.file.hash';
 import { request } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
 
 @Component
 export struct UploadFile{
@@ -54,7 +55,7 @@ export struct UploadFile{
           }
         })
       })
-      if (this.progress>0){
+      if (this.progress>=0){
         Stack(){
           Row(){
             Row().width(`${this.progress}%`).backgroundColor('#eeeeee').borderRadius(0)
@@ -82,10 +83,12 @@ export struct UploadFile{
             if (file.fileNames?.length) {
               this.progress = 0
               this.fileonupload = file.fileNames![0]
+              let options:fileIo.CopyOptions = {}
+              await fileIo.copy(file.uris![0],'internal://cache/')
               await this.Upload({
                 filename: file.fileNames![0],
                 name: file.fileNames![0],
-                uri: file.uris[0],
+                uri: 'internal://cache/'+file.fileNames![0],
                 type: 'application/octet-stream'
               })
               this.FileList.push({ name: this.fileonupload, id: await hash.hash(file.uris[0], 'sha256') })

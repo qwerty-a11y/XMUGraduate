@@ -106,6 +106,10 @@ export struct top {
  }
 
 
+ export class ForceRefresh {
+  public refresh?:()=>void = undefined
+ }
+
  // ====================== 8. 审核页类别组件（CategoryComponent）======================
 /**
  * 审核页类别组件
@@ -118,8 +122,7 @@ export struct top {
 @Component
 export struct CategoryComponent {
   @State FilteredList:TypeRecord.RecordEntry[]=UploadsData.FilteredList
-  @Watch('ForceUpdate')
-  @Link UpdateTrigger:boolean
+  @Link Controller:ForceRefresh
   /**
    * 组件构建方法：定义UI结构
    * 布局：垂直容器，内部循环渲染所有活动卡片
@@ -127,13 +130,20 @@ export struct CategoryComponent {
   ForceUpdate(){
     this.FilteredList=[...UploadsData.FilteredList]
   }
+
+  aboutToAppear(): void {
+    this.Controller.refresh=this.ForceUpdate
+  }
+
   build() {
     Column() {
       // 循环渲染卡片列表
       // ForEach：鸿蒙UI框架的循环渲染组件，遍历cards数组
       ForEach(this.FilteredList, (entry: TypeRecord.RecordEntry) => {
         // 为每个卡片数据创建一个活动卡片组件
-        ActivityCardComponent({ entry: entry });
+        ActivityCardComponent({ entry: entry }).onClick(() => {
+          router.pushUrl({ url: 'pages/Stu/Records' ,params:{data:entry,ref:this.Controller}});
+        });
       });
     }
     .width('100%') // 宽度占满父容器
@@ -291,9 +301,6 @@ export struct ActivityCardComponent {
        offsetX: 0,
        offsetY: 2 // 阴影向下偏移2px
      })
-     .margin({ bottom: 10 })
-     .onClick(() => {
-       router.pushUrl({ url: 'pages/Stu/Records' ,params:this.entry});
-     });
+     .margin({ bottom: 10 });
    }
  }
