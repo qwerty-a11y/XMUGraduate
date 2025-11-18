@@ -1,6 +1,6 @@
 import router from '@ohos.router';
 import { Account } from '../../datatypes/Account';
-import { RecordEntry } from '../../datatypes/Record';
+import { Attachment, RecordEntry } from '../../datatypes/Record';
 import { TestData } from '../../debug/TestData';
 import { DateUtils } from '../../utils';
 import http from '@ohos.net.http';
@@ -19,7 +19,7 @@ interface Application{
   UploadTime:number
   ModifyTime:number
   Description:string
-  Attachments:string[]
+  Attachments:Attachment[]
   FeedBack:string
   extra_data:string
 }

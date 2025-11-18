@@ -7,6 +7,7 @@ import { StaticData,DynamicData} from '../../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
 import { ApplicationStateChangeCallback } from '@kit.AbilityKit';
+import { UploadsData } from '../../../service/Stu/UploadsData';
 
 //import { AddItemDialog, AddItemDialogConfig } from '../../components/MainViews/StuUploadsComponents/addprojects';
 
@@ -173,6 +174,7 @@ export struct HomeView {
 
   aboutToAppear(): void {
     this.refresh()
+    UploadsData.refresh()
   }
 
   @Prop image_setting: ResourceStr = $r("app.media.Settings"); // 设置图标

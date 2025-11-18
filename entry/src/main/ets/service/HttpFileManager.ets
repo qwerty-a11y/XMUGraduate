@@ -99,7 +99,7 @@ export class HttpFileManager {
       console.info(`Upload Progress: ${progress.toFixed(2)}% (${receivedSize}/${totalSize} bytes)`);
 
       if (options.onProgress) {
-        options.onProgress(progress, receivedSize, totalSize);
+        options.onProgress(progress);
       }
     });
 
@@ -130,7 +130,7 @@ export class HttpFileManager {
       console.info(`Download Progress: ${progress.toFixed(2)}% (${receivedSize}/${totalSize} bytes)`);
 
       if (options.onProgress) {
-        options.onProgress(progress, receivedSize, totalSize);
+        options.onProgress(progress);
       }
     });
 

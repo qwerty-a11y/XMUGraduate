@@ -1,10 +1,11 @@
 import router from '@ohos.router';
-import { RecordEntry } from '../../datatypes/Record';
+import { Attachment, RecordEntry } from '../../datatypes/Record';
 import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponents'
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { UploadFile } from '../../components/FileList';
 
 interface requestData{
   id:number,
@@ -19,9 +20,11 @@ struct ScoreApplyReviewPage {
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
   private typeList:string[] = ['学业竞赛','创新创业训练','科研成果','荣誉称号','社会工作','志愿服务','国际组织学习','参军入伍','体育比赛']
   @State data?:RecordEntry=undefined;
+  @State FileList:Attachment[]=[]
 
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
+    this.FileList=this.data!.Attachments
   }
 
   @Builder ExtraData(){
@@ -179,16 +182,7 @@ struct ScoreApplyReviewPage {
             .width('90%')
             .fontColor('#666666')
           Column({ space: 10 }) {
-            Image(this.image_world)
-              .width(24)
-              .height(24)
-              .margin({ left: 16, top: 10 });
-            Text("点击下载证明文件")
-              .fontSize(14)
-              .width('50%')
-              .height(10)
-              .margin({ bottom: 10 })
-              .textAlign(TextAlign.Center)
+            UploadFile({ FileList:this.FileList })
           }
           .backgroundColor('#e9e9e9')
           .borderRadius(8)

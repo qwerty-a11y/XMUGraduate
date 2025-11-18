@@ -982,7 +982,7 @@ export class RecordEntry{
   public UploadTime:number
   public ModifyTime:number
   public Description:string
-  public Attachments:string[]=[]
+  public Attachments:Attachment[]=[]
   public FeedBack:string = ''
   public extra_data?:TypeInfo
 }

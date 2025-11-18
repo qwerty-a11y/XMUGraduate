@@ -1,11 +1,12 @@
 import router from '@ohos.router';
-import { RecordEntry } from '../../datatypes/Record';
+import { Attachment, RecordEntry } from '../../datatypes/Record';
 import * as RecordsComponents from '../../components/MainViews/Stu/RecordsComponents'
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
 import { promptAction, PromptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { UploadFile } from '../../components/FileList';
 
 interface Application{
   Type:number
@@ -16,7 +17,7 @@ interface Application{
   UploadTime:number
   ModifyTime:number
   Description:string
-  Attachments:string[]
+  Attachments:Attachment[]
   FeedBack:string
   extra_data:string
 }
@@ -34,6 +35,7 @@ struct Records {
   @State data?:RecordEntry=undefined;
   @State isTypeDropdownOpen: boolean = false;
   @State AllowEdit:boolean = false;
+  @State FileList:Attachment[]=[]
 
   @Builder ApplicationType(){
     Column() {
@@ -188,6 +190,7 @@ struct Records {
 
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
+    this.FileList=this.data!.Attachments
     if (this.data!.ReviewStatus == 0 || this.data!.ReviewStatus == 3){
       this.AllowEdit = true
     }
@@ -210,7 +213,10 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.Save(0)) router.back()
+            this.data!.Attachments=this.FileList
+            if (await this.Save(0)){
+              router.back()
+            }
           });
         Button("提交")
           .fontSize(14)
@@ -220,7 +226,10 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.Save(1)) router.back()
+            this.data!.Attachments=this.FileList
+            if (await this.Save(1)) {
+              router.back()
+            }
           });
         Button("删除")
           .fontSize(14)
@@ -265,7 +274,10 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.Save(1)) router.back()
+            this.data!.Attachments=this.FileList
+            if (await this.Save(1)) {
+              router.back()
+            }
           });
         Button("撤销")
           .fontSize(14)
@@ -436,7 +448,6 @@ struct Records {
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
-              .type(InputType.Number)
               .enabled(this.AllowEdit);
           }
           .width('90%')
@@ -452,16 +463,7 @@ struct Records {
             .fontColor('#666666')
             .margin({ left: 16 });
           Column({ space: 10 }) {
-            Image(this.image_world)
-              .width(24)
-              .height(24)
-              .margin({ left: 16, top: 10 });
-            Text("点击下载证明文件")
-              .fontSize(14)
-              .width('50%')
-              .height(10)
-              .margin({ bottom: 10 })
-              .textAlign(TextAlign.Center)
+            UploadFile({ReadOnly:!this.AllowEdit,FileList:this.FileList})
           }
           .backgroundColor('#e9e9e9')
           .borderRadius(8)

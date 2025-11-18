@@ -1,6 +1,6 @@
 import { Poster } from '../Stu/HomeComponents/TypeCard';
 import router from '@ohos.router';
-import { RecordEntry } from '../../../datatypes/Record';
+import { Attachment, RecordEntry } from '../../../datatypes/Record';
 import { DateUtils } from '../../../utils';
 import { TestData } from '../../../debug/TestData';
 import http from '@ohos.net.http';
@@ -19,7 +19,7 @@ interface Application{
   UploadTime:number
   ModifyTime:number
   Description:string
-  Attachments:string[]
+  Attachments:Attachment[]
   FeedBack:string
   extra_data:string
 }

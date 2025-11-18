@@ -1,12 +1,13 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
-import {RecordEntry, RecordType} from '../../datatypes/Record'
+import { Attachment, RecordEntry, RecordType} from '../../datatypes/Record'
 import { BusinessError, request } from '@kit.BasicServicesKit';
 import * as AddProjectComponents from '../../components/MainViews/Stu/AddProjectComponent'
 import { inputConsumer } from '@kit.InputKit';
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
+import { UploadFile } from '../../components/FileList';
 
 //import { FlexAlign, VerticalAlign, InputType } from '@ohos.util'; // 导入所需枚举类型
 
@@ -19,7 +20,7 @@ interface Application{
   UploadTime:number
   ModifyTime:number
   Description:string
-  Attachments:string[]
+  Attachments:Attachment[]
   FeedBack:string
   extra_data:string
 }
@@ -46,6 +47,8 @@ struct AddOptionApplication {
   @State fileUploaded: boolean = false;
   */
   @State tmpentry: RecordEntry = new RecordEntry(RecordType.Competition,'',0,0,'',Date.now())
+  @State FileList:Attachment[]=[]
+
 
   async Save(submit:boolean):Promise<boolean>{
     if (this.tmpentry.Title!='' && this.tmpentry.ApplyScore!=0&&this.tmpentry.Description!='') {
@@ -323,6 +326,8 @@ struct AddOptionApplication {
                 }
                 .width('100%')
 
+                UploadFile({FileList:this.FileList})
+/*
                 Column() {
                   Row() {
                     Image(this.image_download)
@@ -344,6 +349,7 @@ struct AddOptionApplication {
                 .width('100%')
                 //.height(52)
                 .onClick(() => this.onUploadFileClick())
+                */
               }
               .width('100%')
               .padding({
@@ -363,6 +369,7 @@ struct AddOptionApplication {
                   .fontColor(Color.White)
                   // .onClick(() => this.onSaveDraftClick())
                   .onClick(async () => {
+                    this.tmpentry.Attachments=this.FileList
                     if (await this.Save(false)) {
                       router.pushUrl({ url: 'pages/Stu/Main' });
                     }
@@ -375,6 +382,7 @@ struct AddOptionApplication {
                   .fontColor(Color.White)
                   //.onClick(() => this.onSubmitClick())
                   .onClick(async () => {
+                    this.tmpentry.Attachments=this.FileList
                     if (await this.Save(true)) {
                       router.pushUrl({ url: 'pages/Stu/Main' });
                     }

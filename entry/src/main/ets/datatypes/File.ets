@@ -24,7 +24,7 @@ export interface FormDataItem {
 }
 
 // 进度回调类型定义
-type ProgressCallback = (progress: number, receivedSize: number, totalSize: number) => void;
+type ProgressCallback = (progress: number) => void;
 type CompletionCallback = () => void;
 type ErrorCallback = (error?: BusinessError) => void;
 
@@ -44,6 +44,7 @@ export interface UploadOptions {
 export interface DownloadOptions {
   url: string;
   header?: HeadersObject;
+  filePath?: string;
   onProgress?: ProgressCallback;
   onComplete?: CompletionCallback;
   onError?: ErrorCallback;

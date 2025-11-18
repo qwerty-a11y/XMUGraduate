@@ -61,14 +61,18 @@ struct  Setting {
                   .margin({bottom:5})
                 Column(){
                   Row(){
-                      Text(`单位：${BasicData.departments}`)
-                        .flexGrow(1)
+                      Text(`单位：`)
                         .fontSize(16)
+                        .width(50)
                         .margin({top:5,bottom:5,left:8})
-                  }
+                      Text(BasicData.departments)
+                        .fontSize(16)
+                        .width(254)
+                        .margin({top:5,bottom:5,right:8})
+                  }.flexGrow(1)
                   //.margin({bottom:5})
                   .width(320)
-                  .height(52)
+                  .constraintSize({minHeight:52})
 
                   Row() {
                     Divider()

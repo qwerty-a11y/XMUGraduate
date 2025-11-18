@@ -228,7 +228,12 @@ export struct ActivityCardComponent {
          .fontSize(24)
          .fontWeight(FontWeight.Medium)
          .margin({ left: 5 })
+         .width('50%')
+         .height('75%')
          .flexGrow(1)
+         .ellipsisMode(EllipsisMode.END)
+         .maxLines(2)
+         .textOverflow({overflow:TextOverflow.Ellipsis})
          .alignRules({
            left:{anchor:'icon',align:HorizontalAlign.End},
            center:{anchor:'icon',align:VerticalAlign.Center}

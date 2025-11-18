@@ -6,7 +6,7 @@ import { promptAction } from '@kit.ArkUI';
 import {FileSelectResult,PathInfo,DocumentSelectOptions,ImageSelectOptions} from '../datatypes/FilePicker'
 
 
-class FilePickerManager {
+export class FilePickerManager {
   private static instance: FilePickerManager;
 
   // 私有构造函数，确保单例
