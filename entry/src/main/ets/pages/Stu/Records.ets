@@ -7,6 +7,7 @@ import { DynamicData, StaticData } from '../../constants';
 import { promptAction, PromptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UploadFile } from '../../components/FileList';
+import { UploadsData } from '../../service/Stu/UploadsData';
 
 interface Application{
   Type:number
@@ -90,6 +91,7 @@ struct Records {
           DataObjTmp = json.parse(Response.result.toString())
           DataObj = DataObjTmp ? DataObjTmp : {}
           if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+            UploadsData.refresh()
             // 使用 promptAction 显示提示
             promptAction.showToast({
               message: '提交成功',
@@ -156,6 +158,7 @@ struct Records {
         DataObjTmp = json.parse(Response.result.toString())
         DataObj = DataObjTmp ? DataObjTmp : {}
         if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          UploadsData.refresh()
           // 使用 promptAction 显示提示
           promptAction.showToast({
             message: '操作成功',
@@ -384,6 +387,9 @@ struct Records {
             .width('90%')
             .height(36)
             .borderRadius(8)
+            .onChange((text)=>{
+              this.data!.Title=text
+            })
             .enabled(this.AllowEdit);
 
           // 详细描述
@@ -401,6 +407,9 @@ struct Records {
             .textAlign(TextAlign.Start)
             .borderRadius(8)
             .padding({ left: 12, top: 12 ,bottom:12})
+            .onChange((text)=>{
+              this.data!.Description=text
+            })
             .enabled(this.AllowEdit);
 
           // 申请分值
@@ -417,6 +426,9 @@ struct Records {
               .height(36)
               .textAlign(TextAlign.Center)
               .borderRadius(8)
+              .onChange((text)=>{
+                this.data!.ApplyScore=Number(text)
+              })
               .enabled(this.AllowEdit);
           }
           .width('90%')
