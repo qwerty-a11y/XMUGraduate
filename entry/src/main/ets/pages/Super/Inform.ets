@@ -50,7 +50,7 @@ export struct SuperInform {
     for (const item of data.AccountList) {
       if (accountType === false) {
         // 学生类型需要Score，如果不存在则使用默认值0
-        const score = item.Score !== undefined ? item.Score : 0;
+        const score = item.Score != undefined ? item.Score : 0;
         accounts.push(new Student(item.ID, item.Name, score));
       } else {
         // 教师类型不需要Score
@@ -251,7 +251,7 @@ export struct SuperInform {
                     .textAlign(TextAlign.Center);
                   if (this.ListType<2) {
                     // 分数
-                    Text((item as Student).Score.toString()+"分")
+                    Text((item as Student).Score?.toString()+"分")
                       .fontSize(14)
                       .textAlign(TextAlign.Center);
                   }

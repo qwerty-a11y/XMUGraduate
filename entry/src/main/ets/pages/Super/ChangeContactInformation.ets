@@ -1,5 +1,15 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
+import { http } from '@kit.NetworkKit';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+interface data{
+  email:string,
+  phone:string
+}
+interface empty{}
 
 @Entry
 @Component
@@ -17,6 +27,65 @@ struct ChangeContactInformation {
 
   // 返回图标资源
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
+
+  async Save():Promise<boolean>{
+    let httpRequest = http.createHttp();
+    let RequestData: data = {
+      email:this.email,
+      phone:this.phoneNumber
+    }
+    let RequestDataStr: string = json.stringify(RequestData)
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/account/student/update/contact/',
+        {
+          method: http.RequestMethod.PUT,
+          extraData: RequestDataStr,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交成功',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return true
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+  }
 
   // 获取验证码
   private getVerificationCode() {
@@ -59,7 +128,7 @@ struct ChangeContactInformation {
   }
 
   // 验证联系信息并提交
-  private submitContactChange() {
+  async submitContactChange() {
     // 验证手机号
     if (!this.phoneNumber) {
       this.errorMessage = '请输入手机号';
@@ -80,31 +149,36 @@ struct ChangeContactInformation {
         return;
       }
 
+      /*
       // 验证验证码
       if (!this.verificationCode) {
         this.errorMessage = '请输入验证码';
         return;
       }
 
+
       // 简单验证验证码长度（实际项目中应与后端校验）
       if (this.verificationCode.length !== 6) {
         this.errorMessage = '验证码格式不正确';
         return;
       }
+      */
     }
 
-    // 验证通过，模拟修改成功
-    this.errorMessage = '';
+    if (await this.Save()) {
+      // 验证通过，模拟修改成功
+      this.errorMessage = '';
 
-    promptAction.showToast({
-      message: '联系方式修改成功',
-      duration: 2000
-    });
+      promptAction.showToast({
+        message: '联系方式修改成功',
+        duration: 2000
+      });
 
-    // 返回设置页
-    setTimeout(() => {
-      router.back()
-    }, 1000);
+      // 返回设置页
+      setTimeout(() => {
+        router.back()
+      }, 1000);
+    }
   }
 
   build() {
@@ -116,9 +190,8 @@ struct ChangeContactInformation {
           .height(24)
           .margin({ left: 8 })
           .onClick(() => {
-            router.back() // 直接写目标页面路径
+            router.back()
           });
-
 
         Text('修改联系方式')
           .flexGrow(1)
@@ -180,6 +253,7 @@ struct ChangeContactInformation {
         }
         .margin({ bottom: 15 });
 
+        /*
         // 验证码输入框 + 获取按钮
         Column() {
           Text('验证码')
@@ -214,7 +288,7 @@ struct ChangeContactInformation {
           }
         }
         .margin({ bottom: 15 });
-
+        */
         // 错误提示
         if (this.errorMessage) {
           Text(this.errorMessage)
