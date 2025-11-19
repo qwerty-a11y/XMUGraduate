@@ -140,14 +140,21 @@ struct Records {
     let httpRequest = http.createHttp();
     try {
       let URL:string
+      let method:http.RequestMethod
       switch (opr){
-        case false:URL='/api/student/material/applications/withdraw/?UploadTime='+this.data!.UploadTime.toString();break;
-        case true:URL='/api/student/material/applications/destroy/?UploadTime='+this.data!.UploadTime.toString();break;
+        case false:{
+          URL='/api/student/material/applications/withdraw/?UploadTime='+this.data!.UploadTime.toString();
+          method=http.RequestMethod.PUT
+        }break;
+        case true:{
+          URL='/api/student/material/applications/destroy/?UploadTime='+this.data!.UploadTime.toString();
+          method=http.RequestMethod.DELETE
+        }break;
       }
       let Response: http.HttpResponse = await httpRequest.request(
         StaticData.ServerURL + URL,
         {
-          method: http.RequestMethod.DELETE,
+          method: method,
           header: {
             'Content-Type': 'application/json', // 关键：添加这个头
             'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应

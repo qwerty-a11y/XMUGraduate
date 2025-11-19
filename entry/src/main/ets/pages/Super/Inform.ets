@@ -25,13 +25,7 @@ export struct SuperInform {
   @Prop image_check: ResourceStr = $r('app.media.check');
 
   // 学生数据 - 初始化为全部选中
-  @State AccountData: Account[] = [
-    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
-    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
-    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
-    new Student("xxxxxxxxxxxxxxx","XXX",3.0),
-    //new Teacher("XXX","xxxxxxxxxxxxxxx")
-  ];
+  @State AccountData: Account[] = [];
 
   @State AccountSelect: boolean[]=[]
 
@@ -118,7 +112,7 @@ export struct SuperInform {
 
 
   aboutToAppear(): void {
-    this.getAccountList(AccountList.Type<2,AccountList.Major())
+    this.getAccountList(AccountList.Type==2,AccountList.Major())
   }
 
   // 全选方法 - 强制所有项选中
@@ -195,9 +189,12 @@ export struct SuperInform {
 
             Toggle({ type: ToggleType.Switch, isOn: this.allSelected })
               .margin({ left: 5 })
-              .onChange((isOn: boolean) => {
-                isOn ? this.selectAll() : this.deselectAll();
-              });
+              .onClick(() => {
+                !this.allSelected ? this.selectAll() : this.deselectAll();
+              })
+              .onChange((isOn)=>{
+                this.allSelected = isOn
+              })
 
             Image($r('app.media.check'))
               .width(24)

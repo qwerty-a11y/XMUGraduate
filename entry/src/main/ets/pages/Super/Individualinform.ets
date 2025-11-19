@@ -30,7 +30,7 @@ struct OperationPage {
           .height(24)
           .margin({ left: 16 })
           .onClick(() => {
-            router.pushUrl({ url: 'pages/Super/Individual' ,params:this.account});
+            router.back()
           });
 
         Text('个人信息')

@@ -75,7 +75,7 @@ struct Records {
       const response: http.HttpResponse = await httpRequest.request(
         `${StaticData.ServerURL}/api/student/material/reviews/withdraw/`, // 请替换为实际API路径
         {
-          method: http.RequestMethod.DELETE,
+          method: http.RequestMethod.PUT,
           header: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',

@@ -54,7 +54,7 @@ struct OperationPage {
 
     if (response.responseCode === 200) {
       try {
-        const responseData:StudentDetail|TeacherDetail = JSON.parse(response.result.toString());
+        const responseData:StudentDetail|TeacherDetail = JSON.parse(response.result.toString()).data;
         if (!type) this.Details=responseData as StudentDetail
         if (type) this.Details=responseData as TeacherDetail
       } catch (parseError) {
@@ -417,7 +417,7 @@ struct OperationPage {
       .margin({ top: 10, bottom: 20 })
 
       Button(){
-        Text('查看详细信息')
+        Text('查看审核历史记录')
           .fontSize(16)
           .margin({top:10,bottom:10})
       }

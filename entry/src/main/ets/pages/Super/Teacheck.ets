@@ -64,7 +64,7 @@ export struct teacheck {
     let httpRequest = http.createHttp();
     try {
       let Response: http.HttpResponse = await httpRequest.request(
-        StaticData.ServerURL + '/api/student/material/applications/list/',
+        StaticData.ServerURL + '/api/student/material/reviews/history/?id='+this.account!.ID,
         {
           method: http.RequestMethod.GET,
           header: {
@@ -182,7 +182,8 @@ export struct teacheck {
   }
 
   aboutToAppear(): void {
-   this.account=router.getParams() as Account
+    this.account=router.getParams() as Account
+    this.refresh()
   }
 
   build() {
@@ -193,7 +194,7 @@ export struct teacheck {
           Image(this.image_back)
             .width(24)
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Super/Individual' ,params:this.account});
+              router.back()
             });
 
           Row() {
