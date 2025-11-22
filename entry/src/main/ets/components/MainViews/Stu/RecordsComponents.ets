@@ -18,7 +18,9 @@ export struct Competition{
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data)!=typeof(RecordType.Competition)){
+    let object = new RecordType.Competition()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.type) {
       this.tmpentry.extra_data = new RecordType.Competition();
       (this.tmpentry.extra_data as RecordType.Competition).type=TypeInfoEnums.CompetitionTypes.general;
       (this.tmpentry.extra_data as RecordType.Competition).data_general= {
@@ -31,6 +33,8 @@ export struct Competition{
       (this.tmpentry.extra_data as RecordType.Competition).data_ccf={
         ccf_ranking: TypeInfoEnums.CCF_RANKINGS.percent_0_2
       }
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 
@@ -300,14 +304,17 @@ export struct Innovation {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Innovation)) {
+    let object = new RecordType.Innovation()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.data?.innovation_level) {
       this.tmpentry.extra_data = new RecordType.Innovation();
       (this.tmpentry.extra_data as RecordType.Innovation).data = {
         innovation_level: TypeInfoEnums.INNOVATION_LEVELS.national,
         innovation_role: TypeInfoEnums.INNOVATION_ROLES.leader
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
-
   }
 
   @Builder INNOVATION_Levels() {
@@ -396,7 +403,9 @@ export struct Research {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Research)) {
+    let object = new RecordType.Research()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.type) {
       this.tmpentry.extra_data = new RecordType.Research();
       (this.tmpentry.extra_data as RecordType.Research).type = TypeInfoEnums.ResearchTypes.paper;
       (this.tmpentry.extra_data as RecordType.Research).data_paper = {
@@ -406,8 +415,9 @@ export struct Research {
       (this.tmpentry.extra_data as RecordType.Research).data_patent = {
         patent_author_type: TypeInfoEnums.PATENT_AUTHOR_TYPES.first_author
       }
+    }else{
+      this.tmpentry.extra_data = object
     }
-
   }
 
   @Builder Type() {
@@ -578,12 +588,16 @@ export struct Honor {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Honor)) {
+    let object = new RecordType.Honor()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.data?.honor_title_level) {
       this.tmpentry.extra_data = new RecordType.Honor();
       (this.tmpentry.extra_data as RecordType.Honor).data = {
         honor_title_level: TypeInfoEnums.HONOR_TITLE_LEVELS.national,
         score: 0
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 
@@ -654,12 +668,16 @@ export struct SocialWork {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.SocialWork)) {
+    let object = new RecordType.SocialWork()
+    object.fromJSON(this.tmpentry.extra_data as string) //此程序依赖bug运行，虽然这玩意按理来说根本不可能是字符串，但事实就是如此
+    if (!object.data?.social_title) {
       this.tmpentry.extra_data = new RecordType.SocialWork();
       (this.tmpentry.extra_data as RecordType.SocialWork).data = {
         social_title: '',
         score: 0
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 
@@ -718,7 +736,9 @@ export struct Volunteer {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Volunteer)) {
+    let object = new RecordType.Volunteer()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.type) {
       this.tmpentry.extra_data = new RecordType.Volunteer();
       (this.tmpentry.extra_data as RecordType.Volunteer).type = TypeInfoEnums.VolunteerTypes.service;
       (this.tmpentry.extra_data as RecordType.Volunteer).data_service = {
@@ -729,8 +749,9 @@ export struct Volunteer {
         volunteer_award_level: TypeInfoEnums.VOLUNTEER_AWARD_LEVELS.national,
         role: TypeInfoEnums.VOLUNTEER_ROLE.leader
       }
+    }else{
+      this.tmpentry.extra_data = object
     }
-
   }
 
   @Builder Type() {
@@ -967,12 +988,16 @@ export struct International {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.International)) {
+    let object = new RecordType.International()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.data?.intership_duration) {
       this.tmpentry.extra_data = new RecordType.International();
       (this.tmpentry.extra_data as RecordType.International).data = {
         intership_duration: TypeInfoEnums.INTERNSHIP_DURATIONS.full_year,
         score: 0
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 
@@ -1044,12 +1069,16 @@ export struct Military {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Military)) {
+    let object = new RecordType.Military()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.data?.military_service_duration) {
       this.tmpentry.extra_data = new RecordType.Military();
       (this.tmpentry.extra_data as RecordType.Military).data = {
         military_service_duration: TypeInfoEnums.MILITARY_SERVICE_DURATIONS.years_1_2,
         score: 0
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 
@@ -1123,13 +1152,17 @@ export struct Sports {
   @Prop isReadonly: boolean = false  // 新增只读参数
 
   aboutToAppear(): void {
-    if (typeof(this.tmpentry.extra_data) != typeof(RecordType.Sports)) {
+    let object = new RecordType.Sports()
+    object.fromJSON(this.tmpentry.extra_data as string)
+    if (!object.data?.sport_competition_level) {
       this.tmpentry.extra_data = new RecordType.Sports();
       (this.tmpentry.extra_data as RecordType.Sports).data = {
         sport_competition_level: TypeInfoEnums.SPORTS_COMPETITION_LEVELS.international,
         sport_rank: TypeInfoEnums.SPORTS_RANKS.champion,
         sport_type: TypeInfoEnums.SPORTS_TYPES.individual
       };
+    }else{
+      this.tmpentry.extra_data = object
     }
   }
 

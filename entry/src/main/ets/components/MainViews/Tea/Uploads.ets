@@ -2,12 +2,10 @@ import router from '@ohos.router';
 import { Attachment, RecordEntry } from '../../../datatypes/Record';
 import { TestData } from '../../../debug/TestData';
 import { DateUtils } from '../../../utils';
-import { http } from '@kit.NetworkKit';
-import { DynamicData, StaticData } from '../../../constants';
-import json from '@ohos.util.json';
-import * as RecordTypes from  '../../../datatypes/Record'
-import { BusinessError } from '@kit.BasicServicesKit';
-import { promptAction } from '@kit.ArkUI';
+import * as TypeRecord from '../../../datatypes/Record';
+import { HistoryData } from '../../../service/Tea/HistoryData';
+import { FilterDialog } from '../Tea/UploadsComponents/Filter';
+import { emitter } from '@kit.BasicServicesKit';
 
 interface Application{
   Type:number
@@ -43,6 +41,29 @@ export struct teaUploadsView {
 
   @State historyList: RecordEntry[] = TestData.RecordList;
 
+  FilterModifyHandler(NewFilter:TypeRecord.Filter){
+    HistoryData.Filters=NewFilter
+    // 1. 调用HistoryData服务的筛选方法：根据当前搜索关键词（HistoryData.SearchText）更新筛选后的列表（FilteredList）
+    HistoryData.Filter();
+    // 2. 触发数据更新：通过反转布尔值改变UpdateTrigger状态，进而触发子组件（CategoryComponent）重新渲染
+    this.historyList=HistoryData.FilteredList
+  }
+
+  FilterDialogInstance:CustomDialogController=new CustomDialogController({
+    builder: FilterDialog(
+      {
+        confirm: (NewFilter:TypeRecord.Filter) => {
+          this.FilterModifyHandler(NewFilter)
+          this.FilterDialogInstance.close()
+        },
+        cancel:() => {
+          this.FilterDialogInstance.close()
+        }
+      }),
+    alignment: DialogAlignment.Center,
+    autoCancel: true
+  })
+
   // 根据状态返回显示文本
   getStatusText(status: number): string {
     if (status == 2) return '已通过';
@@ -56,7 +77,7 @@ export struct teaUploadsView {
     if (status == 3) return '#F53F3F';
     return ''
   }
-
+/*
   async refresh(){
     let httpRequest = http.createHttp();
     try {
@@ -177,9 +198,15 @@ export struct teaUploadsView {
       console.log(err.name)
     }
   }
-
-  aboutToAppear(): void {
-    this.refresh()
+*/
+  async aboutToAppear() {
+    await HistoryData.refresh()
+    HistoryData.Filter()
+    emitter.on('back',()=>{
+      HistoryData.Filter()
+      this.historyList = HistoryData.FilteredList
+    })
+    this.historyList = HistoryData.FilteredList
   }
 
   build() {
@@ -201,7 +228,15 @@ export struct teaUploadsView {
               .backgroundColor('white')
               .placeholderColor('#999999')
               .margin({ left: 8 })
-              .layoutWeight(1);
+              .layoutWeight(1)
+              .onChange((text)=>{
+                this.SearchText = text
+              })
+              .onSubmit(()=>{
+                HistoryData.SearchText=this.SearchText
+                HistoryData.Filter()
+                this.historyList = HistoryData.FilteredList
+              });
           }
           .backgroundColor('white')
           .borderRadius(20)
@@ -216,6 +251,9 @@ export struct teaUploadsView {
           Image(this.image_filter)
             .width(24)
             .margin({left:10})
+            .onClick(() => {
+              this.FilterDialogInstance.open()
+            })
         }
 
         Text('历史记录')

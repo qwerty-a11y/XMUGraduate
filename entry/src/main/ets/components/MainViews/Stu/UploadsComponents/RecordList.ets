@@ -2,8 +2,9 @@
  import {DateUtils} from '../../../../utils'
  import {UploadsData} from '../../../../service/Stu/UploadsData'
  import router from '@ohos.router';
+ import { emitter } from '@kit.BasicServicesKit';
 
-// ====================== 5. 审核页顶部栏组件（top）======================
+ // ====================== 5. 审核页顶部栏组件（top）======================
 /**
  * 审核页顶部栏组件
  * 功能：集成筛选、搜索、设置入口，支持搜索输入同步与筛选触发
@@ -105,11 +106,6 @@ export struct top {
    }
  }
 
-
- export class ForceRefresh {
-  public refresh?:()=>void = undefined
- }
-
  // ====================== 8. 审核页类别组件（CategoryComponent）======================
 /**
  * 审核页类别组件
@@ -122,7 +118,6 @@ export struct top {
 @Component
 export struct CategoryComponent {
   @State FilteredList:TypeRecord.RecordEntry[]=UploadsData.FilteredList
-  @Link Controller:ForceRefresh
   /**
    * 组件构建方法：定义UI结构
    * 布局：垂直容器，内部循环渲染所有活动卡片
@@ -132,7 +127,12 @@ export struct CategoryComponent {
   }
 
   aboutToAppear(): void {
-    this.Controller.refresh=this.ForceUpdate
+    emitter.on('back',()=>{
+      this.ForceUpdate()
+    })
+    emitter.on('update',()=>{
+      this.ForceUpdate()
+    })
   }
 
   build() {
@@ -142,7 +142,7 @@ export struct CategoryComponent {
       ForEach(this.FilteredList, (entry: TypeRecord.RecordEntry) => {
         // 为每个卡片数据创建一个活动卡片组件
         ActivityCardComponent({ entry: entry }).onClick(() => {
-          router.pushUrl({ url: 'pages/Stu/Records' ,params:{data:entry,ref:this.Controller}});
+          router.pushUrl({ url: 'pages/Stu/Records' ,params:entry}); //此程序依赖bug运行，entry.extra_data必会被隐式转换为JSON字符串，我甚至都不知道怎么过的类型检查，但我也修不了此bug，只能将错就错了
         });
       });
     }

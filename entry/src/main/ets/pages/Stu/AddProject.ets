@@ -3,10 +3,10 @@ import promptAction from '@ohos.promptAction';
 import { Attachment, RecordEntry, RecordType} from '../../datatypes/Record'
 import { BusinessError, request } from '@kit.BasicServicesKit';
 import * as AddProjectComponents from '../../components/MainViews/Stu/AddProjectComponent'
-import { inputConsumer } from '@kit.InputKit';
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
+import * as TypeRecord from '../../datatypes/Record';
 import { UploadFile } from '../../components/FileList';
 
 //import { FlexAlign, VerticalAlign, InputType } from '@ohos.util'; // 导入所需枚举类型
@@ -64,7 +64,7 @@ struct AddOptionApplication {
         'Description': this.tmpentry.Description,
         'Attachments': this.tmpentry.Attachments,
         'FeedBack': this.tmpentry.FeedBack,
-        'extra_data': this.tmpentry.extra_data!.toJSON()
+        'extra_data': (this.tmpentry!.extra_data! as TypeRecord.TypeInfo).toJSON()
       }
       let RequestDataStr: string = json.stringify(RequestData)
       try {

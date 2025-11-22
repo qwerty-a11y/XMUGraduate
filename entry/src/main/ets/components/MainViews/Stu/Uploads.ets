@@ -1,5 +1,5 @@
 // 导入通用组件库：包含导航栏、顶部栏、类别组件等可复用UI元素
-import {top, CategoryComponent, ForceRefresh} from './UploadsComponents/RecordList'
+import {top, CategoryComponent} from './UploadsComponents/RecordList'
 // 导入鸿蒙路由模块：用于页面跳转（当前组件暂未直接使用，预留扩展）
 import router from '@ohos.router';
 // 导入测试数据：用于开发阶段模拟审核记录数据（避免依赖真实后端）
@@ -16,7 +16,7 @@ import App from '@system.app';
 import * as RecordTypes from '../../../datatypes/Record';
 import { PromptAction } from '@ohos.arkui.UIContext';
 import { promptAction } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { Attachment } from '../../../datatypes/Record';
 
 interface Application{
@@ -48,8 +48,7 @@ export struct UploadsView {
     UploadsData.Filters=NewFilter
     // 1. 调用UploadsData服务的筛选方法：根据当前搜索关键词（UploadsData.SearchText）更新筛选后的列表（FilteredList）
     UploadsData.Filter();
-    // 2. 触发数据更新：通过反转布尔值改变UpdateTrigger状态，进而触发子组件（CategoryComponent）重新渲染
-    this.Controller.refresh!()
+    emitter.emit('update')
   }
 
   FilterDialogInstance:CustomDialogController=new CustomDialogController({
@@ -66,7 +65,6 @@ export struct UploadsView {
     alignment: DialogAlignment.Center,
     autoCancel: true
   })
-  @Link Controller:ForceRefresh
   @State List:RecordTypes.RecordEntry[] = []
 
   update(){
@@ -83,8 +81,10 @@ export struct UploadsView {
    */
   async aboutToAppear() {
     await UploadsData.refresh()
+    emitter.on('back',()=>{
+      this.update()
+    })
     this.update()
-    this.Controller.refresh!()
     // 1. 加载测试数据到全局数据服务：将TestData中的模拟审核记录赋值给UploadsData的UploadsList（原始数据池）
     //UploadsData.UploadsList = TestData.RecordList;
     // 2. 执行首次数据筛选：根据默认筛选条件（如无搜索关键词时显示全部）生成FilteredList（筛选后的数据）
@@ -94,7 +94,6 @@ export struct UploadsView {
   async onPageShow() {
     await UploadsData.refresh()
     this.update()
-    this.Controller.refresh!()
   }
 
   /**
@@ -109,7 +108,6 @@ export struct UploadsView {
         // 筛选/搜索回调：点击筛选按钮或提交搜索时触发
         onSearchTextUpdate: () => {
           UploadsData.Filter();
-          this.Controller.refresh!()
         },
         onFilterClicked: () => {
           this.FilterDialogInstance.open()
@@ -139,7 +137,7 @@ export struct UploadsView {
 
           // 渲染类别组件：传递UpdateTrigger状态，实现数据更新联动
           // 核心作用：展示筛选后的审核记录列表（通过CategoryComponent内部遍历UploadsData.FilteredList实现）
-          CategoryComponent({Controller:this.Controller});
+          CategoryComponent();
         }
         //.width(343) // 列表内容宽度固定（与顶部栏搜索框对齐，视觉统一）
         .justifyContent(FlexAlign.Start); // 列表项靠上排列（避免内容为空时居中）

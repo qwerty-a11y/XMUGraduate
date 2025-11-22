@@ -4,8 +4,9 @@ import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponen
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { UploadFile } from '../../components/FileList';
+import { HistoryData } from '../../service/Tea/HistoryData';
 
 interface requestData{
   id:number,
@@ -280,6 +281,8 @@ struct Records {
               .borderRadius(8)
               .onClick(async ()=>{
                 if (await this.editRequest(this.data!.UploadTime,false,this.data!.FeedBack)){
+                  await HistoryData.refresh()
+                  emitter.emit('back')
                   router.back()
                 }
               });
@@ -292,6 +295,8 @@ struct Records {
               .borderRadius(8)
               .onClick(async ()=>{
                 if (await this.withdrawRequest(this.data!.UploadTime)){
+                  await HistoryData.refresh()
+                  emitter.emit('back')
                   router.back()
                 }
               });

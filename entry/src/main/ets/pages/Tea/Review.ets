@@ -4,8 +4,9 @@ import * as ReviewComponents from '../../components/MainViews/Tea/ReviewComponen
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { UploadFile } from '../../components/FileList';
+import { ReviewData } from '../../service/Tea/ReviewData';
 
 interface requestData{
   id:number,
@@ -196,7 +197,7 @@ struct ScoreApplyReviewPage {
               .width('60%')
               .fontColor('#333333')
               .margin({ left: 8 });
-            TextInput()
+            TextInput({text:this.data!.ApplyScore.toString()})
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -244,6 +245,8 @@ struct ScoreApplyReviewPage {
               .borderRadius(8)
               .onClick(async ()=>{
                 if (await this.sendReviewRequest(this.data!.UploadTime,false,this.data!.FeedBack)){
+                  await ReviewData.refresh()
+                  emitter.emit('back')
                   router.back()
                 }
               });
@@ -256,6 +259,8 @@ struct ScoreApplyReviewPage {
               .borderRadius(8)
               .onClick(async ()=>{
                 if (await this.sendReviewRequest(this.data!.UploadTime,true,this.data!.FeedBack)){
+                  await ReviewData.refresh()
+                  emitter.emit('back')
                   router.back()
                 }
               });

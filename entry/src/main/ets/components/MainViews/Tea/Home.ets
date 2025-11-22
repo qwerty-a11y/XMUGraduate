@@ -8,9 +8,10 @@ import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../../constants';
 import * as RecordTypes from  '../../../datatypes/Record'
 import { promptAction } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { BasicData } from '../../../service/Tea/BasicData';
 import { AWARD_LEVELS } from '../../../datatypes/TypeInfoEnums';
+import { ReviewData } from '../../../service/Tea/ReviewData';
 
 interface Application{
   Type:number
@@ -55,7 +56,7 @@ export struct teaHomeView {
 
   // 列表数据，包含所有所需字段
   @State reviewList: RecordEntry[] = [];
-
+/*
   async getApplications(){
     let httpRequest = http.createHttp();
     try {
@@ -176,7 +177,7 @@ export struct teaHomeView {
       console.log(err.name)
     }
   }
-
+*/
   async getInformation(){
     let httpRequest = http.createHttp();
     try {
@@ -230,9 +231,12 @@ export struct teaHomeView {
   }
 
   async aboutToAppear() {
-    await this.getApplications()
+    await ReviewData.refresh()
     await this.getInformation()
-    this.reviewList=[...this.reviewList]
+    emitter.on('back',()=>{
+      this.reviewList=ReviewData.ReviewList
+    })
+    this.reviewList=ReviewData.ReviewList
   }
 
   // 列表项组件

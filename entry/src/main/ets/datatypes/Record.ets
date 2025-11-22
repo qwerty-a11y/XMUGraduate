@@ -984,7 +984,7 @@ export class RecordEntry{
   public Description:string
   public Attachments:Attachment[]=[]
   public FeedBack:string = ''
-  public extra_data?:TypeInfo
+  public extra_data?:TypeInfo|string
 }
 
 export class Filter{

@@ -4,11 +4,12 @@ import * as RecordsComponents from '../../components/MainViews/Stu/RecordsCompon
 import http from '@ohos.net.http';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
+import * as TypeRecord from '../../datatypes/Record';
 import { promptAction, PromptAction } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, emitter } from '@kit.BasicServicesKit';
 import { UploadFile } from '../../components/FileList';
 import { UploadsData } from '../../service/Stu/UploadsData';
-import { ForceRefresh } from '../../components/MainViews/Stu/UploadsComponents/RecordList';
+
 
 interface Application{
   Type:number
@@ -38,7 +39,6 @@ struct Records {
   @State isTypeDropdownOpen: boolean = false;
   @State AllowEdit:boolean = false;
   @State FileList:Attachment[]=[]
-  @State Controller?:ForceRefresh = undefined
 
   @Builder ApplicationType(){
     Column() {
@@ -70,7 +70,7 @@ struct Records {
         'Description': this.data!.Description,
         'Attachments': this.data!.Attachments,
         'FeedBack': this.data!.FeedBack,
-        'extra_data': this.data!.extra_data!.toJSON()
+        'extra_data': (this.data!.extra_data! as TypeRecord.TypeInfo).toJSON()
       }
       let RequestDataStr: string = json.stringify(RequestData)
       try {
@@ -205,9 +205,7 @@ struct Records {
   }
 
   aboutToAppear(): void {
-    let params = router.getParams() as Record<string,object>
-    this.data = params['data'] as RecordEntry
-    this.Controller = params['ref'] as ForceRefresh
+    this.data = router.getParams() as RecordEntry
     this.FileList=this.data!.Attachments
     if (this.data!.ReviewStatus == 0){
       this.AllowEdit = true
@@ -233,6 +231,8 @@ struct Records {
           .onClick(async ()=>{
             this.data!.Attachments=this.FileList
             if (await this.Save(0)){
+              await UploadsData.refresh()
+              emitter.emit('back')
               router.back()
             }
           });
@@ -246,7 +246,9 @@ struct Records {
           .onClick(async ()=>{
             this.data!.Attachments=this.FileList
             if (await this.Save(1)) {
-              router.back(router.RouterMode.Standard)
+              await UploadsData.refresh()
+              emitter.emit('back')
+              router.back()
             }
           });
         Button("删除")
@@ -257,7 +259,11 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.State(true)) router.back(router.RouterMode.Standard)
+            if (await this.State(true)) {
+              await UploadsData.refresh()
+              emitter.emit('back')
+              router.back()
+            }
           });
       }
       .width('100%')
@@ -274,7 +280,11 @@ struct Records {
           .backgroundColor('#66ccff')
           .borderRadius(8)
           .onClick(async ()=>{
-            if (await this.State(false)) router.back(router.RouterMode.Standard)
+            if (await this.State(false)) {
+              await UploadsData.refresh()
+              emitter.emit('back')
+              router.back()
+            }
           });
       }
       .width('100%')
