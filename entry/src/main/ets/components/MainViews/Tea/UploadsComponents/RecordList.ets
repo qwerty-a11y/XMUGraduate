@@ -1,7 +1,4 @@
- import * as TypeRecord from '../../../../datatypes/Record'
- import {DateUtils} from '../../../../utils'
- import {UploadsData} from '../../../../service/Tea/HistoryData'
- import router from '@ohos.router';
+import {HistoryData} from '../../../../service/Tea/HistoryData'
 
 // ====================== 5. 审核页顶部栏组件（top）======================
 /**
@@ -49,7 +46,7 @@ export struct top {
            //.flexGrow(1) // 占满剩余宽度：适配搜索框
            // 输入变化事件：同步输入文本到全局数据服务（UploadsData）
            .onChange((value: string) => {
-             UploadsData.SearchText = value;
+             HistoryData.SearchText = value;
            })
            // 提交事件（如按回车）：触发筛选逻辑
            .onSubmit(() => {

@@ -7,7 +7,8 @@ import { DynamicData, StaticData } from '../constants';
 import { Attachment } from '../datatypes/Record';
 import hash from '@ohos.file.hash';
 import { request } from '@kit.BasicServicesKit';
-import { fileIo } from '@kit.CoreFileKit';
+//import { fileIo } from '@kit.CoreFileKit';
+import fs from '@ohos.file.fs';
 
 @Component
 export struct UploadFile{
@@ -19,13 +20,18 @@ export struct UploadFile{
   @Prop image_add: ResourceStr = $r("app.media.Add");
   @State progress:number = -1
   @State fileonupload:string = ''
+  @State hash:string = ''
 
-  async Upload(file:FileItem){
+  Upload(file:FileItem){
     HttpFileManager.upload(this.context,{
-      url:StaticData.ServerURL+'/api/student/material/applications/fileupload',
+      url:StaticData.ServerURL+'/api/student/material/applications/fileupload/',
       files:[file],
       header:{Authorization:"Token "+DynamicData.token},
       onProgress:(progress:number)=>{this.progress=progress},
+      onComplete:()=>{
+        this.FileList.push({ name: this.fileonupload, id: this.hash })
+        this.progress = -1
+      }
     })
   }
 
@@ -42,14 +48,31 @@ export struct UploadFile{
               })
           }
         }.height(40).backgroundColor('#eeeeee').onClick(async ()=>{
+          try {
+            await fs.rename('filedownload?id='+item.id, this.context.cacheDir + '/delete')
+          } catch (e){
+            console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
+          }
+          try {
+            await fs.unlink(this.context.cacheDir + '/delete')
+          } catch (e){
+            console.error(`Failed to delete existed file. err: ${JSON.stringify(e)}`);
+          }
+          console.log(this.context.cacheDir+'/'+item.name+' - '+(await fs.access(this.context.cacheDir+'/'+item.name))?'True':'False')
+          console.log(this.context.cacheDir+'/delete'+' - '+(await fs.access(this.context.cacheDir+'/delete'))?'True':'False')
           let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
             url:"http://127.0.0.1:8000/api/student/material/applications/filedownload?id="+item.id,
             header:{Authorization:"Token "+DynamicData.token},
-            filePath:this.context.cacheDir+item.name
+            filePath:this.context.cacheDir+'/'
           })
           if (file) {
+            try {
+              await fs.rename(this.context.cacheDir + '/filedownload?id='+item.id, this.context.cacheDir + '/'+item.name)
+            } catch (e){
+              console.error(`Failed to rename downloaded file. err: ${JSON.stringify(e)}`);
+            }
             let want:Want={
-              uri:this.context.cacheDir+item.name
+              uri:this.context.cacheDir+'/'+item.name
             }
             this.context.startAbility(want)
           }
@@ -58,13 +81,13 @@ export struct UploadFile{
       if (this.progress>=0){
         Stack(){
           Row(){
-            Row().width(`${this.progress}%`).backgroundColor('#eeeeee').borderRadius(0)
-          }.height(40)
+            Row().width(`${this.progress}%`).height(40).backgroundColor('#eeffff').borderRadius(0)
+          }.justifyContent(FlexAlign.Start).height(40).width('100%')
           Row({space:10}){
             Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
             Text(this.fileonupload).width('70%')
-          }.height(40)
-        }
+          }.height(40).backgroundColor(Color.Transparent)
+        }.width('100%')
       }
       if (!this.ReadOnly) {
         Row() {
@@ -83,16 +106,17 @@ export struct UploadFile{
             if (file.fileNames?.length) {
               this.progress = 0
               this.fileonupload = file.fileNames![0]
-              let options:fileIo.CopyOptions = {}
-              await fileIo.copy(file.uris![0],'internal://cache/')
-              await this.Upload({
+              const srcFile = fs.openSync(file.uris![0], fs.OpenMode.READ_ONLY);
+              const destPath=this.context.cacheDir+'/'+this.fileonupload
+              this.hash = await hash.hash(srcFile.path, 'sha256')
+              //let options:fileIo.CopyOptions = {}
+              fs.copyFileSync(srcFile.fd,destPath)
+              this.Upload({
                 filename: file.fileNames![0],
                 name: file.fileNames![0],
                 uri: 'internal://cache/'+file.fileNames![0],
                 type: 'application/octet-stream'
               })
-              this.FileList.push({ name: this.fileonupload, id: await hash.hash(file.uris[0], 'sha256') })
-              this.progress = -1
             }
           })
           .enabled(this.progress < 0)
@@ -112,18 +136,21 @@ export struct UploadFile{
             if (file.fileNames?.length) {
               this.progress = 0
               this.fileonupload = file.fileNames![0]
-              await this.Upload({
+              const srcFile = fs.openSync(file.uris![0], fs.OpenMode.READ_ONLY);
+              const destPath=this.context.cacheDir+'/'+this.fileonupload
+              //let options:fileIo.CopyOptions = {}
+              fs.copyFileSync(srcFile.fd,destPath)
+              this.hash = await hash.hash(destPath, 'sha256')
+              this.Upload({
                 filename: file.fileNames![0],
                 name: file.fileNames![0],
-                uri: file.uris[0],
+                uri: 'internal://cache/'+file.fileNames![0],
                 type: 'application/octet-stream'
               })
-              this.FileList.push({ name: this.fileonupload, id: await hash.hash(file.uris[0], 'sha256') })
-              this.progress = -1
             }
           })
           .enabled(this.progress < 0)
-        }.width('100%').justifyContent(FlexAlign.SpaceAround)
+        }.width('100%').justifyContent(FlexAlign.SpaceAround).margin({top:10})
       }
     }
   }

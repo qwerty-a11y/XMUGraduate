@@ -35,6 +35,7 @@ export struct Competition{
       }
     }else{
       this.tmpentry.extra_data = object
+      this.SelectedType=(this.tmpentry.extra_data! as RecordType.Competition).type!
     }
   }
 
@@ -417,6 +418,7 @@ export struct Research {
       }
     }else{
       this.tmpentry.extra_data = object
+      this.SelectedType=(this.tmpentry.extra_data! as RecordType.Research).type!
     }
   }
 
@@ -751,6 +753,7 @@ export struct Volunteer {
       }
     }else{
       this.tmpentry.extra_data = object
+      this.SelectedType=(this.tmpentry.extra_data! as RecordType.Volunteer).type!
     }
   }
 
