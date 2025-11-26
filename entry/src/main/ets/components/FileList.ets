@@ -4,11 +4,14 @@ import {UploadOptions,DownloadOptions,HeadersObject,FormDataItem,FileItem,EmptyO
 import {FileSelectResult,PathInfo,DocumentSelectOptions,ImageSelectOptions} from '../datatypes/FilePicker'
 import  {FilePickerManager} from '../service/FilePickerManager'
 import { DynamicData, StaticData } from '../constants';
+import { filePreview } from '@kit.PreviewKit';
 import { Attachment } from '../datatypes/Record';
 import hash from '@ohos.file.hash';
 import { request } from '@kit.BasicServicesKit';
+import fileuri from '@ohos.file.fileuri';
 //import { fileIo } from '@kit.CoreFileKit';
 import fs from '@ohos.file.fs';
+import { FileType } from '../utils';
 
 @Component
 export struct UploadFile{
@@ -49,7 +52,7 @@ export struct UploadFile{
           }
         }.height(40).backgroundColor('#eeeeee').onClick(async ()=>{
           try {
-            await fs.rename('filedownload?id='+item.id, this.context.cacheDir + '/delete')
+            await fs.rename('?id='+item.id, this.context.cacheDir + '/delete')
           } catch (e){
             console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
           }
@@ -61,21 +64,30 @@ export struct UploadFile{
           console.log(this.context.cacheDir+'/'+item.name+' - '+(await fs.access(this.context.cacheDir+'/'+item.name))?'True':'False')
           console.log(this.context.cacheDir+'/delete'+' - '+(await fs.access(this.context.cacheDir+'/delete'))?'True':'False')
           let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
-            url:"http://127.0.0.1:8000/api/student/material/applications/filedownload?id="+item.id,
+            url:StaticData.ServerURL+"/api/student/material/applications/filedownload/?id="+item.id,
             header:{Authorization:"Token "+DynamicData.token},
-            filePath:this.context.cacheDir+'/'
+            filePath:this.context.cacheDir+'/',
+            onComplete:async ()=>{
+              try {
+                fs.rename(this.context.cacheDir + '/?id='+item.id, this.context.cacheDir + '/'+item.name)
+              } catch (e){
+                console.error(`Failed to rename downloaded file. err: ${JSON.stringify(e)}`);
+              }
+              let uri=fileuri.getUriFromPath(this.context.cacheDir+'/'+item.name)
+              if (await filePreview.canPreview(this.context,uri)) {
+                let preview: filePreview.PreviewInfo = {
+                  uri: uri,
+                  mimeType: FileType.getFileType(item.name)
+                }
+                filePreview.openPreview(this.context, preview)
+              } else {
+                let want:Want={
+                  uri:uri
+                }
+                this.context.startAbility(want)
+              }
+            }
           })
-          if (file) {
-            try {
-              await fs.rename(this.context.cacheDir + '/filedownload?id='+item.id, this.context.cacheDir + '/'+item.name)
-            } catch (e){
-              console.error(`Failed to rename downloaded file. err: ${JSON.stringify(e)}`);
-            }
-            let want:Want={
-              uri:this.context.cacheDir+'/'+item.name
-            }
-            this.context.startAbility(want)
-          }
         })
       })
       if (this.progress>=0){

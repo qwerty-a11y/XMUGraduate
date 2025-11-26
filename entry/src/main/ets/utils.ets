@@ -1,3 +1,5 @@
+import { uniformTypeDescriptor } from '@kit.ArkData';
+
 export class DateUtils{
   public static  ToString(num:number, notime:boolean = false):string {
     let date:Date = new Date(num)
@@ -13,5 +15,26 @@ export class DateUtils{
     console.log(num.toString())
     if (num<0) return '不限';
     else return DateUtils.ToString(num)
+  }
+}
+
+export class FileType{
+  public static getFileType(uri:string):string{
+    let extension:string=''
+    try {
+      extension = uri.substring(uri.lastIndexOf('.'))
+    }catch (e){
+      extension = ''
+      return ''
+    }
+    try {
+      let typeId = uniformTypeDescriptor.getUniformDataTypeByFilenameExtension(extension);
+      let typeObj = uniformTypeDescriptor.getTypeDescriptor(typeId);
+      let mimeTypes = typeObj.mimeTypes;
+      return mimeTypes[0]
+    } catch (err) {
+      console.error('err message:' + err.message + ', err code:' + err.code);
+    }
+    return ''
   }
 }
