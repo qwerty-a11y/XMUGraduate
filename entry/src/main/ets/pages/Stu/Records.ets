@@ -294,7 +294,7 @@ struct Records {
   }
 
   @Builder FeedBack(){
-    if (this.data?.Description != '') {
+    if (this.data?.FeedBack != '') {
       //-------------------有反馈-------------------
       // 反馈
       Text("反馈 ")
@@ -302,7 +302,7 @@ struct Records {
         .width('90%')
         .fontColor('#666666')
         .margin({ left: 16 ,right:16});
-      Text(this.data!.Description)
+      Text(this.data!.FeedBack)
         .fontSize(14)
         .fontColor('#333333')
         .backgroundColor('#e9e9e9')
