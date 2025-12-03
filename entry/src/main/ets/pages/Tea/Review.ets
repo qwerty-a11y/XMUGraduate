@@ -26,6 +26,7 @@ struct ScoreApplyReviewPage {
   aboutToAppear(): void {
     this.data = router.getParams() as RecordEntry
     this.FileList=this.data!.Attachments
+    this.data.RealScore=this.data.ApplyScore
   }
 
   @Builder ExtraData(){
@@ -197,7 +198,7 @@ struct ScoreApplyReviewPage {
               .width('60%')
               .fontColor('#333333')
               .margin({ left: 8 });
-            TextInput({text:this.data!.ApplyScore.toString()})
+            TextInput({text:this.data!.RealScore.toString()})
               .fontSize(14)
               .fontColor('#333333')
               .backgroundColor('#e9e9e9')
@@ -206,7 +207,7 @@ struct ScoreApplyReviewPage {
               .textAlign(TextAlign.Center)
               .borderRadius(8)
               .onChange((text)=>{
-                this.data!.RealScore = Number(text)
+                this.data!.RealScore = text==''?-1:Number(text)
               });
           }
           .width('90%')

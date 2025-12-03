@@ -289,9 +289,12 @@ export struct teacheck {
           });
         }
         .width('100%')
+        .constraintSize({
+          minHeight:'100%'
+        })
         .alignItems(HorizontalAlign.Center);
       }
-      .height('75%')
+      .height('85%')
       .width('100%')
       .margin({ bottom: 100 });
     }

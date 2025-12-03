@@ -274,7 +274,11 @@ export struct superHomeView {
           .margin({ bottom: 100 })
         }
         .width('100%')
+        .constraintSize({
+          minHeight:'100%'
+        })
         .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Start)
       }
       .height('90%') // 设置Scroll高度为屏幕的90%，确保有足够空间容纳内容并可滑动
     }
