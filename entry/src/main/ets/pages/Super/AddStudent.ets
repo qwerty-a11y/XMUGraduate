@@ -102,7 +102,7 @@ struct NewAddPage {
                   //console.log(this.context.cacheDir+'/'+item.name+' - '+(await fs.access(this.context.cacheDir+'/'+item.name))?'True':'False')
                   //console.log(this.context.cacheDir+'/delete'+' - '+(await fs.access(this.context.cacheDir+'/delete'))?'True':'False')
                   let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
-                    url:StaticData.ServerURL+"/api/account/admin/download_template/",
+                    url:StaticData.ServerURL+"/api/account/admin/download_stu_template/",
                     header:{Authorization:"Token "+DynamicData.token},
                     filePath:this.context.cacheDir+'/学生批量导入模板.xlsx',
                     onComplete:async ()=>{

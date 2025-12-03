@@ -57,6 +57,7 @@ struct OperationPage {
         const responseData:StudentDetail|TeacherDetail = JSON.parse(response.result.toString()).data;
         if (!type) this.Details=responseData as StudentDetail
         if (type) this.Details=responseData as TeacherDetail
+        this.account!.Name=this.Details!.name
       } catch (parseError) {
         const error = parseError as BusinessError;
         promptAction.showToast({
@@ -127,7 +128,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text(this.account!.Name)
+              Text(this.Details?.name)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })

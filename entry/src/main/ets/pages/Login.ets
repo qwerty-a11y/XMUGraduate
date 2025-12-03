@@ -6,6 +6,8 @@ import http from '@ohos.net.http';
 import { StaticData, DynamicData } from '../constants';
 import json from '@ohos.util.json';
 import { BusinessError } from '@kit.BasicServicesKit';
+import * as StuBasicData from '../service/Stu/BasicData'
+import * as TeaBasicData from '../service/Tea/BasicData'
 
 //import { InputType } from '@ohos.input';
 //import { Curve } from '@ohos.animation';
@@ -63,8 +65,11 @@ struct login {
           DataObjTmp = json.parse(Response.result.toString())
           DataObj = DataObjTmp ? DataObjTmp : {}
           if (Response.responseCode == 200 && DataObj && !(Object.keys(DataObj).includes('non_field_errors'))) {
+            let obj=DataObj as Record<string, string>
             DynamicData.account_id = this.account
-            DynamicData.token = (DataObj as Record<string, string>)['token']
+            DynamicData.token = obj['token']
+            DynamicData.phone = obj['contact']
+            DynamicData.email = obj['email']
             this.login()
           } else {
             // 使用 promptAction 显示提示
@@ -106,6 +111,14 @@ struct login {
     } else if (this.selectedValue === 'teacher') {
       router.pushUrl({ url: ROUTERtea.HOME });
     }
+  }
+
+  aboutToAppear(): void {
+    router.clear()
+    DynamicData.account_id=''
+    DynamicData.token=''
+    StuBasicData.BasicData.clear()
+    TeaBasicData.BasicData.clear()
   }
 
   build() {

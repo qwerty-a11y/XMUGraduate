@@ -663,11 +663,17 @@ export class Volunteer extends TypeInfo {
 
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
-      const keyValue = pair.split(':');
-      const key = keyValue[0].trim();
-      const value = keyValue[1].trim();
+      let keyValue = pair.split(':');
+      const key = keyValue[0].trim().replace(/"/g, '');
+      if (key === 'volunteer_time'){
+        pairs[i]=pairs[i]+','+pairs[i+1]
+        pairs.splice(i+1,1)
+        keyValue = pairs[i].split(':')
+      }
+      const value = keyValue[1].trim().replace(/"/g, '');
 
       if (key === 'volunteer_time') {
+
         // 解析数组格式 [start,end]
         const arrayContent = value.replace(/[\[\]]/g, '');
         const times = arrayContent.split(',');

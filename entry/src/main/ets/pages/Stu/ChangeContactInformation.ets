@@ -37,7 +37,7 @@ struct ChangeContactInformation {
     let RequestDataStr: string = json.stringify(RequestData)
     try {
       let Response: http.HttpResponse = await httpRequest.request(
-        StaticData.ServerURL + '/api/account/student/update/contact/',
+        StaticData.ServerURL + '/api/account/update/contact/',
         {
           method: http.RequestMethod.PUT,
           extraData: RequestDataStr,
@@ -168,6 +168,8 @@ struct ChangeContactInformation {
     if (await this.Save()) {
       // 验证通过，模拟修改成功
       this.errorMessage = '';
+      DynamicData.phone=this.phoneNumber
+      DynamicData.email=this.email
 
       promptAction.showToast({
         message: '联系方式修改成功',
@@ -179,6 +181,11 @@ struct ChangeContactInformation {
         router.back()
       }, 1000);
     }
+  }
+
+  aboutToAppear(): void {
+   this.phoneNumber = DynamicData.phone
+   this.email = DynamicData.email
   }
 
   build() {
@@ -219,7 +226,7 @@ struct ChangeContactInformation {
             .margin({ bottom: 5, left: 2 })
             .alignSelf(ItemAlign.Start);
 
-          TextInput({ placeholder: '请输入手机号' })
+          TextInput({ placeholder: '请输入手机号' ,text:this.phoneNumber})
             .type(InputType.Number)
             .width('100%')
             .height(48)
@@ -240,7 +247,7 @@ struct ChangeContactInformation {
             .margin({ bottom: 5, left: 2 })
             .alignSelf(ItemAlign.Start);
 
-          TextInput({ placeholder: '请输入邮箱地址' })
+          TextInput({ placeholder: '请输入邮箱地址' ,text:this.email})
             .type(InputType.Email)
             .width('100%')
             .height(48)

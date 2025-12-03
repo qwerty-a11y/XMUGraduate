@@ -754,6 +754,7 @@ export struct Volunteer {
     }else{
       this.tmpentry.extra_data = object
       this.SelectedType=(this.tmpentry.extra_data! as RecordType.Volunteer).type!
+      this.TimeSpan = (this.tmpentry!.extra_data as RecordType.Volunteer).data_service!.volunteer_time
     }
   }
 
@@ -834,7 +835,8 @@ export struct Volunteer {
               builder: TimeSpanDialog(
                 {
                   confirm: (NewTime: number) => {
-                    this.TimeSpan[0] = NewTime
+                    this.TimeSpan[0] = NewTime;
+                    (this.tmpentry!.extra_data as RecordType.Volunteer).data_service!.volunteer_time = this.TimeSpan
                     this.TimeSpanDialogInstance?.close()
                   },
                   cancel: () => {
@@ -870,7 +872,8 @@ export struct Volunteer {
               builder: TimeSpanDialog(
                 {
                   confirm: (NewTime: number) => {
-                    this.TimeSpan[1] = NewTime
+                    this.TimeSpan[1] = NewTime;
+                    (this.tmpentry!.extra_data as RecordType.Volunteer).data_service!.volunteer_time = this.TimeSpan
                     this.TimeSpanDialogInstance?.close()
                   },
                   cancel: () => {

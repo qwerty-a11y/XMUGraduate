@@ -477,24 +477,26 @@ struct Records {
           .alignItems(HorizontalAlign.Center);
 
           // 给分
-          Row({ space: 10 }) {
-            Text("给分：")
-              .fontSize(14)
-              .width('60%')
-              .fontColor('#333333')
-            Text((this.data!.RealScore != -1)?this.data!.RealScore.toString():'未评分')
-              .fontSize(14)
-              .fontColor('#333333')
-              .backgroundColor('#e9e9e9')
-              .width(60)
-              .height(36)
-              .textAlign(TextAlign.Center)
-              .borderRadius(8);
+          if (this.data!.ReviewStatus == 2) {
+            Row({ space: 10 }) {
+              Text("给分：")
+                .fontSize(14)
+                .width('60%')
+                .fontColor('#333333')
+              Text((this.data!.RealScore != -1) ? this.data!.RealScore.toString() : '未评分')
+                .fontSize(14)
+                .fontColor('#333333')
+                .backgroundColor('#e9e9e9')
+                .width(60)
+                .height(36)
+                .textAlign(TextAlign.Center)
+                .borderRadius(8);
+            }
+            .width('90%')
+            .margin({ left: 16, right: 16 })
+            .alignItems(VerticalAlign.Center)
+            .justifyContent(FlexAlign.SpaceBetween);
           }
-          .width('90%')
-          .margin({left:16,right:16})
-          .alignItems(VerticalAlign.Center)
-          .justifyContent(FlexAlign.SpaceBetween);
 
 
 

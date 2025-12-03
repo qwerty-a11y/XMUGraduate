@@ -3,10 +3,14 @@ import { FileSelectResult } from '../../datatypes/FilePicker';
 import FilePickerManager from '../../service/FilePickerManager';
 import fs from '@ohos.file.fs';
 import HttpFileManager from '../../service/HttpFileManager';
-import { common } from '@kit.AbilityKit';
+import { common, Want } from '@kit.AbilityKit';
 import { DynamicData, StaticData } from '../../constants';
 import { FileItem } from '../../datatypes/File';
 import { promptAction } from '@kit.ArkUI';
+import { request } from '@kit.BasicServicesKit';
+import fileuri from '@ohos.file.fileuri';
+import { filePreview } from '@kit.PreviewKit';
+import { FileType } from '../../utils';
 
 @Entry
 @Component
@@ -83,6 +87,40 @@ struct NewAddPage {
             Column() {
               Image(this.image_world)
                 .width(24)
+                .onClick(async ()=>{
+                  try {
+                    await fs.rename(this.context.cacheDir + '/教师批量导入模板.xlsx', this.context.cacheDir + '/delete')
+                  } catch (e){
+                    console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
+                  }
+                  try {
+                    await fs.unlink(this.context.cacheDir + '/delete')
+                  } catch (e){
+                    console.error(`Failed to delete existed file. err: ${JSON.stringify(e)}`);
+                  }
+                  //console.log(this.context.cacheDir+'/'+item.name+' - '+(await fs.access(this.context.cacheDir+'/'+item.name))?'True':'False')
+                  //console.log(this.context.cacheDir+'/delete'+' - '+(await fs.access(this.context.cacheDir+'/delete'))?'True':'False')
+                  let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
+                    url:StaticData.ServerURL+"/api/account/admin/download_tea_template/",
+                    header:{Authorization:"Token "+DynamicData.token},
+                    filePath:this.context.cacheDir+'/教师批量导入模板.xlsx',
+                    onComplete:async ()=>{
+                      let uri=fileuri.getUriFromPath(this.context.cacheDir+'/教师批量导入模板.xlsx')
+                      if (await filePreview.canPreview(this.context,uri)) {
+                        let preview: filePreview.PreviewInfo = {
+                          uri: uri,
+                          mimeType: FileType.getFileType("教师批量导入模板.xlsx")
+                        }
+                        filePreview.openPreview(this.context, preview)
+                      } else {
+                        let want:Want={
+                          uri:uri
+                        }
+                        this.context.startAbility(want)
+                      }
+                    }
+                  })
+                })
             }
             .width(25)
           }

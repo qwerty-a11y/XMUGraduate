@@ -2,6 +2,11 @@ import { Poster } from '../Stu/HomeComponents/TypeCard';
 import {Request} from  '../../../datatypes/PasswordResetRequest'
 import {DateUtils} from '../../../utils'
 import router from '@ohos.router'; // 导入路由模块
+import { http } from '@kit.NetworkKit';
+import { DynamicData, StaticData } from '../../../constants';
+import { StudentDetail, TeacherDetail } from '../../../datatypes/AccountDetail';
+import { promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 
 @Component
@@ -11,6 +16,49 @@ export struct superHomeView {
   @Prop image_set: ResourceStr = $r("app.media.Settings");
   @Prop image_search: ResourceStr = $r("app.media.Search");
   @State SearchText: string = '';
+
+  // 网络请求函数
+  async getAccountDetail(
+    id: string
+  ) {
+    const httpRequest = http.createHttp();
+
+    try {
+      // 构建查询参数
+      const params = `?type=0&id=${encodeURIComponent(id)}`;
+
+      const response: http.HttpResponse = await httpRequest.request(
+        `${StaticData.ServerURL}/api/account/admin/retrieve/${params}`, // 请替换为实际API路径
+        {
+          method: http.RequestMethod.GET,
+          header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${DynamicData.token}`
+          },
+          connectTimeout: 5000
+        }
+      );
+
+      if (response.responseCode === 200) {
+        router.pushUrl({ url: 'pages/Super/Individual' ,params: {
+          ID:id
+        }});
+      } else {
+        promptAction.showToast({
+          message: `无法获取账户信息，请检查学号是否正确`,
+          duration: 2000
+        });
+      }
+    } catch (requestError) {
+      const error = requestError as BusinessError;
+      console.log(`请求错误: ${error.message}`);
+      promptAction.showToast({
+        message: '网络请求失败，请检查网络连接',
+        duration: 2000
+      });
+    }
+  }
 
   @State cardData: Array<Request> = [];
   @Builder
@@ -79,7 +127,12 @@ export struct superHomeView {
             .placeholderColor('#999999')
             .margin({ left: 8 })
             .layoutWeight(1)
-            .onSubmit(()=>{})
+            .onChange((text)=>{
+              this.SearchText=text
+            })
+            .onSubmit(()=>{
+              this.getAccountDetail(this.SearchText)
+            })
         }
         .backgroundColor('white')
         .borderRadius(20)

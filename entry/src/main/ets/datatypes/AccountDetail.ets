@@ -1,4 +1,5 @@
 export interface StudentDetail{
+  name:string,
   department:string,
   phone:string,
   email:string,
@@ -13,6 +14,7 @@ export interface StudentDetail{
 }
 
 export interface TeacherDetail{
+  name:string,
   department:string,
   phone:string,
   email:string,
