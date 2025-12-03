@@ -1,16 +1,46 @@
 import router from '@ohos.router';
-import { url } from '@kit.ArkTS';
+import { FileSelectResult } from '../../datatypes/FilePicker';
+import FilePickerManager from '../../service/FilePickerManager';
+import fs from '@ohos.file.fs';
+import HttpFileManager from '../../service/HttpFileManager';
+import { common } from '@kit.AbilityKit';
+import { DynamicData, StaticData } from '../../constants';
+import { FileItem } from '../../datatypes/File';
+import { promptAction } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct NewAddPage {
+  private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
   @Prop image_download: ResourceStr = $r('app.media.Download');
   @Prop image_world: ResourceStr = $r('app.media.world');
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
   @State account: string = ''; // 账号
   @State majorClass: string = ''; // 专业班级
+  @State progress:number = -1
+  @State fileonupload:string = ''
+  @State file?:FileSelectResult = undefined
   @State dataExportPermission: boolean = false; // 数据导出权限状态
+  @Prop image_file: ResourceStr = $r("app.media.File");
+  @Prop image_remove: ResourceStr = $r("app.media.Remove");
+  @Prop image_add: ResourceStr = $r("app.media.Add");
+
+  async Upload(file:FileItem){
+    HttpFileManager.upload(this.context,{
+      url:StaticData.ServerURL+'/api/account/admin/import_teacher/',
+      files:[file],
+      header:{Authorization:"Token "+DynamicData.token},
+      onProgress:(progress:number)=>{this.progress=progress},
+      onComplete:()=>{
+        console.log("上传成功")
+        router.back()
+      },
+      onError:(err)=>{
+        console.log("上传失败："+err?.message)
+      }
+    })
+  }
 
   build() {
     Column() {
@@ -40,14 +70,14 @@ struct NewAddPage {
 
       // 表单区域
       Column() {
-        Text('身份：学生')
+        Text('身份：教师')
           .width('96%')
           .fontSize(16)
           .margin({ top: 32,bottom:10 });
 
         Column(){
           Row(){
-            Text('导入excel表格，格式见文档')
+            Text('导入excel表格，点击右侧按钮查看格式模板')
               .fontSize(14)
               .flexGrow(1)
             Column() {
@@ -59,15 +89,37 @@ struct NewAddPage {
           .width('96%')
           .margin({bottom:10})
 
-          Row(){
-            Image(this.image_download)
-              .height(52)
+          if (this.progress<0) {
+            Button() {
+              Row() {
+                Image(this.image_add).height(24)
+                Text("上传文件")
+              }
+            }
+            .height(40)
+            .padding({ left: 10, right: 10 })
+            .backgroundColor("#0C182431")
+            .borderRadius(5)
+            .onClick(async () => {
+              this.file = await FilePickerManager.selectSingleDocument(this.context)
+              if (this.file?.fileNames?.length) {
+                this.progress = 0
+                this.fileonupload = this.file!.fileNames![0]
+              }
+            })
+            //.width('96%')
+            .borderRadius(20)
+          } else {
+            Row({space:10}){
+              Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
+              Text(this.fileonupload).width('70%')
+              Image(this.image_remove).width('5%').margin({left:'5%',right:'5%'})
+                .onClick(()=>{
+                  this.file=undefined
+                  this.progress=-1
+                })
+            }.height(40)
           }
-          .justifyContent(FlexAlign.Center)
-          .width('96%')
-          .backgroundColor('#ffdedcdc')
-          .borderRadius(20)
-          .height(60)
 
         }
 
@@ -94,21 +146,27 @@ struct NewAddPage {
           .backgroundColor('#87E8DE')
           .borderRadius(20)
           .margin({ top: 24, bottom: 32 })
-          .onClick(() => {
-            router.back()
+          .onClick(async () => {
+            if (this.file?.fileNames?.[0]) {
+              const srcFile = fs.openSync(this.file.uris![0], fs.OpenMode.READ_ONLY);
+              const destPath=this.context.cacheDir+'/'+this.fileonupload
+              //let options:fileIo.CopyOptions = {}
+              fs.copyFileSync(srcFile.fd,destPath)
+              await this.Upload({
+                filename: this.file!.fileNames![0],
+                name: this.file!.fileNames![0],
+                uri: 'internal://cache/'+ this.file.fileNames![0],
+                type: 'application/octet-stream'
+              })
+
+              //router.back()
+            }else {
+              promptAction.showToast({
+                message: '请选择文件',
+                duration: 2000 // 弹窗显示时间（毫秒）
+              });
+            }
           });
-        // .onClick(() => {
-        //   // 确定按钮点击逻辑，使用声明的接口
-        //   const submitData: SubmitData = {
-        //     role: this.isTeacher ? '教师' : '学生',
-        //     account: this.account,
-        //     majorClass: this.majorClass,
-        //     password: '123456',
-        //     dataExportPermission: this.dataExportPermission
-        //   };
-        //   console.info('提交的新添数据：', submitData);
-        //   // 这里可以添加后续操作逻辑，如调用接口保存数据等
-        // });
 
 
       }

@@ -167,3 +167,88 @@ export struct UploadFile{
     }
   }
 }
+
+@Component
+export struct UploadExcel{
+  private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+  @Link FileList:Attachment[]
+  @Prop image_file: ResourceStr = $r("app.media.File");
+  //@Prop ReadOnly:boolean = true
+  @Prop image_remove: ResourceStr = $r("app.media.Remove");
+  @Prop image_add: ResourceStr = $r("app.media.Add");
+  @State progress:number = -1
+  @State fileonupload:string = ''
+  @State hash:string = ''
+
+  Upload(file:FileItem){
+    HttpFileManager.upload(this.context,{
+      url:StaticData.ServerURL+'/api/account/admin/import_users/',
+      files:[file],
+      header:{Authorization:"Token "+DynamicData.token},
+      onProgress:(progress:number)=>{this.progress=progress},
+      onComplete:()=>{
+        this.FileList.push({ name: this.fileonupload, id: this.hash })
+        this.progress = -1
+      }
+    })
+  }
+
+  build() {
+    Column(){
+      ForEach(this.FileList,(item:Attachment,index:number)=>{
+        Row(){
+          Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
+          Text(item.name).width('70%')
+          Image(this.image_remove).width('5%').margin({ left: '5%', right: '5%' })
+              .onClick(() => {
+                this.FileList.splice(index, 1)
+              })
+        }.height(40).backgroundColor('#eeeeee')
+      })
+      if (this.progress>=0){
+        Stack(){
+          Row(){
+            Row().width(`${this.progress}%`).height(40).backgroundColor('#eeffff').borderRadius(0)
+          }.justifyContent(FlexAlign.Start).height(40).width('100%')
+          Row({space:10}){
+            Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
+            Text(this.fileonupload).width('70%')
+          }.height(40).backgroundColor(Color.Transparent)
+        }.width('100%')
+      }
+      if (this.progress<0&&this.FileList.length==0) {
+        Row() {
+          Button() {
+            Row() {
+              Image(this.image_add).height(24)
+              Text("上传文件")
+            }
+          }
+          .height(40)
+          .padding({ left: 10, right: 10 })
+          .backgroundColor("#0C182431")
+          .borderRadius(5)
+          .onClick(async () => {
+            let file: FileSelectResult = await FilePickerManager.selectSingleDocument(this.context)
+            if (file.fileNames?.length) {
+              this.progress = 0
+              this.fileonupload = file.fileNames![0]
+              const srcFile = fs.openSync(file.uris![0], fs.OpenMode.READ_ONLY);
+              const destPath = this.context.cacheDir + '/' + this.fileonupload
+              this.hash = await hash.hash(srcFile.path, 'sha256')
+              //let options:fileIo.CopyOptions = {}
+              fs.copyFileSync(srcFile.fd, destPath)
+              this.Upload({
+                filename: file.fileNames![0],
+                name: file.fileNames![0],
+                uri: 'internal://cache/' + file.fileNames![0],
+                type: 'application/octet-stream'
+              })
+            }
+          })
+          .enabled(this.progress < 0)
+        }.width('100%').justifyContent(FlexAlign.SpaceAround).margin({ top: 10 })
+      }
+    }
+  }
+}

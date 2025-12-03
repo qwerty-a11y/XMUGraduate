@@ -70,7 +70,8 @@ export class HttpFileManager {
 
       const downloadConfig: request.DownloadConfig = {
         url: options.url,
-        header: headers
+        header: headers,
+        filePath:options.filePath
       };
 
       const downloadTask: request.DownloadTask = await request.downloadFile(context, downloadConfig);

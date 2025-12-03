@@ -3,10 +3,15 @@ import { url } from '@kit.ArkTS';
 import { FileSelectResult } from '../../datatypes/FilePicker';
 import FilePickerManager from '../../service/FilePickerManager';
 import HttpFileManager from '../../service/HttpFileManager';
-import { common } from '@kit.AbilityKit';
+import { common, Want } from '@kit.AbilityKit';
 import { FileItem } from '../../datatypes/File';
 import { DynamicData, StaticData } from '../../constants';
 import { promptAction } from '@kit.ArkUI';
+import fs from '@ohos.file.fs';
+import { request } from '@kit.BasicServicesKit';
+import fileuri from '@ohos.file.fileuri';
+import { filePreview } from '@kit.PreviewKit';
+import { FileType } from '../../utils';
 
 @Entry
 @Component
@@ -24,13 +29,21 @@ struct NewAddPage {
   @State file?:FileSelectResult = undefined
   @Prop image_file: ResourceStr = $r("app.media.File");
   @Prop image_remove: ResourceStr = $r("app.media.Remove");
+  @Prop image_add: ResourceStr = $r("app.media.Add");
 
   async Upload(file:FileItem){
     HttpFileManager.upload(this.context,{
-      url:StaticData.ServerURL+'/api/account/admin/import_users/',
+      url:StaticData.ServerURL+'/api/account/admin/import_student/',
       files:[file],
       header:{Authorization:"Token "+DynamicData.token},
       onProgress:(progress:number)=>{this.progress=progress},
+      onComplete:()=>{
+        console.log("上传成功")
+        router.back()
+      },
+      onError:(err)=>{
+        console.log("上传失败："+err?.message)
+      }
     })
   }
 
@@ -69,12 +82,46 @@ struct NewAddPage {
 
         Column(){
           Row(){
-            Text('导入excel表格，格式见文档')
+            Text('导入excel表格，点击右侧按钮查看格式模板')
               .fontSize(14)
               .flexGrow(1)
             Column() {
               Image(this.image_world)
                 .width(24)
+                .onClick(async ()=>{
+                  try {
+                    await fs.rename(this.context.cacheDir + '/学生批量导入模板.xlsx', this.context.cacheDir + '/delete')
+                  } catch (e){
+                    console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
+                  }
+                  try {
+                    await fs.unlink(this.context.cacheDir + '/delete')
+                  } catch (e){
+                    console.error(`Failed to delete existed file. err: ${JSON.stringify(e)}`);
+                  }
+                  //console.log(this.context.cacheDir+'/'+item.name+' - '+(await fs.access(this.context.cacheDir+'/'+item.name))?'True':'False')
+                  //console.log(this.context.cacheDir+'/delete'+' - '+(await fs.access(this.context.cacheDir+'/delete'))?'True':'False')
+                  let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
+                    url:StaticData.ServerURL+"/api/account/admin/download_template/",
+                    header:{Authorization:"Token "+DynamicData.token},
+                    filePath:this.context.cacheDir+'/学生批量导入模板.xlsx',
+                    onComplete:async ()=>{
+                      let uri=fileuri.getUriFromPath(this.context.cacheDir+'/学生批量导入模板.xlsx')
+                      if (await filePreview.canPreview(this.context,uri)) {
+                        let preview: filePreview.PreviewInfo = {
+                          uri: uri,
+                          mimeType: FileType.getFileType("学生批量导入模板.xlsx")
+                        }
+                        filePreview.openPreview(this.context, preview)
+                      } else {
+                        let want:Want={
+                          uri:uri
+                        }
+                        this.context.startAbility(want)
+                      }
+                    }
+                  })
+                })
             }
               .width(25)
           }
@@ -82,10 +129,16 @@ struct NewAddPage {
           .margin({bottom:10})
 
           if (this.progress<0) {
-            Row() {
-              Image(this.image_download)
-                .height(52)
+            Button() {
+              Row() {
+                Image(this.image_add).height(24)
+                Text("上传文件")
+              }
             }
+            .height(40)
+            .padding({ left: 10, right: 10 })
+            .backgroundColor("#0C182431")
+            .borderRadius(5)
             .onClick(async () => {
               this.file = await FilePickerManager.selectSingleDocument(this.context)
               if (this.file?.fileNames?.length) {
@@ -93,21 +146,23 @@ struct NewAddPage {
                 this.fileonupload = this.file!.fileNames![0]
               }
             })
-            .justifyContent(FlexAlign.Center)
-            .width('96%')
-            .backgroundColor('#ffdedcdc')
+            //.width('96%')
             .borderRadius(20)
-            .height(60)
           } else {
-            Row({space:10}){
-              Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
-              Text(this.fileonupload).width('70%')
-              Image(this.image_remove).width('5%').margin({left:'5%',right:'5%'})
-                .onClick(()=>{
-                  this.file=undefined
-                  this.progress=-1
-                })
-            }.height(40)
+            Stack() {
+              Row(){
+                Row().width(`${this.progress}%`).height(40).backgroundColor('#eeffff').borderRadius(0)
+              }.justifyContent(FlexAlign.Start).height(40).width('100%')
+              Row() {
+                Image(this.image_file).width('5%').margin({ left: '5%', right: '5%' })
+                Text(this.fileonupload).width('70%')
+                Image(this.image_remove).width('5%').margin({ left: '5%', right: '5%' })
+                  .onClick(() => {
+                    this.file = undefined
+                    this.progress = -1
+                  })
+              }.height(40)
+            }
           }
 
         }
@@ -137,14 +192,18 @@ struct NewAddPage {
           .margin({ top: 24, bottom: 32 })
           .onClick(async () => {
             if (this.file?.fileNames?.[0]) {
+              const srcFile = fs.openSync(this.file.uris![0], fs.OpenMode.READ_ONLY);
+              const destPath=this.context.cacheDir+'/'+this.fileonupload
+              //let options:fileIo.CopyOptions = {}
+              fs.copyFileSync(srcFile.fd,destPath)
               await this.Upload({
                 filename: this.file!.fileNames![0],
                 name: this.file!.fileNames![0],
-                uri: this.file!.uris[0],
+                uri: 'internal://cache/'+ this.file.fileNames![0],
                 type: 'application/octet-stream'
               })
-              this.progress = -1
-              router.back()
+
+              //router.back()
             }else {
               promptAction.showToast({
                 message: '请选择文件',
