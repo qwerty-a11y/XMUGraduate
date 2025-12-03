@@ -156,7 +156,8 @@ export struct Competition{
     Column({space:10}){
       Row(){
         Text('竞赛级别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.competition_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -173,7 +174,8 @@ export struct Competition{
       .width('100%')
       Row(){
         Text('竞赛等级')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.competition_grade.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -190,7 +192,8 @@ export struct Competition{
       .width('100%')
       Row(){
         Text('奖项等级')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.award_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -207,7 +210,8 @@ export struct Competition{
       .width('100%')
       Row(){
         Text('团队规模')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.team_number.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -224,7 +228,8 @@ export struct Competition{
       .width('100%')
       Row(){
         Text('团队角色')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_general!.team_role.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -247,7 +252,8 @@ export struct Competition{
     Column(){
       Row(){
         Text('CCF认证排名')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Competition).data_ccf!.ccf_ranking.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -270,7 +276,8 @@ export struct Competition{
     Column() {
       Row() {
         Text('类型')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data as RecordType.Competition).type!.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -354,7 +361,8 @@ export struct Innovation {
     Column({ space: 10 }) {
       Row() {
         Text('创新训练级别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Innovation).data!.innovation_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -372,7 +380,8 @@ export struct Innovation {
 
       Row() {
         Text('创新训练角色')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Innovation).data!.innovation_role.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -491,7 +500,8 @@ export struct Research {
     Column({ space: 10 }) {
       Row() {
         Text('论文类别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Research).data_paper!.paper_categorie.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -509,7 +519,8 @@ export struct Research {
 
       Row() {
         Text('论文作者')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Research).data_paper!.paper_author.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -532,7 +543,8 @@ export struct Research {
     Column() {
       Row() {
         Text('专利作者类型')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Research).data_patent!.patent_author_type.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -555,7 +567,8 @@ export struct Research {
     Column() {
       Row() {
         Text('类型')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data as RecordType.Research).type!.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -623,7 +636,8 @@ export struct Honor {
     Column({ space: 10 }) {
       Row() {
         Text('荣誉称号级别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Honor).data!.honor_title_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -641,7 +655,8 @@ export struct Honor {
 
       Row() {
         Text('申请分数')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.Honor).data!.score.toString() })
           .onChange((value: string) => {
             if (!this.isReadonly) {
@@ -687,7 +702,8 @@ export struct SocialWork {
     Column({ space: 10 }) {
       Row() {
         Text('社会工作职务')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.SocialWork).data!.social_title })
           .onChange((value: string) => {
             if (!this.isReadonly) {
@@ -703,7 +719,8 @@ export struct SocialWork {
 
       Row() {
         Text('申请分数')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.SocialWork).data!.score.toString() })
           .onChange((value: string) => {
             if (!this.isReadonly) {
@@ -811,7 +828,8 @@ export struct Volunteer {
     Column({ space: 10 }) {
       Row() {
         Text('志愿服务时间')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
       }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
@@ -918,7 +936,8 @@ export struct Volunteer {
     Column({ space: 10 }) {
       Row() {
         Text('表彰级别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Volunteer).data_award!.volunteer_award_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -959,7 +978,8 @@ export struct Volunteer {
     Column() {
       Row() {
         Text('类型')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data as RecordType.Volunteer).type!.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -1027,7 +1047,8 @@ export struct International {
     Column({ space: 10 }) {
       Row() {
         Text('实习时长')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.International).data!.intership_duration.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -1045,7 +1066,8 @@ export struct International {
 
       Row() {
         Text('申请分数')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.International).data!.score.toString() })
           .onChange((value: string) => {
             if (!this.isReadonly) {
@@ -1108,7 +1130,8 @@ export struct Military {
     Column({ space: 10 }) {
       Row() {
         Text('兵役时长')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Military).data!.military_service_duration.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -1126,7 +1149,8 @@ export struct Military {
 
       Row() {
         Text('申请分数')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         TextInput({ text: (this.tmpentry.extra_data! as RecordType.Military).data!.score.toString() })
           .onChange((value: string) => {
             if (!this.isReadonly) {
@@ -1224,7 +1248,8 @@ export struct Sports {
     Column({ space: 10 }) {
       Row() {
         Text('比赛级别')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_competition_level.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -1242,7 +1267,8 @@ export struct Sports {
 
       Row() {
         Text('比赛名次')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_rank.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {
@@ -1260,7 +1286,8 @@ export struct Sports {
 
       Row() {
         Text('比赛类型')
-          .fontSize(16)
+          .fontSize(14)
+          .fontColor('#666666')
         Button((this.tmpentry.extra_data! as RecordType.Sports).data!.sport_type.valueOf())
           .onClick(() => {
             if (!this.isReadonly) {

@@ -43,7 +43,7 @@ export struct UploadFile{
       ForEach(this.FileList,(item:Attachment,index:number)=>{
         Row(){
           Image(this.image_file).width('5%').margin({left:'5%',right:'5%'})
-          Text(item.name).width('70%')
+          Text(item.name).width(this.ReadOnly?'85%':'70%')
           if (!this.ReadOnly) {
             Image(this.image_remove).width('5%').margin({ left: '5%', right: '5%' })
               .onClick(() => {

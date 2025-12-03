@@ -272,24 +272,10 @@ struct Records {
 
           // 操作按钮
           Row({ space: 20 }) {
-            Button("重新审核")
-              .fontSize(14)
-              .fontWeight(500)
-              .width(120)
-              .height(44)
-              .backgroundColor('#66ccff')
-              .borderRadius(8)
-              .onClick(async ()=>{
-                if (await this.editRequest(this.data!.UploadTime,false,this.data!.FeedBack)){
-                  await HistoryData.refresh()
-                  emitter.emit('back')
-                  router.back()
-                }
-              });
             Button("撤销")
               .fontSize(14)
               .fontWeight(500)
-              .width(120)
+              .width(300)
               .height(44)
               .backgroundColor('#66ccff')
               .borderRadius(8)

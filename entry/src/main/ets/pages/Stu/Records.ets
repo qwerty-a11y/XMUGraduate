@@ -301,16 +301,16 @@ struct Records {
         .fontSize(14)
         .width('90%')
         .fontColor('#666666')
-        .margin({ left: 16 });
+        .margin({ left: 16 ,right:16});
       Text(this.data!.Description)
         .fontSize(14)
         .fontColor('#333333')
         .backgroundColor('#e9e9e9')
         .width('90%')
-        .height(80)
         .textAlign(TextAlign.Start)
+        .halfLeading(false)
         .borderRadius(8)
-        .padding({ left: 12, top: 12 });
+        .padding(12);
     }
   }
 
@@ -403,7 +403,7 @@ struct Records {
             .fontSize(14)
             .fontColor('#666666')
             .width('90%')
-            .margin({ left: 16 })
+            .margin({ left: 16 ,right:16})
             .enabled(this.AllowEdit);
           TextInput({text:this.data!.Title})
             .fontSize(14)
@@ -422,7 +422,7 @@ struct Records {
             .fontSize(14)
             .width('90%')
             .fontColor('#666666')
-            .margin({ left: 16 });
+            .margin({ left: 16 ,right:16});
           TextArea({text:this.data!.Description})
             .fontSize(14)
             .fontColor('#333333')
@@ -467,7 +467,7 @@ struct Records {
             .fontSize(14)
             .width('90%')
             .fontColor('#666666')
-            .margin({ left: 16 });
+            .margin({ left: 16 ,right:16});
           Column({ space: 10 }) {
             UploadFile({ReadOnly:!this.AllowEdit,FileList:this.FileList})
           }
@@ -482,7 +482,7 @@ struct Records {
               Text("给分：")
                 .fontSize(14)
                 .width('60%')
-                .fontColor('#333333')
+                .fontColor('#666666')
               Text((this.data!.RealScore != -1) ? this.data!.RealScore.toString() : '未评分')
                 .fontSize(14)
                 .fontColor('#333333')
