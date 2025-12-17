@@ -1,5 +1,17 @@
 import router from '@ohos.router'; // 导入路由模块
+import { http } from '@kit.NetworkKit';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
 //import { CommonConstants } from '../common/constants';
+
+interface data{
+  oldpassword:string,
+  newpassword:string
+}
+interface empty{}
 
 @Entry
 @Component
@@ -14,8 +26,67 @@ struct ChangePassword {
   // 返回图标资源
   @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
 
+  async Save():Promise<boolean>{
+    let httpRequest = http.createHttp();
+    let RequestData: data = {
+      oldpassword:this.oldPassword,
+      newpassword:this.newPassword
+    }
+    let RequestDataStr: string = json.stringify(RequestData)
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/account/user/change-password/',
+        {
+          method: http.RequestMethod.PUT,
+          extraData: RequestDataStr,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交成功',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return true
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+  }
+
   // 验证密码并提交
-  private submitPasswordChange() {
+  async submitPasswordChange() {
     // 简单验证逻辑
     if (!this.oldPassword) {
       this.errorMessage = '请输入原密码';
@@ -34,10 +105,12 @@ struct ChangePassword {
 
     // 验证通过，这里可以添加实际修改密码的逻辑
     this.errorMessage = '';
-    // 模拟修改成功后返回设置页
-    setTimeout(() => {
-      router.back()
-    }, 500);
+    if(await this.Save()) {
+      // 模拟修改成功后返回设置页
+      setTimeout(() => {
+        router.back()
+      }, 500);
+    }
   }
 
   build() {
