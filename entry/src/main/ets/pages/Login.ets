@@ -88,18 +88,37 @@ struct login {
         let DataObj: Object | empty
         let DataObjTmp: object | null
         try {
-          DataObjTmp = json.parse(Response.result.toString())
-          DataObj = DataObjTmp ? DataObjTmp : {}
-          if (Response.responseCode == 200 && DataObj && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          if (Response.responseCode == 200) {
+            DataObjTmp = json.parse(Response.result.toString())
+            DataObj = DataObjTmp ? DataObjTmp : {}
             let obj=DataObj as Record<string, string>
             DynamicData.account_id = this.account
             DynamicData.token = obj['token']
             DynamicData.phone = obj['contact']
             DynamicData.email = obj['email']
-            this.login()
+            if (this.selectedValue === 'student') {
+              DynamicData.account_type = 0
+              this.login()
+            } else if (this.selectedValue === 'super') {
+              DynamicData.account_type = 2
+              if (this._2FAPage) router.pushUrl({url:'pages/Super/Main'})
+              else router.pushUrl({url:'pages/Add2FA'})
+            } else if (this.selectedValue === 'teacher') {
+              DynamicData.account_type = 1
+              if (this._2FAPage) router.pushUrl({url:'pages/Tea/Main'})
+              else router.pushUrl({url:'pages/Add2FA'})
+            }
+
           } else if (Response.responseCode == 401){
-            this._2FAPage=true
-            this.isFirstLoad=false
+            if(!this._2FAPage) {
+              this._2FAPage = true
+              this.isFirstLoad = false
+            } else {
+              promptAction.showToast({
+                message: '验证码错误，请重试',
+                duration: 2000 // 弹窗显示时间（毫秒）
+              });
+            }
           } else {
             // 使用 promptAction 显示提示
             promptAction.showToast({

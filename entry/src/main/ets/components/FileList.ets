@@ -66,13 +66,13 @@ export struct UploadFile{
           let file:request.DownloadTask|null = await HttpFileManager.download(this.context,{
             url:StaticData.ServerURL+"/api/student/material/applications/filedownload/?id="+item.id,
             header:{Authorization:"Token "+DynamicData.token},
-            filePath:this.context.cacheDir+'/',
+            filePath:this.context.cacheDir+'/'+item.name,
             onComplete:async ()=>{
-              try {
-                fs.rename(this.context.cacheDir + '/?id='+item.id, this.context.cacheDir + '/'+item.name)
-              } catch (e){
-                console.error(`Failed to rename downloaded file. err: ${JSON.stringify(e)}`);
-              }
+              //try {
+                //fs.rename(this.context.cacheDir + '/?id='+item.id, this.context.cacheDir + '/'+item.name)
+              //} catch (e){
+                //console.error(`Failed to rename downloaded file. err: ${JSON.stringify(e)}`);
+              //}
               let uri=fileuri.getUriFromPath(this.context.cacheDir+'/'+item.name)
               if (await filePreview.canPreview(this.context,uri)) {
                 let preview: filePreview.PreviewInfo = {

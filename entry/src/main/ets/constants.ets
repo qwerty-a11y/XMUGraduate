@@ -4,6 +4,7 @@ export class StaticData{
 
 export class DynamicData{
   public static account_id:string = ''
+  public static account_type:number = 0
   public static token:string = ''
   public static phone:string = ''
   public static email:string = ''

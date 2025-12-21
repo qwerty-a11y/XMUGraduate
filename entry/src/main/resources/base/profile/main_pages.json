@@ -2,6 +2,8 @@
   "src": [
     "pages/Launch",
     "pages/Login",
+    "pages/Add2FA",
+    "pages/Confirm2FA",
     "pages/Stu/Main",
     "pages/Stu/Setting",
     "pages/Stu/ChangePassword",

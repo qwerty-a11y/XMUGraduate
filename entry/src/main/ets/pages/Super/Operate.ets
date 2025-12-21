@@ -3,17 +3,27 @@ import { http } from '@kit.NetworkKit';
 import json from '@ohos.util.json';
 import { DynamicData, StaticData } from '../../constants';
 import { promptAction } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, request } from '@kit.BasicServicesKit';
 import { CoolDownDialog } from '../../components/MainViews/Super/OperationComponents/CoolDownDialog';
+import { Environment, fileUri, picker } from '@kit.CoreFileKit';
+import { DateUtils } from '../../utils';
+import HttpFileManager from '../../service/HttpFileManager';
+import { common } from '@kit.AbilityKit';
+import fs from '@ohos.file.fs';
 
 interface data{
   accounts:string[]
+}
+interface exportdata{
+  filelink:string,
+  filename:string
 }
 interface empty{}
 
 @Entry
 @Component
 struct OperationPage {
+  private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
   @Prop image_go: ResourceStr = $r("app.media.RightArrow");
   @State operationList: string[] = [
@@ -84,6 +94,106 @@ struct OperationPage {
       console.log(err.name)
       return false
     }
+  }
+
+  async Export(){
+    let downloaddata:exportdata
+    //请求文件直链
+    let httpRequest = http.createHttp();
+    let RequestData: data = {
+      accounts:this.accounts
+    }
+    let RequestDataStr: string = json.stringify(RequestData)
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/account/admin/export-users/',
+        {
+          method: http.RequestMethod.PUT,
+          extraData: RequestDataStr,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token,
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          downloaddata = (DataObj as exportdata)
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+
+    const downloadPath = Environment.getUserDownloadDir();
+    const documentViewPicker = new picker.DocumentViewPicker(this.context);
+    const documentSaveOptions = new picker.DocumentSaveOptions();
+    documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+    documentViewPicker.save(documentSaveOptions).then(async (documentSaveResult: Array<string>) => {
+      let uri = documentSaveResult[0];
+      const FilePath = new fileUri.FileUri(uri + '/' + downloaddata.filename).path;
+      try {
+        await fs.rename(this.context.cacheDir + '/' + downloaddata.filename, this.context.cacheDir + '/delete')
+      } catch (e){
+        console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
+      }
+      try {
+        await fs.unlink(this.context.cacheDir + '/delete')
+      } catch (e){
+        console.error(`Failed to delete existed file. err: ${JSON.stringify(e)}`);
+      }
+      let file: request.DownloadTask | null = await HttpFileManager.download(this.context, {
+        url: StaticData.ServerURL + downloaddata.filelink,
+        header: { Authorization: "Token " + DynamicData.token },
+        filePath: this.context.cacheDir + '/' + downloaddata.filename,
+        //filePath: FilePath,
+        onComplete: async () => {
+          let srcFile = fs.openSync(this.context.cacheDir + '/' + downloaddata.filename)
+          fs.copyFileSync(srcFile.fd,FilePath)
+          promptAction.showToast({
+            message: '文件已保存至Download/保研小助手/' + downloaddata.filename,
+            duration: 2000
+          })
+        },
+        onError: (e) => {
+          let error = e as BusinessError
+          let msg = error?.message
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '下载失败：' + msg,
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      })
+    })
+    return true
   }
 
   build() {
@@ -180,7 +290,7 @@ struct OperationPage {
                           title:'确认操作',
                           text:'确定要导出选定账户的基本信息吗？',
                           confirm: () => {
-                            this.Request('')
+                            this.Export()
                             CoolDownDialogInstance.close()
                           },
                           cancel:() => {
