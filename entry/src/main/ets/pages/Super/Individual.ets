@@ -16,13 +16,12 @@ interface OperationItem {
 @Component
 struct OperationPage {
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
-  @State operationList: OperationItem[] = [
-    { name: '重置2fa', isSelected: false},
-    { name: '冻结账号', isSelected: false },
-    { name: '删除账号', isSelected: false },
-    { name: '导出数据', isSelected: false },
-    { name: '数据导出权限', isSelected: false },
-    { name: '重置密码为：123456', isSelected: false },
+  @Prop image_go: ResourceStr = $r("app.media.RightArrow");
+  @State operationList: string[] = [
+    '重置2FA',
+    '删除账号',
+    '导出数据',
+    '重置密码',
   ];
   @State account?:Account=undefined
   @State isStudent:boolean = true
@@ -499,23 +498,6 @@ struct OperationPage {
           .width('100%')
           .flexGrow(1);
 
-          // 确定按钮区域
-          Button('确定操作')
-            .width(320)
-            .height(40)
-            .fontColor('#000000')
-            .backgroundColor('#77F0EC')
-            .borderRadius(20)
-            .margin({ bottom: 60 })
-            .onClick(() => {
-              // 确定按钮点击逻辑，比如获取选中的操作项并执行对应操作
-              const selectedItems = this.operationList.filter(item => item.isSelected);
-              console.info('选中的操作项：', selectedItems);
-              // 这里可以添加后续操作逻辑，如调用接口等
-            })
-            .onClick(() => {
-              router.back()
-            });
         }
         .width('100%')
       }

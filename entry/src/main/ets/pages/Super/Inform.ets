@@ -17,6 +17,10 @@ interface AccountResponse {
   AccountList: Array<AccountData>;
 }
 
+interface OprList {
+  accounts:string[]
+}
+
 @Entry
 @Component
 export struct SuperInform {
@@ -34,6 +38,7 @@ export struct SuperInform {
   private totalPages: number = 6;
   @State batchOperationMode: boolean = false; // 批量操作模式开关
   @State allSelected: boolean = true; // 全选状态
+  @State allNotSelected: boolean = false
 
   @State ListType:number=AccountList.Type
 
@@ -136,6 +141,11 @@ export struct SuperInform {
     return this.AccountSelect.every(item => item);
   }
 
+  // 检查是否所有项都未被选中
+  checkAllNotSelected(): boolean {
+    return this.AccountSelect.every(item => !item);
+  }
+
   build() {
     Column() {
       // 顶部导航栏
@@ -200,8 +210,15 @@ export struct SuperInform {
               .width(24)
               .height(24)
               .margin({ left: 50, right: 8 })
+              .enabled(!this.allNotSelected)
               .onClick(() => {
-                router.pushUrl({ url: 'pages/Super/Operate'});
+                let List:OprList={accounts:[]}
+                this.AccountSelect.forEach((isselected,index) => {
+                  if (isselected){
+                    List.accounts.push(this.AccountData[index].ID)
+                  }
+                });
+                router.pushUrl({ url: 'pages/Super/Operate', params:List});
               });
           }
         }
@@ -226,6 +243,7 @@ export struct SuperInform {
                       this.AccountSelect[index] = isOn;
                       // 同步更新全选开关状态
                       this.allSelected = this.checkAllSelected();
+                      this.allNotSelected = this.checkAllNotSelected()
                     });
                 }
                 Row() {

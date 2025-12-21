@@ -1,22 +1,87 @@
 import router from '@ohos.router';
+import { http } from '@kit.NetworkKit';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { _2FADialog } from '../../components/MainViews/Super/OperationComponents/2FADialog';
+import { CoolDownDialog } from '../../components/MainViews/Super/OperationComponents/CoolDownDialog';
 
-interface OperationItem {
-  name: string;
-  isSelected: boolean;
+interface data{
+  accounts:string[]
 }
+interface empty{}
 
 @Entry
 @Component
 struct OperationPage {
   @Prop image_back: ResourceStr = $r('app.media.LeftArrow');
-  @State operationList: OperationItem[] = [
-    { name: '重置2fa', isSelected: false},
-    { name: '冻结账号', isSelected: false },
-    { name: '删除账号', isSelected: false },
-    { name: '导出数据', isSelected: false },
-    { name: '数据导出权限', isSelected: false },
-    { name: '重置密码为：123456', isSelected: false },
+  @Prop image_go: ResourceStr = $r("app.media.RightArrow");
+  @State operationList: string[] = [
+    '重置2FA',
+    '删除所有账号',
+    '导出数据',
+    '重置所有账号密码',
   ];
+
+  async Request(path:string,code?:string){
+    let httpRequest = http.createHttp();
+    let RequestData: data = {
+      accounts:['*']
+    }
+    let RequestDataStr: string = json.stringify(RequestData)
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + path,
+        {
+          method: http.RequestMethod.PUT,
+          extraData: RequestDataStr,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token,
+            '2FA': code?code:''
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交成功',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return true
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+  }
 
   build() {
     Column() {
@@ -47,22 +112,119 @@ struct OperationPage {
       // 操作列表区域
       Column() {
         List() {
-          ForEach(this.operationList, (item: OperationItem) => {
+          ForEach(this.operationList, (item: string,index:number) => {
             ListItem() {
               Row() {
-                Text(item.name)
+                Text(item)
                   .fontSize(16)
                   .margin({ left: 16 });
-                Toggle({ type: ToggleType.Switch, isOn: item.isSelected })
-                  .margin({ right: 16 })
-                  .onChange((isOn: boolean) => {
-                    // 这里可以添加 Toggle 状态变化的逻辑，比如更新数据等
-                    // 示例中仅演示 UI，暂不做复杂逻辑
-                  });
+                Image(this.image_go)
+                  .width(20)
+                  .height(20)
+                  .margin({ right: 12 });
               }
               .width('100%')
               .height(48)
               .justifyContent(FlexAlign.SpaceBetween)
+              .onClick(()=>{
+                let CoolDownDialogInstance:CustomDialogController
+                switch(index){
+                  case 0:
+                    CoolDownDialogInstance=new CustomDialogController({
+                      builder: CoolDownDialog(
+                        {
+                          CoolDown:5,
+                          title:'确认操作',
+                          text:'确定要重置全部账号的2FA状态吗？这会要求用户重新导入2FA验证码。',
+                          confirm: () => {
+                            this.Request('')
+                          },
+                          cancel:() => {
+                            CoolDownDialogInstance.close()
+                          }
+                        }),
+                      alignment: DialogAlignment.Center,
+                      autoCancel: true
+                    })
+                    CoolDownDialogInstance.open()
+                    break;
+                  case 1:
+                    CoolDownDialogInstance=new CustomDialogController({
+                      builder: CoolDownDialog(
+                        {
+                          CoolDown:0,
+                          title:'确认操作',
+                          text:'确实要删除全部账号吗？警告：该操作不可逆！',
+                          confirm: () => {
+                            let _2FADialogInstance:CustomDialogController=new CustomDialogController({
+                              builder: _2FADialog(
+                                {
+                                  title:'验证身份',
+                                  text:'“删除所有账号”为高风险操作，请验证您的身份',
+                                  confirm: (code:string) => {
+                                    this.Request('/api/account/admin/destroy/',code)
+                                  },
+                                  cancel:() => {
+                                    _2FADialogInstance.close()
+                                  }
+                                }),
+                              alignment: DialogAlignment.Center,
+                              autoCancel: true
+                            })
+                            _2FADialogInstance.open()
+                            CoolDownDialogInstance.close()
+                          },
+                          cancel:() => {
+                            CoolDownDialogInstance.close()
+                          }
+                        }),
+                      alignment: DialogAlignment.Center,
+                      autoCancel: true
+                    })
+                    CoolDownDialogInstance.open()
+                    break;
+                  case 2:
+                    CoolDownDialogInstance=new CustomDialogController({
+                      builder: CoolDownDialog(
+                        {
+                          CoolDown:0,
+                          title:'确认操作',
+                          text:'确定要导出所有账户的基本信息吗？',
+                          confirm: () => {
+                            this.Request('')
+                          },
+                          cancel:() => {
+                            CoolDownDialogInstance.close()
+                          }
+                        }),
+                      alignment: DialogAlignment.Center,
+                      autoCancel: true
+                    })
+                    CoolDownDialogInstance.open()
+                    break;
+                  case 3:
+                    CoolDownDialogInstance=new CustomDialogController({
+                      builder: CoolDownDialog(
+                        {
+                          CoolDown:5,
+                          title:'确认操作',
+                          text:'确定要重置所有账号的密码为123456吗？',
+                          confirm: () => {
+                            this.Request('/api/account/admin/reset_password/')
+                          },
+                          cancel:() => {
+                            CoolDownDialogInstance.close()
+                          }
+                        }),
+                      alignment: DialogAlignment.Center,
+                      autoCancel: true
+                    })
+                    CoolDownDialogInstance.open()
+                    break;
+                  default:
+                    break;
+                }
+              })
             }
           });
         }
@@ -74,23 +236,6 @@ struct OperationPage {
       .width('100%')
       .flexGrow(1);
 
-      // 确定按钮区域
-      Button('确定')
-        .width(120)
-        .height(40)
-        .fontColor('#000000')
-        .backgroundColor('#77F0EC')
-        .borderRadius(20)
-        .margin({ bottom: 40 })
-        .onClick(() => {
-          // 确定按钮点击逻辑，比如获取选中的操作项并执行对应操作
-          const selectedItems = this.operationList.filter(item => item.isSelected);
-          console.info('选中的操作项：', selectedItems);
-          // 这里可以添加后续操作逻辑，如调用接口等
-        })
-        .onClick(() => {
-          router.back()
-        });
     }
     .width('100%')
     .height('100%')

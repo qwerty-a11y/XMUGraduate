@@ -87,46 +87,6 @@ struct ChangeContactInformation {
     }
   }
 
-  // 获取验证码
-  private getVerificationCode() {
-    // 验证邮箱格式
-    if (!this.email) {
-      this.errorMessage = '请先输入邮箱地址';
-      return;
-    }
-
-    const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailReg.test(this.email)) {
-      this.errorMessage = '请输入有效的邮箱地址';
-      return;
-    }
-
-    // 模拟发送验证码
-    this.errorMessage = '';
-    this.isCodeButtonDisabled = true;
-    this.countdown = 60;
-
-    // 显示提示
-    promptAction.showToast({
-      message: '验证码已发送至您的邮箱',
-      duration: 2000
-    });
-
-    // 倒计时逻辑
-    const timer = setInterval(() => {
-      this.countdown--;
-      this.codeButtonText = `${this.countdown}s后重新获取`;
-
-      if (this.countdown <= 0) {
-        clearInterval(timer);
-        this.codeButtonText = '获取验证码';
-        this.isCodeButtonDisabled = false;
-      }
-    }, 1000);
-
-    // 实际项目中这里应该调用后端接口发送验证码
-  }
-
   // 验证联系信息并提交
   async submitContactChange() {
     // 验证手机号
@@ -148,21 +108,6 @@ struct ChangeContactInformation {
         this.errorMessage = '请输入有效的邮箱地址';
         return;
       }
-
-      /*
-      // 验证验证码
-      if (!this.verificationCode) {
-        this.errorMessage = '请输入验证码';
-        return;
-      }
-
-
-      // 简单验证验证码长度（实际项目中应与后端校验）
-      if (this.verificationCode.length !== 6) {
-        this.errorMessage = '验证码格式不正确';
-        return;
-      }
-      */
     }
 
     if (await this.Save()) {

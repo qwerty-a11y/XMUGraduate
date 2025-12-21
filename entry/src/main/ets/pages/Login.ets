@@ -21,7 +21,8 @@ interface AnimateParam {
 interface LoginRequest {
   user_type: string,
   school_id: string,
-  password: string
+  password: string,
+  code: string
 }
 
 interface empty {}
@@ -32,18 +33,43 @@ struct login {
   @State selectedValue: string = 'student'; // 初始选择学生身份
   @State account: string = ''; // 账号状态
   @State password: string = ''; // 密码状态
-  CustomAnimate: AnimateParam = {
-    duration: 250,
-    curve: Curve.EaseInOut
-  };
+  @State code: string = ''
+  @State _2FAPage: boolean = false
+  @Prop image_back: ResourceStr = $r("app.media.LeftArrow");
+  // 状态：标记是否为首次加载（用于控制首次进入首页的动画）
+  private isFirstLoad:boolean = true
+  // 动画参数配置：时长250ms，缓动曲线为"缓入缓出"（视觉过渡更自然）
+  animateParam:AnimateParam = {
+    duration:250,
+    curve:Curve.EaseInOut
+  }
+
+  // 首页首次加载动画：入场无偏移（IDENTITY），离场向左移出（-100%）
+  leftAnimationsFirst = TransitionEffect.asymmetric(
+    TransitionEffect.IDENTITY.animation(this.animateParam), // 入场动画
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateParam) // 离场动画
+  )
+  // 首页非首次加载动画：入场/离场均向左移出（避免重复入场动画）
+  leftAnimations = TransitionEffect.asymmetric(
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateParam),
+    TransitionEffect.translate({x:'-100%'}).animation(this.animateParam)
+  )
+  // 审核页动画：入场/离场均向右移出
+  rightAnimations = TransitionEffect.asymmetric(
+    TransitionEffect.translate({x:'100%'}).animation(this.animateParam),
+    TransitionEffect.translate({x:'100%'}).animation(this.animateParam)
+  )
 
   async request() {
+    //this._2FAPage=true
+    //this.isFirstLoad=false
     if (this.account && this.password) {
       let httpRequest = http.createHttp();
       let RequestData: LoginRequest = {
         'user_type': this.selectedValue,
         'school_id': this.account,
-        'password': this.password
+        'password': this.password,
+        'code': this.code
       }
       let RequestDataStr: string = json.stringify(RequestData)
       try {
@@ -71,6 +97,9 @@ struct login {
             DynamicData.phone = obj['contact']
             DynamicData.email = obj['email']
             this.login()
+          } else if (Response.responseCode == 401){
+            this._2FAPage=true
+            this.isFirstLoad=false
           } else {
             // 使用 promptAction 显示提示
             promptAction.showToast({
@@ -121,6 +150,358 @@ struct login {
     TeaBasicData.BasicData.clear()
   }
 
+  @Builder
+  LoginAnd2FA(){
+    if (this._2FAPage){
+      RelativeContainer() {
+        Column() {
+          Text('需要2FA验证，请输入TOTP验证码').padding({ bottom: 15 })
+          // 验证码输入框
+          TextInput({ placeholder: '验证码' })
+            .width('100%')
+            .height(40)
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .shadow({
+              color: '#12000000',
+              radius: 4,
+              offsetX: 2,
+              offsetY: 4
+            })
+            .type(InputType.Number)
+            .margin({ bottom: 15 })
+            .onChange((value: string) => this.code = value); // 输入时更新account
+
+          // 登录按钮：点击触发login方法
+          Button('确认')
+            .width('80%')
+            .height(45)
+            .backgroundColor('#ff77f0ec')
+            .borderRadius(16)
+            .onClick(() => this.request()); // 点击登录
+          //.onClick(() => this.login()); // 点击登录
+        }
+        .id('core')
+        .width(257)
+        .height(300)
+        .margin({ bottom: 20 })
+        .alignRules({middle:{anchor:'__container__',align:HorizontalAlign.Center}})
+        Image(this.image_back)
+          .width(24)
+          .height(24)
+          .alignRules({
+            top:{anchor:'__container__',align:VerticalAlign.Top},
+            right:{anchor:'core',align:HorizontalAlign.Start}
+          })
+          .onClick(() => {
+            this._2FAPage=false
+          });
+      }
+      .height(300)
+      .transition(this.rightAnimations)
+      .width('100%')
+    } else {
+      if (this.isFirstLoad) {
+        Column() {
+          // 身份选择 RelativeContainer（学生、教师、超管）
+          RelativeContainer() {
+            Column()
+              .height(42)
+              .borderRadius(20)
+              .width('33.33%')
+              .alignRules({
+                middle: { anchor: this.selectedValue, align: HorizontalAlign.Center }
+              })
+              .backgroundColor('#AFEEEE')
+              .animation(this.animateParam);
+
+            Row() {
+              Radio({ value: 'student', group: 'identity' })
+                .checked(this.selectedValue === 'student')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'student';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('学生')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'student');
+            }
+            .id('student')
+            .width('33.33%')
+            .flexGrow(1);
+
+            Row() {
+              Radio({ value: 'teacher', group: 'identity' })
+                .checked(this.selectedValue === 'teacher')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'teacher';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('教师')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'teacher');
+            }
+            .id('teacher')
+            .width('33.34%')
+            .alignRules({
+              left: { anchor: 'student', align: HorizontalAlign.End }
+            })
+            .flexGrow(1);
+
+            Row() {
+              Radio({ value: 'super', group: 'identity' })
+                .checked(this.selectedValue === 'super')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'super';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('超管')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'super');
+            }
+            .id('super')
+            .alignRules({
+              left: { anchor: 'teacher', align: HorizontalAlign.End }
+            })
+            .width('33.33%')
+            .flexGrow(1);
+          }
+          .width('100%')
+          .height(42)
+          .margin({ bottom: 15 })
+          .borderRadius(20)
+          .backgroundColor('#FFFFFF');
+
+          // 账号输入框：绑定account状态
+          TextInput({ placeholder: '输入账号' ,text:this.account})
+            .width('100%')
+            .height(40)
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .shadow({
+              color: '#12000000',
+              radius: 4,
+              offsetX: 2,
+              offsetY: 4
+            })
+            .margin({ bottom: 15 })
+            .onChange((value: string) => this.account = value); // 输入时更新account
+
+          // 密码输入框：绑定password状态
+          TextInput({ placeholder: '输入密码' ,text:this.password})
+            .type(InputType.Password)
+            .width('100%')
+            .height(40)
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .shadow({
+              color: '#12000000',
+              radius: 4,
+              offsetX: 2,
+              offsetY: 4
+            })
+            .margin({ bottom: 15 })
+            .onChange((value: string) => this.password = value); // 输入时更新password
+
+          // 登录按钮：点击触发login方法
+          Button('登录')
+            .width('80%')
+            .height(45)
+            .backgroundColor('#ff77f0ec')
+            .borderRadius(16)
+            .onClick(() => this.request()); // 点击登录
+          //.onClick(() => this.login()); // 点击登录
+        }
+        .width(257)
+        .height(300)
+        .transition(this.leftAnimationsFirst)
+        .margin({ bottom: 20 });
+      } else {
+        Column() {
+          // 身份选择 RelativeContainer（学生、教师、超管）
+          RelativeContainer() {
+            Column()
+              .height(42)
+              .borderRadius(20)
+              .width('33.33%')
+              .alignRules({
+                middle: { anchor: this.selectedValue, align: HorizontalAlign.Center }
+              })
+              .backgroundColor('#AFEEEE')
+              .animation(this.animateParam);
+
+            Row() {
+              Radio({ value: 'student', group: 'identity' })
+                .checked(this.selectedValue === 'student')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'student';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('学生')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'student');
+            }
+            .id('student')
+            .width('33.33%')
+            .flexGrow(1);
+
+            Row() {
+              Radio({ value: 'teacher', group: 'identity' })
+                .checked(this.selectedValue === 'teacher')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'teacher';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('教师')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'teacher');
+            }
+            .id('teacher')
+            .width('33.34%')
+            .alignRules({
+              left: { anchor: 'student', align: HorizontalAlign.End }
+            })
+            .flexGrow(1);
+
+            Row() {
+              Radio({ value: 'super', group: 'identity' })
+                .checked(this.selectedValue === 'super')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) {
+                    this.selectedValue = 'super';
+                  }
+                })
+                .width(0)
+                .height(0)
+                .position({ x: -100, y: 0 });
+              Text('超管')
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .height(42)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .flexGrow(1)
+                .textAlign(TextAlign.Center)
+                .onClick(() => this.selectedValue = 'super');
+            }
+            .id('super')
+            .alignRules({
+              left: { anchor: 'teacher', align: HorizontalAlign.End }
+            })
+            .width('33.33%')
+            .flexGrow(1);
+          }
+          .width('100%')
+          .height(42)
+          .margin({ bottom: 15 })
+          .borderRadius(20)
+          .backgroundColor('#FFFFFF');
+
+          // 账号输入框：绑定account状态
+          TextInput({ placeholder: '输入账号' ,text:this.account})
+            .width('100%')
+            .height(40)
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .shadow({
+              color: '#12000000',
+              radius: 4,
+              offsetX: 2,
+              offsetY: 4
+            })
+            .margin({ bottom: 15 })
+            .onChange((value: string) => this.account = value); // 输入时更新account
+
+          // 密码输入框：绑定password状态
+          TextInput({ placeholder: '输入密码' ,text:this.password})
+            .type(InputType.Password)
+            .width('100%')
+            .height(40)
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .shadow({
+              color: '#12000000',
+              radius: 4,
+              offsetX: 2,
+              offsetY: 4
+            })
+            .margin({ bottom: 15 })
+            .onChange((value: string) => this.password = value); // 输入时更新password
+
+          Text('忘记密码？')
+            .fontSize(12)
+            .fontColor('#FF0000')
+            .margin({ bottom: 15 })
+            .align(Alignment.Start)
+            .width('100%');
+
+          // 登录按钮：点击触发login方法
+          Button('登录')
+            .width('80%')
+            .height(45)
+            .backgroundColor('#ff77f0ec')
+            .borderRadius(16)
+            .onClick(() => this.request()); // 点击登录
+          //.onClick(() => this.login()); // 点击登录
+        }
+        .width(257)
+        .height(300)
+        .transition(this.leftAnimations)
+        .margin({ bottom: 20 });
+      }
+    }
+  }
+
   build() {
     Stack() {
       Baoyanstartbg()
@@ -135,156 +516,7 @@ struct login {
         .textAlign(TextAlign.Center)
         .margin({ bottom: 500 });
 
-      Column() {
-        // 身份选择 RelativeContainer（学生、教师、超管）
-        RelativeContainer() {
-          Column()
-            .height(42)
-            .borderRadius(20)
-            .width('33.33%')
-            .alignRules({
-              middle: { anchor: this.selectedValue, align: HorizontalAlign.Center }
-            })
-            .backgroundColor('#AFEEEE')
-            .animation(this.CustomAnimate);
-
-          Row() {
-            Radio({ value: 'student', group: 'identity' })
-              .checked(this.selectedValue === 'student')
-              .onChange((isChecked: boolean) => {
-                if (isChecked) {
-                  this.selectedValue = 'student';
-                }
-              })
-              .width(0)
-              .height(0)
-              .position({ x: -100, y: 0 });
-            Text('学生')
-              .fontSize(16)
-              .fontWeight(FontWeight.Medium)
-              .height(42)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(20)
-              .flexGrow(1)
-              .textAlign(TextAlign.Center)
-              .onClick(() => this.selectedValue = 'student');
-          }
-          .id('student')
-          .width('33.33%')
-          .flexGrow(1);
-
-          Row() {
-            Radio({ value: 'teacher', group: 'identity' })
-              .checked(this.selectedValue === 'teacher')
-              .onChange((isChecked: boolean) => {
-                if (isChecked) {
-                  this.selectedValue = 'teacher';
-                }
-              })
-              .width(0)
-              .height(0)
-              .position({ x: -100, y: 0 });
-            Text('教师')
-              .fontSize(16)
-              .fontWeight(FontWeight.Medium)
-              .height(42)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(20)
-              .flexGrow(1)
-              .textAlign(TextAlign.Center)
-              .onClick(() => this.selectedValue = 'teacher');
-          }
-          .id('teacher')
-          .width('33.34%')
-          .alignRules({
-            left: { anchor: 'student', align: HorizontalAlign.End }
-          })
-          .flexGrow(1);
-
-          Row() {
-            Radio({ value: 'super', group: 'identity' })
-              .checked(this.selectedValue === 'super')
-              .onChange((isChecked: boolean) => {
-                if (isChecked) {
-                  this.selectedValue = 'super';
-                }
-              })
-              .width(0)
-              .height(0)
-              .position({ x: -100, y: 0 });
-            Text('超管')
-              .fontSize(16)
-              .fontWeight(FontWeight.Medium)
-              .height(42)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(20)
-              .flexGrow(1)
-              .textAlign(TextAlign.Center)
-              .onClick(() => this.selectedValue = 'super');
-          }
-          .id('super')
-          .alignRules({
-            left: { anchor: 'teacher', align: HorizontalAlign.End }
-          })
-          .width('33.33%')
-          .flexGrow(1);
-        }
-        .width('100%')
-        .height(42)
-        .margin({ bottom: 15 })
-        .borderRadius(20)
-        .backgroundColor('#FFFFFF');
-
-        // 账号输入框：绑定account状态
-        TextInput({ placeholder: '输入账号' })
-          .width('100%')
-          .height(40)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(8)
-          .shadow({
-            color: '#12000000',
-            radius: 4,
-            offsetX: 2,
-            offsetY: 4
-          })
-          .margin({ bottom: 15 })
-          .onChange((value: string) => this.account = value); // 输入时更新account
-
-        // 密码输入框：绑定password状态
-        TextInput({ placeholder: '输入密码' })
-          .type(InputType.Password)
-          .width('100%')
-          .height(40)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(8)
-          .shadow({
-            color: '#12000000',
-            radius: 4,
-            offsetX: 2,
-            offsetY: 4
-          })
-          .margin({ bottom: 15 })
-          .onChange((value: string) => this.password = value); // 输入时更新password
-
-        Text('忘记密码？')
-          .fontSize(12)
-          .fontColor('#FF0000')
-          .margin({ bottom: 15 })
-          .align(Alignment.Start)
-          .width('100%');
-
-        // 登录按钮：点击触发login方法
-        Button('登录')
-          .width('80%')
-          .height(45)
-          .backgroundColor('#ff77f0ec')
-          .borderRadius(16)
-          .onClick(() => this.request()); // 点击登录
-          //.onClick(() => this.login()); // 点击登录
-      }
-      .width(257)
-      .height(300)
-      .margin({ bottom: 20 });
+      this.LoginAnd2FA()
     }
     .width('100%')
     .height('100%');

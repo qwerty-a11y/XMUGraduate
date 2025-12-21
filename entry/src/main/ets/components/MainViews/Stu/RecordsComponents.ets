@@ -19,8 +19,12 @@ export struct Competition{
 
   aboutToAppear(): void {
     let object = new RecordType.Competition()
-    object.fromJSON(this.tmpentry.extra_data as string)
-    if (!object.type) {
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Competition
+    }
+    if (!object.type || !object.data_general && !object.data_ccf) {
       this.tmpentry.extra_data = new RecordType.Competition();
       (this.tmpentry.extra_data as RecordType.Competition).type=TypeInfoEnums.CompetitionTypes.general;
       (this.tmpentry.extra_data as RecordType.Competition).data_general= {
@@ -313,7 +317,11 @@ export struct Innovation {
 
   aboutToAppear(): void {
     let object = new RecordType.Innovation()
-    object.fromJSON(this.tmpentry.extra_data as string)
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Innovation
+    }
     if (!object.data?.innovation_level) {
       this.tmpentry.extra_data = new RecordType.Innovation();
       (this.tmpentry.extra_data as RecordType.Innovation).data = {
@@ -414,8 +422,12 @@ export struct Research {
 
   aboutToAppear(): void {
     let object = new RecordType.Research()
-    object.fromJSON(this.tmpentry.extra_data as string)
-    if (!object.type) {
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Research
+    }
+    if (!object.type || !object.data_paper && !object.data_patent) {
       this.tmpentry.extra_data = new RecordType.Research();
       (this.tmpentry.extra_data as RecordType.Research).type = TypeInfoEnums.ResearchTypes.paper;
       (this.tmpentry.extra_data as RecordType.Research).data_paper = {
@@ -604,7 +616,11 @@ export struct Honor {
 
   aboutToAppear(): void {
     let object = new RecordType.Honor()
-    object.fromJSON(this.tmpentry.extra_data as string)
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Honor
+    }
     if (!object.data?.honor_title_level) {
       this.tmpentry.extra_data = new RecordType.Honor();
       (this.tmpentry.extra_data as RecordType.Honor).data = {
@@ -686,7 +702,11 @@ export struct SocialWork {
 
   aboutToAppear(): void {
     let object = new RecordType.SocialWork()
-    object.fromJSON(this.tmpentry.extra_data as string) //此程序依赖bug运行，虽然这玩意按理来说根本不可能是字符串，但事实就是如此
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string) //此程序依赖bug运行，虽然这玩意按理来说根本不可能是字符串，但事实就是如此
+    }else {
+      object = this.tmpentry.extra_data as RecordType.SocialWork //此程序依赖bug运行，现在它又不是字符串了，我必须进行类型检查，他妈的鸿蒙
+    }
     if (!object.data?.social_title) {
       this.tmpentry.extra_data = new RecordType.SocialWork();
       (this.tmpentry.extra_data as RecordType.SocialWork).data = {
@@ -756,8 +776,12 @@ export struct Volunteer {
 
   aboutToAppear(): void {
     let object = new RecordType.Volunteer()
-    object.fromJSON(this.tmpentry.extra_data as string)
-    if (!object.type) {
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Volunteer
+    }
+    if (!object.type || !object.data_service && !object.data_award) {
       this.tmpentry.extra_data = new RecordType.Volunteer();
       (this.tmpentry.extra_data as RecordType.Volunteer).type = TypeInfoEnums.VolunteerTypes.service;
       (this.tmpentry.extra_data as RecordType.Volunteer).data_service = {
@@ -1015,7 +1039,11 @@ export struct International {
 
   aboutToAppear(): void {
     let object = new RecordType.International()
-    object.fromJSON(this.tmpentry.extra_data as string)
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.International
+    }
     if (!object.data?.intership_duration) {
       this.tmpentry.extra_data = new RecordType.International();
       (this.tmpentry.extra_data as RecordType.International).data = {
@@ -1098,7 +1126,11 @@ export struct Military {
 
   aboutToAppear(): void {
     let object = new RecordType.Military()
-    object.fromJSON(this.tmpentry.extra_data as string)
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Military
+    }
     if (!object.data?.military_service_duration) {
       this.tmpentry.extra_data = new RecordType.Military();
       (this.tmpentry.extra_data as RecordType.Military).data = {
@@ -1183,7 +1215,11 @@ export struct Sports {
 
   aboutToAppear(): void {
     let object = new RecordType.Sports()
-    object.fromJSON(this.tmpentry.extra_data as string)
+    if (typeof(this.tmpentry.extra_data)==typeof("")){
+      object.fromJSON(this.tmpentry.extra_data as string)
+    }else {
+      object = this.tmpentry.extra_data as RecordType.Sports
+    }
     if (!object.data?.sport_competition_level) {
       this.tmpentry.extra_data = new RecordType.Sports();
       (this.tmpentry.extra_data as RecordType.Sports).data = {
