@@ -4,12 +4,14 @@ import http from '@ohos.net.http';
 import { DynamicData, StaticData } from '../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 import promptAction from '@ohos.promptAction';
+import { LengthMetrics } from '@kit.ArkUI';
 
 // 定义请求数据接口
 interface StudentInfoRequest {
   school_id: string;
   name: string;
   department: string;
+  major: number;
   academy_score: number;
   cet4: number;
   cet6: number;
@@ -29,9 +31,10 @@ struct NewAddPage {
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
   @State account: string = ''; // 账号
   @State name:string =''
-  @State majorClass: string = ''; // 专业班级
+  @State major: number = 0; // 专业班级
   @State score: number = 0;
   @State cet: number[] = [-1,-1];
+  private MajorList:string[] = ['计算机科学与技术','软件工程','人工智能','网络安全']
   //@State dataExportPermission: boolean = false; // 数据导出权限状态
 
   async submitAccountInfo(): Promise<boolean> {
@@ -50,7 +53,7 @@ struct NewAddPage {
         requestData = {
           school_id: this.account,
           name: this.name,
-          department: this.majorClass,
+          department: '信息学院-'+this.MajorList[this.major],
           academy_score: this.score,
           cet4: this.cet[0] !== -1 ? this.cet[0] : 0,
           cet6: this.cet[1] !== -1 ? this.cet[1] : 0
@@ -60,7 +63,7 @@ struct NewAddPage {
         requestData = {
           school_id: this.account,
           name: this.name,
-          department: this.majorClass
+          department: '信息学院'
         } as TeacherInfoRequest;
       }
 
@@ -117,14 +120,6 @@ struct NewAddPage {
     if (!this.name.trim()) {
       promptAction.showToast({
         message: '请输入姓名',
-        duration: 2000
-      });
-      return false;
-    }
-
-    if (!this.majorClass.trim()) {
-      promptAction.showToast({
-        message: '请输入单位',
         duration: 2000
       });
       return false;
@@ -240,20 +235,76 @@ struct NewAddPage {
             this.name = value;
           });
 
-        // 专业班级输入框，仅学生可见
-
-        Text('单位：')
-          .width('96%')
-          .fontSize(16)
-          .margin({ top: 16});
-        TextInput({ placeholder: '请输入院系，学生还要输入班级' })
-          .width('90%')
-          .margin({ left: 16, right: 16, top: 4 })
-          .onChange((value: string) => {
-            this.majorClass = value;
-          });
-
         if (!this.isTeacher) {
+          Text('专业：')
+            .width('96%')
+            .fontSize(16)
+            .margin({ top: 16});
+          Row() {
+            // 计科专业选择
+            Text('计科')
+              .fontSize(18)
+              .backgroundColor(this.major == 0 ? '#C5F4F3' : '#E5E5E5')  // 选中时为蓝色  // 未选择学生时不可用
+              .borderRadius(12)
+              .padding({
+                left: 12,
+                right: 12,
+                bottom: 5,
+                top: 5
+              })
+              .margin({ left: 10, right: 10 })
+              .onClick(() => {
+                this.major = 0
+              });
+
+            // 软工专业选择
+            Text('软工')
+              .backgroundColor(this.major == 1 ? '#C5F4F3' : '#E5E5E5')  // 未选择学生时不可用
+              .borderRadius(12)
+              .fontSize(18)
+              .padding({
+                left: 12,
+                right: 12,
+                bottom: 5,
+                top: 5
+              })
+              .margin({ left: 10, right: 10 })
+              .onClick(() => {
+                this.major = 1
+              });
+
+            Text('智能')
+              .fontSize(18)
+              .padding({
+                left: 12,
+                right: 12,
+                bottom: 5,
+                top: 5
+              })
+              .backgroundColor(this.major == 2 ? '#C5F4F3' : '#E5E5E5')  // 未选择学生时不可用
+              .borderRadius(12)
+              .margin({ left: 10, right: 10 })
+              .onClick(() => {
+                this.major=2
+              });
+
+            // 网安专业选择
+            Text('网安')
+              .margin({ left: 10, right: 10 })
+              .padding({
+                left: 12,
+                right: 12,
+                bottom: 5,
+                top: 5
+              })
+              .backgroundColor(this.major == 3 ? '#C5F4F3' : '#E5E5E5')  // 未选择学生时不可用
+              .borderRadius(12)
+              .fontSize(18)
+              .onClick(() => {
+                this.major=3
+              });
+          }
+          .width('100%')
           Row() {
             Text('绩点/4.0：')
               .fontSize(16)

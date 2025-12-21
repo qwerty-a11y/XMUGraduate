@@ -20,12 +20,9 @@ struct NewAddPage {
   @Prop image_download: ResourceStr = $r('app.media.Download');
   @Prop image_world: ResourceStr = $r('app.media.world');
   @State isTeacher: boolean = true; // 标记是教师还是学生，默认教师
-  @State account: string = ''; // 账号
-  @State majorClass: string = ''; // 专业班级
   @State progress:number = -1
   @State fileonupload:string = ''
   @State file?:FileSelectResult = undefined
-  @State dataExportPermission: boolean = false; // 数据导出权限状态
   @Prop image_file: ResourceStr = $r("app.media.File");
   @Prop image_remove: ResourceStr = $r("app.media.Remove");
   @Prop image_add: ResourceStr = $r("app.media.Add");
@@ -165,18 +162,6 @@ struct NewAddPage {
           .fontSize(16)
           .width('96%')
           .margin({ top: 32 });
-
-        Row() {
-          Text('数据导出权限')
-            .fontSize(16)
-            .margin({ top: 16,bottom:10 });
-          Toggle({ type: ToggleType.Switch, isOn: this.dataExportPermission })
-            .margin({ top: 16, right: 16 })
-            .onChange((isOn: boolean) => {
-              this.dataExportPermission = isOn;
-            });
-        }
-        .width('96%')
 
         Button('确定')
           .width(120)

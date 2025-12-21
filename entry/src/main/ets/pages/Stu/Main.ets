@@ -5,6 +5,8 @@ import {HomeView} from '../../components/MainViews/Stu/Home'
 import {UploadsView} from '../../components/MainViews/Stu/Uploads'
 // 导入鸿蒙路由模块，用于页面跳转与参数传递
 import router from '@ohos.router';
+import { prompt } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 // 入口组件装饰器，标识当前组件为页面入口
 @Entry
@@ -46,6 +48,24 @@ struct Main {
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
+  @State exitTime: number= 0;
+
+  public ExitApp() {
+    if ((new Date().getTime() - this.exitTime) > 5000) {
+      prompt.showToast({
+        message: '再按一次退出程序',
+        duration: 2000,
+      });
+      this.exitTime = new Date().getTime();
+    } else {
+      (this.getUIContext().getHostContext() as common.UIAbilityContext)?.terminateSelf()
+    }
+  }
+
+  onBackPress(): boolean | void {
+    this.ExitApp();
+    return true;
+  }
 
   /**
    * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图

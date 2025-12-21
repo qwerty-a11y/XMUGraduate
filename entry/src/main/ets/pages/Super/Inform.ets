@@ -29,13 +29,11 @@ export struct SuperInform {
   @Prop image_check: ResourceStr = $r('app.media.check');
 
   // 学生数据 - 初始化为全部选中
-  @State AccountData: Account[] = [];
+  @State AccountData: Account[] = AccountList.List;
 
   @State AccountSelect: boolean[]=[]
 
   // 状态管理
-  @State currentPage: number = 1;
-  private totalPages: number = 6;
   @State batchOperationMode: boolean = false; // 批量操作模式开关
   @State allSelected: boolean = true; // 全选状态
   @State allNotSelected: boolean = false
@@ -91,6 +89,7 @@ export struct SuperInform {
         // 解析数据并存入数组
         this.AccountData = this.parseAccountData(dataObj, accountType);
         this.AccountSelect = new Array(this.AccountData.length).fill(true)
+        AccountList.List = this.AccountData
 
       } catch (parseError) {
         const error = parseError as BusinessError;
@@ -118,6 +117,11 @@ export struct SuperInform {
 
   aboutToAppear(): void {
     this.getAccountList(AccountList.Type==2,AccountList.Major())
+  }
+
+  onPageShow(): void {
+    this.AccountData = AccountList.List
+    this.AccountSelect = new Array(this.AccountData.length).fill(true)
   }
 
   // 全选方法 - 强制所有项选中

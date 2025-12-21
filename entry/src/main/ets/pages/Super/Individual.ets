@@ -356,7 +356,7 @@ struct OperationPage {
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
 
-              Text(this.account!.Name)
+              Text(this.Details?.name)
                 .flexGrow(1)
                 .fontSize(16)
                 .margin({ top: 5, bottom: 5, left: 8 })
@@ -573,6 +573,8 @@ struct OperationPage {
                               confirm: () => {
                                 this.Request('/api/account/admin/destroy/')
                                 CoolDownDialogInstance.close()
+                                AccountList.List.splice(AccountList.List.indexOf(this.account as Account),1)
+                                router.back()
                               },
                               cancel:() => {
                                 CoolDownDialogInstance.close()

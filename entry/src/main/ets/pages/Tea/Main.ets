@@ -3,6 +3,8 @@ import router from '@ohos.router'; // 导入路由模块
 import {NavigationBarsuper} from '../../components/Navigator';
 import {teaHomeView} from '../../components/MainViews/Tea/Home'
 import {teaUploadsView} from '../../components/MainViews/Tea/Uploads'
+import { prompt } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -37,6 +39,24 @@ export struct teamain {
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
+  @State exitTime: number= 0;
+
+  public ExitApp() {
+    if ((new Date().getTime() - this.exitTime) > 5000) {
+      prompt.showToast({
+        message: '再按一次退出程序',
+        duration: 2000,
+      });
+      this.exitTime = new Date().getTime();
+    } else {
+      (this.getUIContext().getHostContext() as common.UIAbilityContext)?.terminateSelf()
+    }
+  }
+
+  onBackPress(): boolean | void {
+    this.ExitApp();
+    return true;
+  }
 
   /**
    * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图

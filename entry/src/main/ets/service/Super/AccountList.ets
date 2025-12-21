@@ -1,4 +1,5 @@
 import List from "@ohos.util.List";
+import { Account } from "../../datatypes/Account";
 import * as TypeRecord from '../../datatypes/Record'
 
 @Observed
@@ -14,4 +15,5 @@ export class AccountList{
     });
     return idx
   }
+  public static List:Account[] = []
 }

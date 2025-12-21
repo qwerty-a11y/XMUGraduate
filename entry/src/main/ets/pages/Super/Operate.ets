@@ -18,10 +18,8 @@ struct OperationPage {
   @Prop image_go: ResourceStr = $r("app.media.RightArrow");
   @State operationList: string[] = [
     '重置2FA',
-    //{ name: '冻结账号', isSelected: false },
     '删除账号',
     '导出数据',
-    //{ name: '数据导出权限', isSelected: false },
     '重置密码',
   ];
   @State accounts:string[]=[]

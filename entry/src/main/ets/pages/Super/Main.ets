@@ -3,7 +3,8 @@ import router from '@ohos.router'; // 导入路由模块
 import {NavigationBarsuper} from '../../components/Navigator';
 import {superHomeView} from '../../components/MainViews/Super/Home'
 import {superUploadsView} from '../../components/MainViews/Super/Uploads'
-import { Translation } from '@kit.ArkUI';
+import { prompt, Translation } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -42,11 +43,24 @@ export struct SuperMain {
   @State ActiveView:number = 0;
   // 状态：审核页数据更新触发器（通过布尔值反转触发子组件重新渲染）
   @State UpdateTrigger:boolean = false;
+  @State exitTime: number= 0;
 
-  /**
-   * 自定义构建函数（@Builder）：根据ActiveView状态渲染对应的视图
-   * 作用：封装视图切换逻辑，避免build方法冗余
-   */
+  public ExitApp() {
+    if ((new Date().getTime() - this.exitTime) > 5000) {
+      prompt.showToast({
+        message: '再按一次退出程序',
+        duration: 2000,
+      });
+      this.exitTime = new Date().getTime();
+    } else {
+      (this.getUIContext().getHostContext() as common.UIAbilityContext)?.terminateSelf()
+    }
+  }
+
+  onBackPress(): boolean | void {
+    this.ExitApp();
+    return true;
+  }
 
   @Builder
   View(){
