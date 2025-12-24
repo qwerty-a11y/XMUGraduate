@@ -1,12 +1,8 @@
 import router from '@ohos.router';
-
-interface CardItem {
-  status: string;
-  statusColor: string;
-  //type: string;
-  from: string;
-  time: string;
-}
+import { Request } from '../../datatypes/Feedback'
+import { FeedBacks } from '../../service/Super/AccountList';
+import { DateUtils } from '../../utils';
+import { emitter } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
@@ -16,54 +12,37 @@ export struct SuperUploadsView {
   @Prop image_filter: ResourceStr = $r("app.media.Filter"); // 筛选图标
   @Prop image_search: ResourceStr = $r("app.media.Search");
   @State SearchText: string = '';
-  @State cardData: Array<CardItem> = [
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      //type: '反馈',
-      from: '**同学',
-      time: '2025-10-11 10:00'
-    },
-    {
-      status: '未处理',
-      statusColor: '#FF0000',
-      //type: '账号问题',
-      from: '**教师',
-      time: '2025-10-11 09:30'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-      //type: '反馈',
-      from: '**教师',
-      time: '2025-10-10 16:20'
-    },
-    {
-      status: '已处理',
-      statusColor: '#00FF00',
-     // type: '账号问题',
-      from: '**同学',
-      time: '2025-10-10 15:10'
-    }
-  ];
+  @State cardData: Request[] = FeedBacks.List
+
+  async update(){
+    await FeedBacks.Refresh()
+    this.cardData=[...FeedBacks.List]
+  }
+
+  async aboutToAppear() {
+    emitter.on('back',()=>{
+      this.update()
+    })
+    await this.update()
+  }
 
   @Builder
-  CardComponent(item: CardItem) {
+  CardComponent(item: Request) {
     Row() {
       Column() {
         Row() {
-          Text(item.status)
+          Text(item.Status?'已处理':'未处理')
             .fontSize(14)
             .margin({ right: 5 });
           // 状态圆点
           Circle()
             .width(8)
             .height(8)
-            .fill(item.statusColor);
+            .fill(item.Status?Color.Green:Color.Red);
         }
         .margin({ bottom: 5 });
 
-        Text(`来自：${item.from}`)
+        Text("来自："+item.Name+" "+(item.Identity?'老师':'学生'))
           .fontSize(16);
       }
       .width('50%')
@@ -74,7 +53,7 @@ export struct SuperUploadsView {
         //   .fontSize(16)
         //   .fontWeight(FontWeight.Bold)
         //   .margin({ bottom: 5 });
-        Text(item.time)
+        Text(DateUtils.ToString(item.UploadTime))
           .fontSize(12)
           .fontColor('#999999');
       }
@@ -93,7 +72,10 @@ export struct SuperUploadsView {
     })
     .width(340)
     //.padding(10)
-    .justifyContent(FlexAlign.Center); // 卡片内容水平居中
+    .justifyContent(FlexAlign.Center) // 卡片内容水平居中
+    .onClick(()=>{
+      router.pushUrl({url:'pages/Super/FeedbackDetail',params:item})
+    })
   }
 
   build() {
@@ -129,52 +111,11 @@ export struct SuperUploadsView {
         .shadow({ radius: 2, color: '#00000010' });
 
 
-        Row() {
-          Row() {
-            Image(this.image_search)
-              .width(24)
-              .height(24)
-              .margin({ left: 12 })
-            TextInput({
-              placeholder: 'Search',
-              text: this.SearchText
-            })
-              .fontSize(16)
-              .height(32)
-              .backgroundColor('white')
-              .placeholderColor('#999999')
-              .margin({ left: 8 })
-              .layoutWeight(1)
-          }
-          .backgroundColor('white')
-          .borderRadius(20)
-          .height(52)
-          .width(270)
-          .shadow({
-            radius: 4,
-            color: '#10000000',
-            offsetX: 0,
-            offsetY: 2
-          })
-          .margin({ left: 15 });
-
-          Image(this.image_filter)
-            .width(24)
-            .height(24)
-            .margin({ left: 8, right: 5 })
-          Image(this.image_arrange)
-            .width(24)
-            .height(24)
-        }
-        .width('100%')
-        .backgroundColor('#fff4fafa')
-        .margin({ top: 10, bottom: 10 })
-        .shadow({ radius: 10, color: '#00000010' })
 
         //.alignItems(VerticalAlign.Center)
       }
       .width('100%')
-      .height('20%')
+      .height('10%')
       .position({
         x: 0,
         y: 0
@@ -182,7 +123,7 @@ export struct SuperUploadsView {
 
       Column() {
         List() {
-          ForEach(this.cardData, (item: CardItem) => {
+          ForEach(this.cardData, (item: Request) => {
             ListItem() {
               this.CardComponent(item);
             }
@@ -194,9 +135,9 @@ export struct SuperUploadsView {
       }
       .width(340)
       .position({
-        top: '20%'
+        top: '10%'
       })
-      .height('80%')
+      .height('90%')
       .width('100%') // 让List宽度占满
       .layoutWeight(1); // 让List占满剩余高度
     }

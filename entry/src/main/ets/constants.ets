@@ -1,5 +1,5 @@
 export class StaticData{
-  public static ServerURL:string = 'http://192.168.88.203:8000'
+  public static ServerURL:string = 'http://192.168.21.203:8000'
 }
 
 export class DynamicData{

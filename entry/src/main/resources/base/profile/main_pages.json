@@ -12,6 +12,7 @@
     "pages/Stu/Feedback",
     "pages/Stu/Records",
     "pages/Super/Feedback",
+    "pages/Super/FeedbackDetail",
     "pages/Super/Inform",
     "pages/Super/Operate",
     "pages/Super/Add",

@@ -240,38 +240,6 @@ export struct superHomeView {
           }
           .width(330)
           .margin({bottom:15})
-
-          Column(){
-            Column() {
-              Text('账号问题')
-                .fontSize(14)
-                .width('100%')
-            }
-            .width(330)
-
-            Column(){
-              if (this.cardData.length == 0){
-                Text("暂无账号问题反馈").margin({top:40}).fontColor(Color.Gray)
-              } else {
-                List() {
-                  ForEach(this.cardData, (item: Request) => {
-                    ListItem() {
-                      this.CardComponent(item);
-                    }
-                    .margin({ bottom: 5, top: 5 })
-                    .width(340)
-                  });
-                }
-                .width(330)
-              }
-            }
-            .backgroundColor('#ffffff')
-            .width(340)
-            .constraintSize({minHeight:100})
-
-          }
-          // 增加一个大的底部边距，确保Scroll内容高度超过自身高度，可滑动
-          .margin({ bottom: 100 })
         }
         .width('100%')
         .constraintSize({

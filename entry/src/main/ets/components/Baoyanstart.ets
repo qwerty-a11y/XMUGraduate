@@ -14,7 +14,7 @@ export struct Baoyanstartbg {
 @Component
 export struct Baoyanlogo {
   // 图标资源
-  private logoImage: ResourceStr = $r("app.media.AppLogo");
+  private logoImage: ResourceStr = $r("app.media.startIcon");
 
   build() {
     Image(this.logoImage)

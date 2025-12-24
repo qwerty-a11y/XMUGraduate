@@ -52,7 +52,7 @@ export struct UploadFile{
           }
         }.height(40).backgroundColor('#eeeeee').onClick(async ()=>{
           try {
-            await fs.rename('?id='+item.id, this.context.cacheDir + '/delete')
+            await fs.rename(this.context.cacheDir+'/'+item.name, this.context.cacheDir + '/delete')
           } catch (e){
             console.error(`Failed to rename existed file. err: ${JSON.stringify(e)}`);
           }

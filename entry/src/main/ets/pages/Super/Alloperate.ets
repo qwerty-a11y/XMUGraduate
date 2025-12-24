@@ -246,7 +246,7 @@ struct OperationPage {
                           title:'确认操作',
                           text:'确定要重置全部账号的2FA状态吗？这会要求用户重新导入2FA验证码。',
                           confirm: () => {
-                            this.Request('')
+                            this.Request('/api/admin/reset2fa/')
                           },
                           cancel:() => {
                             CoolDownDialogInstance.close()

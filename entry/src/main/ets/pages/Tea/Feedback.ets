@@ -1,5 +1,14 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
+import { http } from '@kit.NetworkKit';
+import json from '@ohos.util.json';
+import { DynamicData, StaticData } from '../../constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+interface data{
+  content:string
+}
+interface empty{}
 
 @Entry
 @Component
@@ -11,8 +20,66 @@ struct FeedbackPage {
   @State feedbackContent: string = '';
   @State errorMessage: string = '';
 
+  async Submit():Promise<boolean>{
+    let httpRequest = http.createHttp();
+    let RequestData: data = {
+      content:this.feedbackContent
+    }
+    let RequestDataStr: string = json.stringify(RequestData)
+    try {
+      let Response: http.HttpResponse = await httpRequest.request(
+        StaticData.ServerURL + '/api/feedback/create/',
+        {
+          method: http.RequestMethod.POST,
+          extraData: RequestDataStr,
+          header: {
+            'Content-Type': 'application/json', // 关键：添加这个头
+            'Accept': 'application/json', // 可选：告诉服务器期望 JSON 响应
+            'Authorization': 'Token '+DynamicData.token
+          },
+          connectTimeout:5000
+        }
+      )
+      let DataObj: Object | empty
+      let DataObjTmp: object | null
+      try {
+        DataObjTmp = json.parse(Response.result.toString())
+        DataObj = DataObjTmp ? DataObjTmp : {}
+        if (Response.responseCode == 200 && !(Object.keys(DataObj).includes('non_field_errors'))) {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交成功',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return true
+        } else {
+          // 使用 promptAction 显示提示
+          promptAction.showToast({
+            message: '提交失败，请检查网络连接',
+            duration: 2000 // 弹窗显示时间（毫秒）
+          });
+          return false
+        }
+      } catch (e) {
+        let error = e as BusinessError
+        let msg = error?.message
+        // 使用 promptAction 显示提示
+        promptAction.showToast({
+          message: '解析错误：' + msg,
+          duration: 2000 // 弹窗显示时间（毫秒）
+        });
+        return false;
+      }
+    } catch (e) {
+      let err: BusinessError = e as BusinessError
+      console.log(err.message)
+      console.log(err.name)
+      return false
+    }
+  }
+
   // 提交反馈
-  private submitFeedback() {
+  async submitFeedback() {
     // 简单验证
     if (!this.feedbackContent.trim()) {
       this.errorMessage = '请输入反馈内容';
@@ -24,12 +91,14 @@ struct FeedbackPage {
       return;
     }
 
-    // 模拟提交成功
-    this.errorMessage = '';
-    promptAction.showToast({
-      message: '反馈提交成功，感谢您的建议！',
-      duration: 2000
-    });
+    if (await this.Submit()) {
+      // 模拟提交成功
+      this.errorMessage = '';
+      promptAction.showToast({
+        message: '反馈提交成功，感谢您的建议！',
+        duration: 2000
+      })
+    }
 
     // 返回设置页
     setTimeout(() => {

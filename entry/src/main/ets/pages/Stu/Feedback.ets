@@ -6,7 +6,7 @@ import { DynamicData, StaticData } from '../../constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 interface data{
-  feedback:string
+  content:string
 }
 interface empty{}
 
@@ -23,14 +23,14 @@ struct FeedbackPage {
   async Submit():Promise<boolean>{
     let httpRequest = http.createHttp();
     let RequestData: data = {
-      feedback:this.feedbackContent
+      content:this.feedbackContent
     }
     let RequestDataStr: string = json.stringify(RequestData)
     try {
       let Response: http.HttpResponse = await httpRequest.request(
-        StaticData.ServerURL + '/api/account/update/contact/',
+        StaticData.ServerURL + '/api/feedback/create/',
         {
-          method: http.RequestMethod.PUT,
+          method: http.RequestMethod.POST,
           extraData: RequestDataStr,
           header: {
             'Content-Type': 'application/json', // 关键：添加这个头

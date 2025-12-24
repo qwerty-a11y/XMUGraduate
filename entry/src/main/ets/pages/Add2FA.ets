@@ -111,8 +111,10 @@ struct Add2FA{
         })
       Button(){
         Text("复制密钥")
-      }.onClick(()=>{
-        pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN,this.secret)
+      }.onClick(async ()=>{
+        let pasteData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN,this.secret)
+        let systemPasteboard = pasteboard.getSystemPasteboard();
+        await systemPasteboard.setData(pasteData);
         promptAction.showToast({
           message:"复制成功",
           duration:2000

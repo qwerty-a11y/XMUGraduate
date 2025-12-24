@@ -8,6 +8,7 @@ import json from '@ohos.util.json';
 import { BusinessError } from '@kit.BasicServicesKit';
 import * as StuBasicData from '../service/Stu/BasicData'
 import * as TeaBasicData from '../service/Tea/BasicData'
+import { AccountList, FeedBacks } from '../service/Super/AccountList';
 
 //import { InputType } from '@ohos.input';
 //import { Curve } from '@ohos.animation';
@@ -167,6 +168,8 @@ struct login {
     DynamicData.token=''
     StuBasicData.BasicData.clear()
     TeaBasicData.BasicData.clear()
+    AccountList.List=[]
+    FeedBacks.List=[]
   }
 
   @Builder

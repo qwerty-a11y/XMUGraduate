@@ -310,7 +310,7 @@ export struct Honor {
       .width('100%')
 
       Row() {
-        Text('申请分数')
+        Text('项目分数')
           .fontSize(14)
           .fontColor('#666666')
         Text((this.tmpentry.extra_data! as RecordType.Honor).data!.score.toString())
@@ -359,7 +359,7 @@ export struct SocialWork {
       .width('100%')
 
       Row() {
-        Text('申请分数')
+        Text('项目分数')
           .fontSize(14)
           .fontColor('#666666')
         Text((this.tmpentry.extra_data! as RecordType.SocialWork).data!.score.toString())
@@ -428,7 +428,7 @@ export struct Volunteer {
       .justifyContent(FlexAlign.SpaceAround)
       .width('100%')
       Row() {
-        Text('申请分数')
+        Text('项目分数')
           .fontSize(14)
           .fontColor('#666666')
         Text((this.tmpentry.extra_data! as RecordType.Volunteer).data_service!.score.toString())
@@ -530,7 +530,7 @@ export struct International {
       .width('100%')
 
       Row() {
-        Text('申请分数')
+        Text('项目分数')
           .fontSize(14)
           .fontColor('#666666')
         Text((this.tmpentry.extra_data! as RecordType.International).data!.score.toString())
@@ -579,7 +579,7 @@ export struct Military {
       .width('100%')
 
       Row() {
-        Text('申请分数')
+        Text('项目分数')
           .fontSize(14)
           .fontColor('#666666')
         Text((this.tmpentry.extra_data! as RecordType.Military).data!.score.toString())
