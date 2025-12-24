@@ -38,7 +38,7 @@ export interface BasicResponse {
 
 @Component
 export struct HomeView {
-
+  @Prop image_world: ResourceStr = $r("app.media.world");
   @State GPA:number = BasicData.GPA
   @State score:number = BasicData.score
   @State estimated_score:number = BasicData.estimated_score
@@ -264,20 +264,35 @@ export struct HomeView {
             offsetY: 4 // 阴影向下偏移2px
           });
 
-          Row(){
-            Text("新添加分项")
-              .fontSize(18)
-            //.textAlign(TextAlign.Center)
+          Row({space:10}) {
+            Row() {
+              Text('保研条例参考')
+                .fontSize(18)
+            }
+            .width('47%')
+            .height(32)
+            .justifyContent(FlexAlign.Center)
+            .backgroundColor('#84F2C3')
+            .borderRadius(20)
+            .onClick(() => {
+              router.pushUrl({ url: 'pages/Tea/Rules' });
+            });
+
+            Row() {
+              Text("新添加分项")
+                .fontSize(18)
+              //.textAlign(TextAlign.Center)
+            }
+            //.alignItems(VerticalAlign.Center)
+            .justifyContent(FlexAlign.Center)
+            .width('47%')
+            .height(32)
+            .backgroundColor('#84F2C3')
+            .borderRadius(20)
+            .onClick(() => {
+              router.pushUrl({ url: 'pages/Stu/AddProject' });
+            });
           }
-          //.alignItems(VerticalAlign.Center)
-          .justifyContent(FlexAlign.Center)
-          .width(340)
-          .height(32)
-          .backgroundColor('#84F2C3')
-          .borderRadius(20)
-          .onClick(() => {
-            router.pushUrl({ url: 'pages/Stu/AddProject' });
-          });
 
           // 学业专长标题
           Text('学业专长')

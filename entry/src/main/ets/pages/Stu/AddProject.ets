@@ -32,6 +32,7 @@ interface empty{}
 struct AddOptionApplication {
   @Prop image_download: ResourceStr = $r('app.media.Download');
   @Prop image_false: ResourceStr = $r("app.media.false");
+  @Prop image_world: ResourceStr = $r("app.media.world");
   @State isDialogShow: boolean = true;
   @State typeOptions: string[] = [
     '学业竞赛', '创新创业训练', '科研成果',
@@ -217,6 +218,7 @@ struct AddOptionApplication {
                 top: 10,
                 bottom: 10
               })
+
 
               // 类型选择行
               Row() {
